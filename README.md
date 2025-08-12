@@ -322,6 +322,11 @@ lein subgrid order_items orders order_id "Product:product_name" "Qty:quantity"
 - Child table must have foreign key to parent
 - Child table must have primary key `id`
 
+#### Example Subgrid UI
+
+![Subgrid Example](./subgrid-example.png)
+*Example: A subgrid showing order items within an order.*
+
 ---
 
 ## 🗄️ Database Support
