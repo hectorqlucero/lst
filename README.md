@@ -325,7 +325,7 @@ lein subgrid order_items orders order_id "Product:product_name" "Qty:quantity"
 #### Example Subgrid UI
 
 ![Subgrid Example](./subgrid-example.png)
-*Example: A subgrid showing order items within an order.*
+*Example: A subgrid showing sibling items within an contactos.*
 
 ---
 
