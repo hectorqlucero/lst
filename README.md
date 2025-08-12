@@ -20,6 +20,7 @@
 - [Access Control](#access-control)
 - [Troubleshooting](#troubleshooting)
 - [API Reference](#api-reference)
+- [Project File Map](#project-file-map)
 
 ---
 
@@ -495,6 +496,34 @@ lein subgrid <child> <parent> <fk> :rights [A]         # Admin only
 | `db` | MySQL | Default production |
 | `pg` | PostgreSQL | Alternative production |
 | `localdb` | SQLite | Development/testing |
+
+---
+
+## 🗂️ Project File Map
+
+A quick reference for where to find and update everything in your generated LST app.
+
+| Feature/Area      | Location(s)                                                                 | Purpose / What to Edit                                  |
+|-------------------|-----------------------------------------------------------------------------|---------------------------------------------------------|
+| **CRUD Grids**    | `src/myapp/handlers/admin/<table>/`                                         | Controllers, models, and views for admin CRUD           |
+| **Dashboards**    | `src/myapp/handlers/<table>/`                                               | Read-only table controllers, models, and views          |
+| **Reports**       | `src/myapp/handlers/reports/<name>/`                                        | Custom report controllers, models, and views            |
+| **Subgrids**      | `src/myapp/handlers/admin/<child>/`<br>`src/myapp/handlers/admin/<parent>/` | Child grid logic and parent integration                 |
+| **Menus**         | `src/myapp/menu.clj`                                                        | Update navigation and sidebar links                     |
+| **App Layout**    | `src/myapp/layout.clj`                                                      | Change global page layout and shared UI                 |
+| **Routing**       | `src/myapp/routes/`                                                         | URL routing for all features                            |
+| **Config**        | `resources/private/config.clj`                                              | Database and global app settings                        |
+| **Seed Data**     | `src/myapp/models/cdb.clj`                                                  | Add/edit initial data for `lein database`               |
+| **Migrations**    | `resources/migrations/`                                                     | SQL files for schema changes                            |
+| **Builder Templates** | `src/myapp/builder/`                                                    | Source templates for code generators (advanced)         |
+
+### 🔎 Quick Tips
+
+- **Add a new menu item?** Edit `src/myapp/menu.clj`.
+- **Change database config?** Edit `resources/private/config.clj`.
+- **Seed or update test data?** Edit `src/myapp/models/cdb.clj`.
+- **Customize generated UI?** Edit files in the relevant handler directory.
+- **Change how generators scaffold code?** Advanced: edit builder templates in `src/myapp/builder/`.
 
 ---
 
