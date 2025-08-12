@@ -36,7 +36,7 @@
   (let [table "users"
         form-fields (or (:params request) (:form-params request) request)]
     (try
-      (if (build-form-save form-fields table :conn :mysql)
+      (if (build-form-save form-fields table :conn :default)
         {:status 200 :headers {"Content-Type" "application/json"} :body "{\"ok\":true}"}
         {:status 500 :headers {"Content-Type" "application/json"} :body "{\"ok\":false}"})
       (catch Exception e
@@ -47,7 +47,7 @@
 (defn users-delete
   [_ id]
   (let [table "users"
-        result (build-form-delete table id :conn :mysql)]
+        result (build-form-delete table id :conn :default)]
     (if result
       {:status 302 :headers {"Location" "/admin/users"}}
       (error-404 "Unable to process record!" "/admin/users"))))

@@ -15,7 +15,7 @@
 (defn get-users
   []
   ;; Use PostgreSQL connection
-  (Query get-users-sql :conn :mysql))
+  (Query get-users-sql :conn :default))
 
 ;; Start get-user
 (def get-user-sql
@@ -30,7 +30,7 @@
 (defn get-user
   [id]
   ;; Use PostgreSQL connection
-  (first (Query [get-user-sql (crud-fix-id id)] :conn :mysql)))
+  (first (Query [get-user-sql (crud-fix-id id)] :conn :default)))
 ;; End get-user
 
 (comment
