@@ -9,31 +9,30 @@
 ;; You can add any other app-specific keys (uploads, email, etc.) at the top level.
 
 {:connections
- {;; --- Main MySQL database ---
-  :main {:db-type   "mysql"                                 ;; "mysql", "postgresql", "sqlite", etc.
+ { ;; --- Mysql database ---
+  :mysql {:db-type   "mysql"                                 ;; "mysql", "postgresql", "sqlite", etc.
          :db-class  "com.mysql.cj.jdbc.Driver"              ;; JDBC driver class
          :db-name   "//localhost:3306/your_dbname"           ;; JDBC subname (host:port/db)
          :db-user   "root"
          :db-pwd    "your_password"}
 
   ;; --- Local SQLite database ---
-  :localdb {:db-type   "sqlite"
+  :sqlite {:db-type   "sqlite"
             :db-class  "org.sqlite.JDBC"
             :db-name   "db/your_dbname.sqlite"}                   ;; No user/pwd needed for SQLite
 
   ;; --- PostgreSQL database ---
-  :pg {:db-type   "postgresql"
+  :postgres {:db-type   "postgresql"
        :db-class  "org.postgresql.Driver"
        :db-name   "//localhost:5432/your_dbname"
        :db-user   "root"
        :db-pwd    "your_password"}
 
   ;; --- Default connection used by the app ---
-  :default {:db-type   "mysql"
-            :db-class  "com.mysql.cj.jdbc.Driver"
-            :db-name   "//localhost:3306/your_dbname"
-            :db-user   "root"
-            :db-pwd    "your_password"}}
+  :main :postgres ; Used for migrations
+  :default :postgres ; Used for generators (lein grid, lein dashboard, etc.)
+  :pg :postgres
+  :localdb :sqlite}
 
  ;; --- Other global app settings ---
  :uploads      "./uploads/your_upload_folder/"      ;; Path for file uploads
@@ -58,13 +57,13 @@
 ;;
 ;; --- EXAMPLES OF USAGE IN CODE ---
 ;; (Query db "SELECT * FROM users")
-;; (Query db_analytics "SELECT * FROM logs")
-;; (Query db_localdb "SELECT * FROM settings")
+;; (Query pg "SELECT * FROM logs")
+;; (Query localdb "SELECT * FROM settings")
 ;; (Insert db "users" {:name "Alice"})
-;; (Insert db_analytics "logs" {:event "login"})
-;; (Insert db_localdb "settings" {:key "theme" :value "dark"})
-;; (Query "SELECT * FROM logs" :conn :analytics)
-;; (Insert "logs" {:event "logout"} :conn :analytics)
+;; (Insert pg "logs" {:event "login"})
+;; (Insert localdb "settings" {:key "theme" :value "dark"})
+;; (Query "SELECT * FROM logs" :conn :pg)
+;; (Insert "logs" {:event "logout"} :conn :pg)
 
 ;; ----------------------------------------------------------------------
 ;; Example database configurations for different database engines
@@ -118,12 +117,12 @@
 
 ;; --- Multiple Databases (multi-DB) ---
 ;; {:connections
-;;  {:main {:db-type "mysql"
+;;  {:mysql {:db-type "mysql"
 ;;          :db-class "com.mysql.cj.jdbc.Driver"
 ;;          :db-name "//localhost:3306/mydb"
 ;;          :db-user "root"
 ;;          :db-pwd  "password"}
-;;   :analytics {:db-type "postgresql"
+;;   :postgres {:db-type "postgresql"
 ;;               :db-class "org.postgresql.Driver"
 ;;               :db-name "//localhost:5432/analytics"
 ;;               :db-user "postgres"

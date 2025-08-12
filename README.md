@@ -100,22 +100,59 @@ lein with-profile dev run
 Edit `resources/private/config.clj` with your database credentials:
 
 ```clojure
-{:db      {:classname "com.mysql.cj.jdbc.Driver" 
-           :subprotocol "mysql"      
-           :subname "//localhost:3306/mydb" 
-           :user "myuser" 
-           :password "mypassword"}
-           
- :pg      {:classname "org.postgresql.Driver"    
-           :subprotocol "postgresql" 
-           :subname "//localhost:5432/mydb" 
-           :user "myuser" 
-           :password "mypassword"}
-           
- :localdb {:classname "org.sqlite.JDBC"          
-           :subprotocol "sqlite"     
-           :subname "db/mydb.sqlite"}}
+{:connections
+ { ;; --- Mysql database ---
+  :mysql {:db-type   "mysql"                                 ;; "mysql", "postgresql", "sqlite", etc.
+         :db-class  "com.mysql.cj.jdbc.Driver"              ;; JDBC driver class
+         :db-name   "//localhost:3306/your_dbname"           ;; JDBC subname (host:port/db)
+         :db-user   "root"
+         :db-pwd    "your_password"}
+
+  ;; --- Local SQLite database ---
+  :sqlite {:db-type   "sqlite"
+            :db-class  "org.sqlite.JDBC"
+            :db-name   "db/your_dbname.sqlite"}                   ;; No user/pwd needed for SQLite
+
+  ;; --- PostgreSQL database ---
+  :postgres {:db-type   "postgresql"
+       :db-class  "org.postgresql.Driver"
+       :db-name   "//localhost:5432/your_dbname"
+       :db-user   "root"
+       :db-pwd    "your_password"}
+
+  ;; --- Default connection used by the app ---
+  :main :postgres ; Used for migrations
+  :default :postgres ; Used for generators (lein grid, lein dashboard, etc.)
+  :pg :postgres
+  :localdb :sqlite}
+
+ ;; --- Other global app settings ---
+ :uploads      "./uploads/your_upload_folder/"      ;; Path for file uploads
+ :site-name    "your_site_name"                 ;; App/site name
+ :company-name "your_company_name"            ;; Company name
+ :port         3000                        ;; App port
+ :tz           "US/Pacific"                ;; Timezone
+ :base-url     "http://0.0.0.0:3000/"      ;; Base URL
+ :img-url      "https://0.0.0.0/uploads/"  ;; Image base URL
+ :path         "/uploads/"                 ;; Uploads path (for web)
+ ;; Optional email config
+ :email-host   "smtp.example.com"
+ :email-user   "user@example.com"
+ :email-pwd    "emailpassword"}
+
 ```
+
+> ⚠️ **Important**: Always update `:main` and `:default` to point to your primary database connection. This allows you to run `lein migrate`, `lein grid`, `lein dashboard`, etc. without specifying the database each time. If you only use one database, set both to the same connection key (e.g., `:mysql`, `:postgres`, or `:sqlite`).
+
+### Configuration Sections
+
+| Section | Purpose | Required |
+|---------|---------|----------|
+| `:connections` | Database connections and defaults | ✅ Yes |
+| `:uploads` | File upload settings | ⚠️ If using file uploads |
+| `:email` | SMTP email configuration | ⚠️ If sending emails |
+| `:app` | Application metadata | ⚠️ Recommended |
+| `:security` | Security settings | ⚠️ Recommended |
 
 ### Database Setup Commands
 
