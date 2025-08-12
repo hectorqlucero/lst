@@ -225,19 +225,21 @@ myapp/
 
 **Purpose**: Creates full Create, Read, Update, Delete interfaces
 
-```bash
-# Basic syntax
-lein grid <table> "Label:field" "Label:field" ...
+By default, all fields are inferred from the database schema.  
+**Specifying fields is optional**—only use it to customize labels or limit fields.
 
-# Examples
-lein grid users "Name:firstname" "Email:email"
-lein grid products "Product Name:name" "Price:price" "Category:category_id"
+```bash
+# Basic usage (all fields auto-detected)
+lein grid users
 
 # With database connection
-lein grid pg customers "Company:company_name" "Contact:contact_email"
+lein grid pg customers
 
 # With access restrictions
-lein grid orders "Order #:order_number" "Total:total_amount" :rights [A S]
+lein grid orders :rights [A S]
+
+# (Optional) Specify fields and labels
+lein grid products "Product Name:name" "Price:price" "Category:category_id"
 ```
 
 **Generated Files**:
@@ -245,16 +247,23 @@ lein grid orders "Order #:order_number" "Total:total_amount" :rights [A S]
 - `src/myapp/handlers/admin/<table>/model.clj`
 - `src/myapp/handlers/admin/<table>/view.clj`
 
+---
+
 ### Dashboard Generator (Read-Only)
 
 **Purpose**: Creates read-only data tables
 
-```bash
-# Basic syntax
-lein dashboard <table> "Label:field" "Label:field" ...
+By default, all fields are inferred from the database schema.  
+**Specifying fields is optional**.
 
-# Examples
-lein dashboard products "Product:name" "Price:price" "Stock:quantity"
+```bash
+# Basic usage (all fields auto-detected)
+lein dashboard products
+
+# With access restrictions
+lein dashboard users :rights [S]
+
+# (Optional) Specify fields and labels
 lein dashboard users "Name:firstname" "Email:email" "Joined:created_at"
 ```
 
@@ -263,17 +272,23 @@ lein dashboard users "Name:firstname" "Email:email" "Joined:created_at"
 - `src/myapp/handlers/<table>/model.clj`
 - `src/myapp/handlers/<table>/view.clj`
 
+---
+
 ### Report Generator
 
 **Purpose**: Creates custom report pages
 
-```bash
-# Basic syntax
-lein report <name>
+By default, all fields are inferred from the database schema.  
+**Specifying fields is optional**.
 
-# Examples
+```bash
+# Basic usage (all fields auto-detected)
 lein report monthlySales
+
+# With access restrictions
 lein report userActivity :rights [A S]
+
+# With database connection
 lein report pg inventoryReport :set-default
 ```
 
@@ -282,31 +297,30 @@ lein report pg inventoryReport :set-default
 - `src/myapp/handlers/reports/<name>/model.clj`
 - `src/myapp/handlers/reports/<name>/view.clj`
 
+---
+
 ### Subgrid Generator (Master-Detail)
 
 **Purpose**: Creates child grids linked to parent records
 
-```bash
-# Basic syntax
-lein subgrid <child-table> <parent-table> <foreign-key> ["Label:field" ...]
+By default, all fields are inferred from the database schema.  
+**Specifying fields is optional**.
 
-# Examples
+```bash
+# Basic usage (all fields auto-detected)
+lein subgrid order_items orders order_id
+
+# With access restrictions
+lein subgrid user_addresses users user_id :rights [A]
+
+# (Optional) Specify fields and labels
 lein subgrid order_items orders order_id "Product:product_name" "Qty:quantity"
-lein subgrid user_addresses users user_id "Type:address_type" "Address:street"
 ```
 
 **Requirements**:
 - Parent table must have primary key `id`
 - Child table must have foreign key to parent
 - Child table must have primary key `id`
-
-### Generator Options
-
-| Option | Description | Example |
-|--------|-------------|---------|
-| `conn` | Specify database connection | `:conn pg` |
-| `:rights` | Restrict access by role | `:rights [A S]` |
-| `:set-default` | Save connection as default | `:set-default` |
 
 ---
 
