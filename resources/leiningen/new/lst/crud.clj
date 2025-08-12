@@ -31,7 +31,7 @@
 (def KEY
   (let [secret (or (:session-secret config)
                    (get-in config [:security :session-secret])
-                   "{{name}-session-key")]
+                   "{{name}}-session-key")]
     (ensure-16-bytes secret)))
 
 (defn build-db-spec [cfg]

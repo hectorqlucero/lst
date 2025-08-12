@@ -1,4 +1,4 @@
-# ls
+# lst
 
 A Professional Leiningen Template for Lucero Systems Web Applications
 
@@ -6,17 +6,17 @@ A Professional Leiningen Template for Lucero Systems Web Applications
 
 ## Overview
 
-**ls** is a modern [Leiningen](https://leiningen.org/) project template for rapidly building robust,
+**lst** is a modern [Leiningen](https://leiningen.org/) project template for rapidly building robust,
 scalable, and maintainable Clojure web applications. It lets you scaffold CRUD grids, dashboards,
 reports, and subgrids in seconds, following Lucero Systems conventions. With a clear
-handler/view/model structure, Hiccup-based HTML, and seamless DB integration, **ls** helps you
+handler/view/model structure, Hiccup-based HTML, and seamless DB integration, **lst** helps you
 launch your next Clojure web project fast.
 
 ---
 
 ## ✨ Features
 
-- **Rapid Project Scaffolding**: Instantly create a new web app with `lein new ls your-project-name`.
+- **Rapid Project Scaffolding**: Instantly create a new web app with `lein new lst your-project-name`.
 - **Powerful Code Generators**: Generate CRUD grids, dashboards, reports, and subgrids for any database table.
 - **Customizable Templates**: Easily adapt Clojure string templates for handlers, views, and models.
 - **Automatic Database Integration**: Auto-generates fields from your database schema.
@@ -45,7 +45,7 @@ To use this template on your computer:
 1. **Clone the repository:**
    ```sh
    git clone <your-repo-url>
-   cd ls
+   cd lst
    ```
 
 2. **Build and install the template into your local Maven repository:**
@@ -55,7 +55,7 @@ To use this template on your computer:
    lein install
    ```
 
-   You can now use `ls` as a template for new projects on your machine.
+   You can now use `lst` as a template for new projects on your machine.
 
 ---
 
@@ -64,7 +64,7 @@ To use this template on your computer:
 ### 1. Create a New Project
 
 ```sh
-lein new ls myapp
+lein new lst myapp
 cd myapp
 ```
 
@@ -437,7 +437,7 @@ Notes:
 
 ---
 
-## 🌐 Why Choose ls?
+## 🌐 Why Choose lst?
 
 - **SEO-Ready**: Clean, semantic HTML and best practices for discoverability.
 - **Enterprise-Grade**: Built for Lucero Systems, but flexible for any Clojure web project.
@@ -446,9 +446,9 @@ Notes:
 
 ---
 
-## 📖 API Documentation: ls Leiningen Template
+## 📖 API Documentation: lst Leiningen Template
 
-This document overviews the main namespaces, functions, and code generation APIs in the **ls**
+This document overviews the main namespaces, functions, and code generation APIs in the **lst**
 Leiningen template.
 
 ---
@@ -468,7 +468,7 @@ Leiningen template.
 
 ## Overview
 
-The **ls** template generates a Clojure web app with a modular handler/view/model structure,
+The **lst** template generates a Clojure web app with a modular handler/view/model structure,
 automatic CRUD, dashboard, and report scaffolding, and seamless DB integration. The generated code
 is idiomatic, extensible, and ready for production.
 
@@ -655,7 +655,7 @@ The following Leiningen commands are available for code generation:
 ## Extending the Template
 
 - **Custom Templates**:  
-  Edit `resources/leiningen/new/ls/builder.clj` to add or modify code generation templates.
+  Edit `resources/leiningen/new/lst/builder.clj` to add or modify code generation templates.
 
 - **Add New Features**:  
   Follow the handler/view/model pattern for new resources.
@@ -670,7 +670,7 @@ The following Leiningen commands are available for code generation:
 - Inline comments are provided in each generated source file.
 - For advanced usage, see the [Leiningen documentation](https://leiningen.org/).
 - For questions or contributions, open an issue or pull request on the
-  [GitHub repository](https://github.com/your-org/ls).
+  [GitHub repository](https://github.com/your-org/lst).
 
 ---
 

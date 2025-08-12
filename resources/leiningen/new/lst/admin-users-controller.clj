@@ -32,10 +32,11 @@
 
 
 (defn users-save
-  [params]
-  (let [table "users"]
+  [request]
+  (let [table "users"
+        form-fields (or (:params request) (:form-params request) request)]
     (try
-      (if (build-form-save params table :conn :mysql)
+      (if (build-form-save form-fields table :conn :mysql)
         {:status 200 :headers {"Content-Type" "application/json"} :body "{\"ok\":true}"}
         {:status 500 :headers {"Content-Type" "application/json"} :body "{\"ok\":false}"})
       (catch Exception e
