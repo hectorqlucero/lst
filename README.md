@@ -363,6 +363,7 @@ After generating a subgrid, integrate it into the parent view:
 
 | Problem | Cause | Solution |
 |---------|-------|----------|
+| **Generated components not showing** | Server needs to reload routes | Open `src/myapp/core.clj`, save it (no changes needed), then refresh webpage |
 | **Routes not updating** | Server cache | Restart dev server with `lein with-profile dev run` |
 | **Database connection error** | Wrong credentials | Check `resources/private/config.clj` |
 | **Subgrid not opening** | Missing foreign key | Verify FK exists in child table |
