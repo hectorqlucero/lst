@@ -92,9 +92,21 @@
 
       :else (throw (ex-info (str "Unsupported db-type: " dbtype) {:dbtype dbtype})))))
 
+
+;; Helper to resolve keyword indirection in :connections
+(defn- resolve-conn [connections v]
+  (loop [val v]
+    (if (and (keyword? val) (contains? connections val))
+      (recur (get connections val))
+      val)))
+
 (def dbs
   (if (and (:connections config) (map? (:connections config)))
-    (into {} (for [[k v] (:connections config)] [k (build-db-spec v)]))
+    (into {}
+          (for [[k v] (:connections config)]
+            (let [resolved (resolve-conn (:connections config) v)]
+              (when (map? resolved)
+                [k (build-db-spec resolved)]))))
     {:default (build-db-spec config)}))
 
 (def db (or (get dbs :default) (first (vals dbs))))
