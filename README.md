@@ -1,206 +1,338 @@
-# lst
+# LST - Lucero Systems Template
 
-A professional Leiningen template for Lucero Systems–style Clojure web applications.
+> A professional Leiningen template for rapid Clojure web application development
 
----
-
-## What is lst?
-
-lst is a Leiningen template that scaffolds full-stack, database-backed Clojure web apps fast. It generates CRUD grids, dashboards, reports, and subgrids with a consistent handler/model/view structure, Bootstrap 5 + DataTables UI, and ready‑to‑use routes and auth checks.
-
-Use it to:
-- Create CRUD interfaces in seconds
-- Wire dashboards and reports
-- Add master–detail subgrids (modal-based)
-- Target MySQL, PostgreSQL, or SQLite
+[![Clojure](https://img.shields.io/badge/Clojure-1.10+-blue.svg)](https://clojure.org/)
+[![Java](https://img.shields.io/badge/Java-17+-orange.svg)](https://openjdk.org/)
+[![Leiningen](https://img.shields.io/badge/Leiningen-2.9.0+-green.svg)](https://leiningen.org/)
 
 ---
 
-## Requirements
+## 📋 Table of Contents
 
-- Clojure 1.10+
-- Java 17+
-- Leiningen 2.9.0+
+- [Overview](#overview)
+- [Features](#features)
+- [Quick Start](#quick-start)
+- [Configuration](#configuration)
+- [Core Concepts](#core-concepts)
+- [Generator Commands](#generator-commands)
+- [Database Support](#database-support)
+- [Access Control](#access-control)
+- [Troubleshooting](#troubleshooting)
+- [API Reference](#api-reference)
 
 ---
 
-## Install the template
+## 🎯 Overview
 
-```sh
+**LST** is a powerful Leiningen template that scaffolds full-stack, database-backed Clojure web applications with enterprise-grade features. Generate complete CRUD interfaces, dashboards, and reports in seconds with a consistent MVC architecture.
+
+### What You Get
+
+- **CRUD Grids**: Full Create, Read, Update, Delete interfaces
+- **Dashboards**: Read-only data tables with advanced filtering
+- **Reports**: Custom report pages with flexible querying
+- **Subgrids**: Master-detail relationships with modal interfaces
+- **Multi-Database**: MySQL, PostgreSQL, and SQLite support
+- **Modern UI**: Bootstrap 5 + DataTables integration
+- **Security**: Built-in authentication and authorization
+
+---
+
+## ✨ Features
+
+| Feature | Description | Benefit |
+|---------|-------------|---------|
+| **Rapid Scaffolding** | Generate complete CRUD in seconds | 🚀 10x faster development |
+| **Database Agnostic** | MySQL, PostgreSQL, SQLite support | 🔄 Easy deployment flexibility |
+| **Modern UI** | Bootstrap 5 + DataTables | 💎 Professional appearance |
+| **Security Built-in** | Role-based access control | 🔒 Enterprise-ready security |
+| **Modal Subgrids** | Master-detail relationships | 📊 Rich data relationships |
+| **Migration System** | Database versioning | 🔧 Easy schema management |
+
+---
+
+## 🚀 Quick Start
+
+### Prerequisites
+
+| Requirement | Version | Download |
+|-------------|---------|----------|
+| **Java** | 17+ | [OpenJDK](https://openjdk.org/) |
+| **Clojure** | 1.10+ | [Clojure.org](https://clojure.org/) |
+| **Leiningen** | 2.9.0+ | [Leiningen.org](https://leiningen.org/) |
+
+### Installation
+
+```bash
+# 1. Clone and install the template
 git clone <your-repo-url>
 cd lst
 lein clean && lein deps && lein install
 ```
 
-Then generate a new app:
-
-```sh
+```bash
+# 2. Create your new application
 lein new lst myapp
 cd myapp
 ```
 
----
+### First Run
 
-## Configure your app
-
-1) Edit project.clj and replace placeholders (name, org, description).
-2) Add database connections in resources/private/config.clj:
-
-```clojure
-{:db      {:classname "com.mysql.cj.jdbc.Driver" :subprotocol "mysql"      :subname "//localhost:3306/mydb" :user "myuser" :password "mypassword"}
- :pg      {:classname "org.postgresql.Driver"    :subprotocol "postgresql" :subname "//localhost:5432/mydb" :user "myuser" :password "mypassword"}
- :localdb {:classname "org.sqlite.JDBC"          :subprotocol "sqlite"     :subname "db/mydb.sqlite"}}
-```
-
-Create a database (example: MySQL):
-```sql
-CREATE DATABASE mydb CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;
-```
-
-Run the app:
-```sh
-lein with-profile dev run
-```
-
-Run migrations and seed users:
-```sh
-# default connection (:db)
+```bash
+# 3. Configure database (see Configuration section)
+# 4. Run migrations and seed data
 lein migrate
 lein database
 
-# PostgreSQL
-lein migrate pg
-lein database pg
-
-# SQLite
-lein migrate localdb
-lein database localdb
+# 5. Start the development server
+lein with-profile dev run
 ```
 
-Open http://localhost:3000
-
-Default users:
-- user@example.com / user
-- admin@example.com / admin
-- system@example.com / system
+🎉 **Success!** Open http://localhost:3000
 
 ---
 
-## Core concepts (plain English)
+## ⚙️ Configuration
 
-- Grid: CRUD table with “New/Edit/Delete” actions.
-- Dashboard: Read‑only table (no CRUD buttons).
-- Report: Read‑only page under /reports; you supply the query/logic.
-- Subgrid: Child grid tied to a parent record, shown in a modal.
-- Connection key: Which DB config to use (db, pg, localdb).
-- Rights: Who can access (U = user, A = admin, S = system). You can restrict any generated handler.
+### Database Configuration
 
-Namespace layout in a generated app (example: myapp):
-- Handlers (controllers + HTTP endpoints): src/myapp/handlers/...
-- Models (DB access): src/myapp/handlers/.../model.clj
-- Views (Hiccup/HTML): src/myapp/handlers/.../view.clj
-- Private routes: src/myapp/routes/proutes.clj
-- Public routes: src/myapp/routes/routes.clj
-- Navbar: src/myapp/menu.clj
-- Layout: src/myapp/layout.clj
+Edit `resources/private/config.clj` with your database credentials:
+
+```clojure
+{:db      {:classname "com.mysql.cj.jdbc.Driver" 
+           :subprotocol "mysql"      
+           :subname "//localhost:3306/mydb" 
+           :user "myuser" 
+           :password "mypassword"}
+           
+ :pg      {:classname "org.postgresql.Driver"    
+           :subprotocol "postgresql" 
+           :subname "//localhost:5432/mydb" 
+           :user "myuser" 
+           :password "mypassword"}
+           
+ :localdb {:classname "org.sqlite.JDBC"          
+           :subprotocol "sqlite"     
+           :subname "db/mydb.sqlite"}}
+```
+
+### Database Setup Commands
+
+| Database | Setup Command | Migration Command |
+|----------|---------------|-------------------|
+| **MySQL** | `CREATE DATABASE mydb CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;` | `lein migrate` |
+| **PostgreSQL** | `CREATE DATABASE mydb;` | `lein migrate pg` |
+| **SQLite** | *Auto-created* | `lein migrate localdb` |
+
+### Default Users
+
+After running `lein database`, these test users are available:
+
+| Email | Password | Role | Access Level |
+|-------|----------|------|--------------|
+| user@example.com | user | User | Basic access |
+| admin@example.com | admin | Admin | Administrative access |
+| system@example.com | system | System | Full system access |
 
 ---
 
-## One‑minute recipes
+## 🧠 Core Concepts
 
-Create a CRUD grid for users:
-```sh
+### Architecture Overview
+
+```
+myapp/
+├── src/myapp/
+│   ├── handlers/           # Controllers (MVC)
+│   │   ├── admin/         # Admin CRUD interfaces
+│   │   ├── reports/       # Report handlers
+│   │   └── <table>/       # Dashboard handlers
+│   ├── routes/            # URL routing
+│   ├── models/            # Database models
+│   ├── layout.clj         # Page layout
+│   └── menu.clj           # Navigation
+└── resources/
+    ├── private/config.clj # Database config
+    └── migrations/        # Database migrations
+```
+
+### Component Types
+
+| Component | Purpose | URL Pattern | Use Case |
+|-----------|---------|-------------|----------|
+| **Grid** | Full CRUD operations | `/admin/<table>` | Data management |
+| **Dashboard** | Read-only table | `/<table>` | Data viewing |
+| **Report** | Custom queries | `/reports/<name>` | Business reports |
+| **Subgrid** | Child records | Modal in parent | Master-detail |
+
+### Access Rights
+
+| Code | Role | Description |
+|------|------|-------------|
+| **U** | User | Basic authenticated users |
+| **A** | Admin | Administrative users |
+| **S** | System | System administrators |
+
+---
+
+## 🔧 Generator Commands
+
+### Grid Generator (CRUD)
+
+**Purpose**: Creates full Create, Read, Update, Delete interfaces
+
+```bash
+# Basic syntax
+lein grid <table> "Label:field" "Label:field" ...
+
+# Examples
 lein grid users "Name:firstname" "Email:email"
-```
-- Visit: /admin/users
-- Files: src/myapp/handlers/admin/users/{controller,model,view}.clj
+lein grid products "Product Name:name" "Price:price" "Category:category_id"
 
-Create a read‑only dashboard:
-```sh
-lein dashboard users "Name:firstname" "Email:email"
-```
-- Visit: /users
+# With database connection
+lein grid pg customers "Company:company_name" "Contact:contact_email"
 
-Create a report:
-```sh
-lein report monthlySummary
-```
-- Visit: /reports/monthlySummary
-
-Create a subgrid (user_contacts under users via user_id):
-```sh
-lein subgrid user_contacts users user_id "Contact Name:contact_name" "Email:email"
-```
-- Parent visit: /admin/users
-- Child visit: /admin/usercontactsusers (opened via modal button in parent)
-
-Target PostgreSQL once and remember it:
-```sh
-lein grid pg users "Name:firstname" "Email:email" :set-default
+# With access restrictions
+lein grid orders "Order #:order_number" "Total:total_amount" :rights [A S]
 ```
 
-Restrict a page to admins and system only:
-```sh
-lein dashboard kpis :rights [A S]
+**Generated Files**:
+- `src/myapp/handlers/admin/<table>/controller.clj`
+- `src/myapp/handlers/admin/<table>/model.clj`
+- `src/myapp/handlers/admin/<table>/view.clj`
+
+### Dashboard Generator (Read-Only)
+
+**Purpose**: Creates read-only data tables
+
+```bash
+# Basic syntax
+lein dashboard <table> "Label:field" "Label:field" ...
+
+# Examples
+lein dashboard products "Product:name" "Price:price" "Stock:quantity"
+lein dashboard users "Name:firstname" "Email:email" "Joined:created_at"
+```
+
+**Generated Files**:
+- `src/myapp/handlers/<table>/controller.clj`
+- `src/myapp/handlers/<table>/model.clj`
+- `src/myapp/handlers/<table>/view.clj`
+
+### Report Generator
+
+**Purpose**: Creates custom report pages
+
+```bash
+# Basic syntax
+lein report <name>
+
+# Examples
+lein report monthlySales
+lein report userActivity :rights [A S]
+lein report pg inventoryReport :set-default
+```
+
+**Generated Files**:
+- `src/myapp/handlers/reports/<name>/controller.clj`
+- `src/myapp/handlers/reports/<name>/model.clj`
+- `src/myapp/handlers/reports/<name>/view.clj`
+
+### Subgrid Generator (Master-Detail)
+
+**Purpose**: Creates child grids linked to parent records
+
+```bash
+# Basic syntax
+lein subgrid <child-table> <parent-table> <foreign-key> ["Label:field" ...]
+
+# Examples
+lein subgrid order_items orders order_id "Product:product_name" "Qty:quantity"
+lein subgrid user_addresses users user_id "Type:address_type" "Address:street"
+```
+
+**Requirements**:
+- Parent table must have primary key `id`
+- Child table must have foreign key to parent
+- Child table must have primary key `id`
+
+### Generator Options
+
+| Option | Description | Example |
+|--------|-------------|---------|
+| `conn` | Specify database connection | `:conn pg` |
+| `:rights` | Restrict access by role | `:rights [A S]` |
+| `:set-default` | Save connection as default | `:set-default` |
+
+---
+
+## 🗄️ Database Support
+
+### Supported Databases
+
+| Database | Driver | Connection Key | Production Ready |
+|----------|--------|----------------|------------------|
+| **MySQL** | `com.mysql.cj.jdbc.Driver` | `db` | ✅ Yes |
+| **PostgreSQL** | `org.postgresql.Driver` | `pg` | ✅ Yes |
+| **SQLite** | `org.sqlite.JDBC` | `localdb` | ⚠️ Development |
+
+### Migration Commands
+
+| Command | Purpose | Example |
+|---------|---------|---------|
+| `lein migrate [conn]` | Run pending migrations | `lein migrate pg` |
+| `lein rollback [conn]` | Rollback last migration | `lein rollback` |
+| `lein database [conn]` | Seed test data | `lein database localdb` |
+
+### Migration Files
+
+Migrations are database-specific and located in `resources/migrations/`:
+
+```
+resources/migrations/
+├── 001-initial.mysql.up.sql
+├── 001-initial.postgresql.up.sql
+├── 001-initial.sqlite.up.sql
+├── 002-users.mysql.up.sql
+└── ...
 ```
 
 ---
 
-## Generator reference (concise)
+## 🔐 Access Control
 
-General notes
-- Label:field pairs control column headers and which DB fields show. Example: "Email:email".
-- Omit fields to auto‑detect (common for subgrids).
-- You can pass the connection key up front (pg/localdb) or via :conn <key>.
-- :set-default persists the chosen connection for future runs.
-- Rights are optional; default is open to all logged-in users.
+### Setting Access Rights
 
-Grid (CRUD)
-```sh
-lein grid [conn] <table> <Label:field> ... [:rights U A S] [:set-default]
-# or
-lein grid <table> <Label:field> ... :conn <conn> [:rights ...] [:set-default]
+```bash
+# Admin and System only
+lein grid sensitive_data "Data:value" :rights [A S]
+
+# System only
+lein dashboard system_logs "Time:timestamp" "Message:message" :rights [S]
+
+# All authenticated users (default)
+lein dashboard public_info "Title:title" "Content:content"
 ```
-Creates:
-- src/myapp/handlers/admin/<table>/{controller,model,view}.clj
-- Private routes in src/myapp/routes/proutes.clj
-- UI uses myapp.models.grid/build-grid
 
-Dashboard (read‑only)
-```sh
-lein dashboard [conn] <table> <Label:field> ... [:rights U A S] [:set-default]
+### Implementation
+
+Generated controllers automatically check user permissions:
+
+```clojure
+(defn handler [request]
+  (if (auth/has-rights? (:session request) [:A :S])
+    (render-page request)
+    (response/redirect "/unauthorized")))
 ```
-Creates:
-- src/myapp/handlers/<table>/{controller,model,view}.clj
-- Private routes; UI uses myapp.models.grid/build-dashboard
-
-Report (read‑only under /reports)
-```sh
-lein report [conn] <name> [:rights U A S] [:set-default]
-```
-Creates:
-- src/myapp/handlers/reports/<name>/{controller,model,view}.clj
-- Private routes; UI uses myapp.models.grid/build-dashboard
-- You implement the query in model.clj
-
-Subgrid (child of a parent table)
-```sh
-lein subgrid [conn] <child-table> <parent-table> <foreign-key> [Label:field ...] [:rights U A S] [:set-default]
-```
-Creates:
-- src/myapp/handlers/admin/<child><parent>/{controller,model,view}.clj
-- Routes to support modal endpoints
-- Parent view can include the subgrid via helper config
-
-DB requirements for subgrids
-- Primary keys on parent and child (e.g., id)
-- Child has FK to parent (e.g., user_id)
 
 ---
 
-## Wiring a subgrid into a parent view
+## 🔗 Integrating Subgrids
 
-Example (parent users view):
+### Manual Integration Example
+
+After generating a subgrid, integrate it into the parent view:
 
 ```clojure
 (ns myapp.handlers.admin.users.view
@@ -214,8 +346,8 @@ Example (parent users view):
         href "/admin/users"
         args {:new true :edit true :delete true
               :subgrids [(create-subgrid-config
-                           {:title "Contacts"
-                            :table-name "usercontacts"
+                           {:title "User Contacts"
+                            :table-name "user_contacts"
                             :foreign-key "user_id"
                             :href "/admin/usercontactsusers"
                             :icon "bi bi-people"
@@ -223,87 +355,107 @@ Example (parent users view):
     (build-grid-with-subgrids title rows table-id fields href args)))
 ```
 
-Key idea: the subgrid href is /admin/<child><parent>, and the foreign key is passed automatically to the modal.
-
 ---
 
-## Migrations
+## 🐛 Troubleshooting
 
-Location (template):
-- resources/leiningen/new/lst/resources/migrations/
+### Common Issues
 
-Commands (run inside your generated app):
-```sh
-lein migrate [conn]
-lein rollback [conn]
-lein database [conn]
+| Problem | Cause | Solution |
+|---------|-------|----------|
+| **Routes not updating** | Server cache | Restart dev server with `lein with-profile dev run` |
+| **Database connection error** | Wrong credentials | Check `resources/private/config.clj` |
+| **Subgrid not opening** | Missing foreign key | Verify FK exists in child table |
+| **Permission denied** | Wrong user role | Check `:rights` setting in generator |
+| **Migration failed** | SQL syntax error | Check database-specific SQL files |
+
+### Debug Commands
+
+```bash
+# Check database connection
+lein repl
+=> (require '[myapp.db :as db])
+=> (db/test-connection :db)
+
+# Verify routes
+=> (require '[myapp.routes.proutes :as routes])
+=> (routes/app-routes)
+
+# Test authentication
+=> (require '[myapp.auth :as auth])
+=> (auth/has-rights? {:user {:role "A"}} [:A :S])
 ```
 
-Example helpers:
-- 002-users_view.mysql.up.sql
-- 002-users_view.postgresql.up.sql
-- 002-users_view.sqlite.up.sql
-
 ---
 
-## UI behavior
+## 📚 API Reference
 
-- Bootstrap 5 + DataTables for grids
-- Modals for New/Edit with client‑side validation
-- Subgrids open in a modal; saving refreshes content without full reload
+### Quick Command Reference
 
-Assets (template):
-- JS: resources/leiningen/new/lst/resources/public/vendor/app.js
-- CSS: resources/leiningen/new/lst/resources/public/vendor/app.css
-- Layout: resources/leiningen/new/lst/layout.clj
-
----
-
-## Access control (rights)
-
-You can restrict any generated page:
-
-```sh
-lein grid customers :rights [A S]
-lein dashboard kpis :rights [S]
-lein report monthlySummary :rights [U]
-lein subgrid orderitems orders order_id :rights [A S]
+#### Grid Commands
+```bash
+lein grid <table> "Label:field" ...                    # Basic CRUD
+lein grid pg <table> "Label:field" ... :set-default    # PostgreSQL + save default
+lein grid <table> "Label:field" ... :rights [A S]      # Restricted access
 ```
 
-Generated controllers check the current user’s level against the allowed list.
+#### Dashboard Commands
+```bash
+lein dashboard <table> "Label:field" ...               # Read-only table
+lein dashboard <table> "Label:field" ... :rights [S]   # System access only
+```
+
+#### Report Commands
+```bash
+lein report <name>                                      # Basic report
+lein report <name> :rights [A S]                       # Admin/System only
+```
+
+#### Subgrid Commands
+```bash
+lein subgrid <child> <parent> <fk> "Label:field" ...   # Master-detail
+lein subgrid <child> <parent> <fk> :rights [A]         # Admin only
+```
+
+### Database Operations
+
+| Command | Description |
+|---------|-------------|
+| `lein migrate [conn]` | Apply pending migrations |
+| `lein rollback [conn]` | Rollback last migration |
+| `lein database [conn]` | Seed test data |
+
+### Connection Keys
+
+| Key | Database | Usage |
+|-----|----------|-------|
+| `db` | MySQL | Default production |
+| `pg` | PostgreSQL | Alternative production |
+| `localdb` | SQLite | Development/testing |
 
 ---
 
-## Troubleshooting
+## 🤝 Contributing
 
-- Routes didn’t update after generation?
-  - Touch src/myapp/core.clj, then restart the dev server.
-- Wrong DB?
-  - Pass :conn <key> or use :set-default to change the default.
-- Subgrid not opening?
-  - Confirm the :href (e.g., /admin/usercontactsusers) and that the FK exists in the child table.
-- Namespace errors after renaming?
-  - Prefer child/parent handler dirs without underscores (e.g., usercontacts). SQL table names can keep underscores.
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests
+5. Submit a pull request
 
----
+## 📄 License
 
-## Commands quick reference
-
-- Grid
-  - lein grid <table> <Label:field>... [:rights ...]
-  - lein grid pg <table> ... [:set-default]
-  - lein grid <table> ... :conn pg
-- Dashboard
-  - lein dashboard <table> <Label:field>... [:rights ...]
-- Report
-  - lein report <name> [:rights ...]
-- Subgrid
-  - lein subgrid <child> <parent> <fk> [Label:field]... [:rights ...]
+This project is licensed under the MIT License - see the LICENSE file for details.
 
 ---
 
-## Learn more
+## 🔗 Resources
 
-- Leiningen: https://leiningen.org/
-- Template sources: resources/leiningen/new/lst/
-- Example view helpers in template: resources/leiningen/new/lst/admin-users-view.clj
+- [Leiningen Documentation](https://leiningen.org/)
+- [Clojure Documentation](https://clojure.org/)
+- [Bootstrap 5 Documentation](https://getbootstrap.com/docs/5.0/)
+- [DataTables Documentation](https://datatables.net/)
+
+---
+
+*Generated with ❤️ by LST - Lucero Systems Template*
