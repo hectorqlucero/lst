@@ -9,28 +9,29 @@
 ;; You can add any other app-specific keys (uploads, email, etc.) at the top level.
 
 {:connections
- { ;; --- Mysql database ---
+ {;; --- Mysql database ---
   :mysql {:db-type   "mysql"                                 ;; "mysql", "postgresql", "sqlite", etc.
-         :db-class  "com.mysql.cj.jdbc.Driver"              ;; JDBC driver class
-         :db-name   "//localhost:3306/your_dbname"           ;; JDBC subname (host:port/db)
-         :db-user   "root"
-         :db-pwd    "your_password"}
+          :db-class  "com.mysql.cj.jdbc.Driver"              ;; JDBC driver class
+          :db-name   "//localhost:3306/your_dbname"           ;; JDBC subname (host:port/db)
+          :db-user   "root"
+          :db-pwd    "your_password"}
 
   ;; --- Local SQLite database ---
   :sqlite {:db-type   "sqlite"
-            :db-class  "org.sqlite.JDBC"
-            :db-name   "db/your_dbname.sqlite"}                   ;; No user/pwd needed for SQLite
+           :db-class  "org.sqlite.JDBC"
+           :db-name   "db/your_dbname.sqlite"}                   ;; No user/pwd needed for SQLite
 
   ;; --- PostgreSQL database ---
   :postgres {:db-type   "postgresql"
-       :db-class  "org.postgresql.Driver"
-       :db-name   "//localhost:5432/your_dbname"
-       :db-user   "root"
-       :db-pwd    "your_password"}
+             :db-class  "org.postgresql.Driver"
+             :db-name   "//localhost:5432/your_dbname"
+             :db-user   "root"
+             :db-pwd    "your_password"}
 
   ;; --- Default connection used by the app ---
   :main :postgres ; Used for migrations
   :default :postgres ; Used for generators (lein grid, lein dashboard, etc.)
+  :db :mysql
   :pg :postgres
   :localdb :sqlite}
 
