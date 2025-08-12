@@ -149,10 +149,15 @@ Edit `resources/private/config.clj` with your database credentials:
 | Section | Purpose | Required |
 |---------|---------|----------|
 | `:connections` | Database connections and defaults | ✅ Yes |
-| `:uploads` | File upload settings | ⚠️ If using file uploads |
-| `:email` | SMTP email configuration | ⚠️ If sending emails |
-| `:app` | Application metadata | ⚠️ Recommended |
-| `:security` | Security settings | ⚠️ Recommended |
+| `:uploads` | File upload directory path | ⚠️ If using file uploads |
+| `:site-name` | Application/site name | ⚠️ Recommended |
+| `:company-name` | Company name for branding | ⚠️ Recommended |
+| `:port` | Application server port | ⚠️ Recommended |
+| `:tz` | Application timezone | ⚠️ Recommended |
+| `:base-url` | Base URL for the application | ⚠️ Recommended |
+| `:img-url` | Base URL for images | ⚠️ If serving images |
+| `:path` | Web path for uploads | ⚠️ If using file uploads |
+| `:email-*` | SMTP email configuration | ⚠️ If sending emails |
 
 ### Database Setup Commands
 
