@@ -123,6 +123,7 @@ Edit `resources/private/config.clj` with your database credentials:
   ;; --- Default connection used by the app ---
   :main :postgres ; Used for migrations
   :default :postgres ; Used for generators (lein grid, lein dashboard, etc.)
+  :db :mysql
   :pg :postgres
   :localdb :sqlite}
 
@@ -163,7 +164,7 @@ Edit `resources/private/config.clj` with your database credentials:
 
 | Database | Setup Command | Migration Command |
 |----------|---------------|-------------------|
-| **MySQL** | `CREATE DATABASE mydb CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;` | `lein migrate` |
+| **MySQL** | `CREATE DATABASE mydb CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;` | `lein migrate db` |
 | **PostgreSQL** | `CREATE DATABASE mydb;` | `lein migrate pg` |
 | **SQLite** | *Auto-created* | `lein migrate localdb` |
 
