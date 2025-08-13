@@ -684,4 +684,4 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 
-*Generated with ❤️ by LST -
+*Generated with ❤️ by LST - Lucero Systems Template*
