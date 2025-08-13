@@ -50,20 +50,20 @@ Below are example screenshots of LST-generated interfaces. These images demonstr
 
 | Screenshot | Description |
 |------------|-------------|
-| ![Screenshot 1](./screenshot-1.png) | Login Page |
-| ![Screenshot 2](./screenshot-2.png) | Dashboard Overview |
-| ![Screenshot 3](./screenshot-3.png) | CRUD Grid Example |
-| ![Screenshot 4](./screenshot-4.png) | Edit Form |
-| ![Screenshot 5](./screenshot-5.png) | Subgrid (Master-Detail) |
-| ![Screenshot 6](./screenshot-6.png) | Report Example |
-| ![Screenshot 7](./screenshot-7.png) | User Profile |
-| ![Screenshot 8](./screenshot-8.png) | File Upload Form |
-| ![Screenshot 9](./screenshot-9.png) | Modal Dialog |
-| ![Screenshot 10](./screenshot-10.png) | Table Filtering |
-| ![Screenshot 11](./screenshot-11.png) | Data Export Options |
-| ![Screenshot 12](./screenshot-12.png) | Access Denied Page |
-| ![Screenshot 13](./screenshot-13.png) | Settings Page |
-| ![Screenshot 14](./screenshot-14.png) | Custom Report View |
+| ![Screenshot 1](./screenshot-1.png) | Public Page |
+| ![Screenshot 2](./screenshot-2.png) | Login Form |
+| ![Screenshot 3](./screenshot-3.png) | Login Form |
+| ![Screenshot 4](./screenshot-4.png) | Change Password Form |
+| ![Screenshot 5](./screenshot-5.png) | Private Page |
+| ![Screenshot 6](./screenshot-6.png) | Reports Menu |
+| ![Screenshot 7](./screenshot-7.png) | Reports Menu |
+| ![Screenshot 8](./screenshot-8.png) | Users Report |
+| ![Screenshot 9](./screenshot-9.png) | Administration Menu |
+| ![Screenshot 10](./screenshot-10.png) | Contactos Grid |
+| ![Screenshot 11](./screenshot-11.png) | Administration Menu |
+| ![Screenshot 12](./screenshot-12.png) | Siblings Subgrid |
+| ![Screenshot 13](./screenshot-13.png) | Subgrid Edit Record |
+| ![Screenshot 14](./screenshot-14.png) | Subgrid New Record |
 
 *All screenshots are from a default LST application using Bootstrap 5 styling. You can fully customize the appearance and layout to match your branding.*
 
