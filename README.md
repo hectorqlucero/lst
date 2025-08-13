@@ -669,11 +669,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 
-*Generated with ❤️ by LST - Lucero Systems Template*
-
----
-
-## 📝 Creating Forms with HTML5-Compliant Fields
+## 📝 Building Forms with HTML5-Compliant Fields
 
 LST provides a powerful form builder (`form.clj`) that lets you create professional, accessible forms using all standard HTML5 field types. Each field is rendered with Bootstrap 5 styling and supports HTML5 validation, accessibility, and modern browser features.
 
@@ -778,3 +774,323 @@ See `src/myapp/models/util.clj` for more details and examples.
 Combine these utility functions with the form builder and the default view template in `builder.clj` to create dynamic, database-driven forms with minimal code.
 
 For more usage examples, see the commented section at the bottom of `src/myapp/models/form.clj` and `src/myapp/models/util.clj`.
+
+---
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+| Problem | Cause | Solution |
+|---------|-------|----------|
+| **Generated components not showing** | Server needs to reload routes | Open `src/myapp/core.clj`, save it (no changes needed), then refresh webpage |
+| **Routes not updating** | Server cache | Restart dev server with `lein with-profile dev run` |
+| **Database connection error** | Wrong credentials | Check `resources/private/config.clj` |
+| **Subgrid not opening** | Missing foreign key | Verify FK exists in child table |
+| **Permission denied** | Wrong user role | Check `:rights` setting in generator |
+| **Migration failed** | SQL syntax error | Check database-specific SQL files |
+
+### Debug Commands
+
+```bash
+# Check database connection
+lein repl
+=> (require '[myapp.db :as db])
+=> (db/test-connection :db)
+
+# Verify routes
+=> (require '[myapp.routes.proutes :as routes])
+=> (routes/app-routes)
+
+# Test authentication
+=> (require '[myapp.auth :as auth])
+=> (auth/has-rights? {:user {:role "A"}} [:A :S])
+```
+
+---
+
+## 📚 API Reference
+
+### Quick Command Reference
+
+#### Grid Commands
+```bash
+lein grid <table> "Label:field" ...                    # Basic CRUD
+lein grid pg <table> "Label:field" ... :set-default    # PostgreSQL + save default
+lein grid <table> "Label:field" ... :rights [A S]      # Restricted access
+```
+
+#### Dashboard Commands
+```bash
+lein dashboard <table> "Label:field" ...               # Read-only table
+lein dashboard <table> "Label:field" ... :rights [S]   # System access only
+```
+
+#### Report Commands
+```bash
+lein report <name>                                      # Basic report
+lein report <name> :rights [A S]                       # Admin/System only
+```
+
+#### Subgrid Commands
+```bash
+lein subgrid <child> <parent> <fk> "Label:field" ...   # Master-detail
+lein subgrid <child> <parent> <fk> :rights [A]         # Admin only
+```
+
+### Database Operations
+
+| Command | Description |
+|---------|-------------|
+| `lein migrate [conn]` | Apply pending migrations |
+| `lein rollback [conn]` | Rollback last migration |
+| `lein database [conn]` | Seed test data |
+
+### Connection Keys
+
+| Key | Database | Usage |
+|-----|----------|-------|
+| `db` | MySQL | Default production |
+| `pg` | PostgreSQL | Alternative production |
+| `localdb` | SQLite | Development/testing |
+
+---
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests
+5. Submit a pull request
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+---
+
+## 🔗 Resources
+
+- [Leiningen Documentation](https://leiningen.org/)
+- [Clojure Documentation](https://clojure.org/)
+- [Bootstrap 5 Documentation](https://getbootstrap.com/docs/5.0/)
+- [DataTables Documentation](https://datatables.net/)
+
+---
+
+## 📝 Building Forms with HTML5-Compliant Fields
+
+LST provides a powerful form builder (`form.clj`) that lets you create professional, accessible forms using all standard HTML5 field types. Each field is rendered with Bootstrap 5 styling and supports HTML5 validation, accessibility, and modern browser features.
+
+### How It Works
+
+- Use the `build-field` function to define each form field.
+- Pass a Clojure map describing the field’s label, type, name, and any HTML5 attributes you need.
+- All standard HTML5 input types are supported: `text`, `email`, `password`, `number`, `date`, `datetime-local`, `month`, `week`, `time`, `color`, `range`, `file`, `tel`, `url`, `search`, `hidden`, `select`, `radio`, `checkbox`, and `textarea`.
+- Advanced attributes like `required`, `pattern`, `min`, `max`, `step`, `autocomplete`, `autofocus`, `readonly`, `disabled`, `maxlength`, `minlength`, and more are fully supported.
+
+> **Reference:**  
+> The default form view template is defined in `src/myapp/builder/view.clj` and is used by all generated grids, dashboards, and reports. You can customize this template for advanced layouts or branding.
+
+### Example: Building a Form
+
+```clojure
+(form "/submit"
+  [(build-field {:label "Full Name" :type "text" :id "name" :name "name" :placeholder "Enter name" :required true :maxlength 50})
+   (build-field {:label "Email" :type "email" :id "email" :name "email" :placeholder "Enter email" :required true :autocomplete "email"})
+   (build-field {:label "Password" :type "password" :id "pw" :name "pw" :placeholder "Password" :required true :minlength 8})
+   (build-field {:label "Birthday" :type "date" :id "bday" :name "bday"})
+   (build-field {:label "User Level" :type "select" :id "level" :name "level" :value "U" :required true
+                 :options [{:value "" :label "Select..."}
+                           {:value "U" :label "User"}
+                           {:value "A" :label "Admin"}
+                           {:value "S" :label "Sys"}]})]
+  (list (build-primary-input-button {:type "submit" :value "Submit"})
+        (build-secondary-input-button {:type "button" :value "Cancel"}))
+  "Example Form")
+```
+
+### Supported Field Types
+
+| Type             | Description                       | Example Attribute(s)           |
+|------------------|-----------------------------------|-------------------------------|
+| `text`           | Single-line text                  | `:maxlength`, `:pattern`      |
+| `email`          | Email address                     | `:autocomplete "email"`       |
+| `password`       | Password input                    | `:minlength`, `:autocomplete` |
+| `number`         | Numeric input                     | `:min`, `:max`, `:step`       |
+| `date`           | Date picker                       |                               |
+| `datetime-local` | Local date and time               |                               |
+| `month`          | Month picker                      |                               |
+| `week`           | Week picker                       |                               |
+| `time`           | Time picker                       |                               |
+| `color`          | Color picker                      |                               |
+| `range`          | Slider input                      | `:min`, `:max`, `:step`       |
+| `file`           | File upload                       | `:accept`, `:multiple`        |
+| `tel`            | Telephone number                  | `:pattern`                    |
+| `url`            | URL input                         |                               |
+| `search`         | Search box                        |                               |
+| `hidden`         | Hidden field                      |                               |
+| `select`         | Dropdown/select                   | `:options`                    |
+| `radio`          | Radio buttons                     | `:options`                    |
+| `checkbox`       | Checkbox group                    | `:options`                    |
+| `textarea`       | Multi-line text                   | `:rows`, `:maxlength`         |
+
+---
+
+### 🛠️ Utility Functions for Dynamic Forms (`util.clj`)
+
+The `src/myapp/models/util.clj` file provides many helper functions to make building forms easier and more dynamic.
+
+#### Building Select Field Options with `get-options`
+
+The `(get-options ...)` function lets you dynamically generate options for `<select>`, radio, or checkbox fields directly from your database.
+
+**Signature:**
+```clojure
+(get-options table value-field label-fields & {:keys [sort-by filter-field filter-value]})
+```
+
+**Parameters:**
+- `table`: Table name (string)
+- `value-field`: Field to use as the option value (string)
+- `label-fields`: Field(s) to use as the option label (string or vector of strings)
+- `:sort-by`: (optional) Field(s) to sort by
+- `:filter-field` / `:filter-value`: (optional) Filter options by field/value
+
+**Example:**
+```clojure
+;; Get user options for a select field, showing "firstname lastname"
+(get-options "users" "id" ["firstname" "lastname"] :sort-by "lastname")
+;; => ({:value 1 :label "Alice Smith"} {:value 2 :label "Bob Jones"} ...)
+
+;; Use in a form field:
+(build-field {:label "User" :type "select" :name "user_id"
+              :options (get-options "users" "id" ["firstname" "lastname"] :sort-by "lastname")})
+```
+
+#### Other Useful Utilities
+
+- `year-options`, `month-options`: Generate year/month options from a table's date field.
+- `foreign-key`: Fetch a label from a related table for display.
+- `not-empty-str`, `parse-int`, `parse-float`, `parse-bool`: Data cleaning and parsing helpers.
+- `slugify`: Create URL-friendly slugs from strings.
+
+See `src/myapp/models/util.clj` for more details and examples.
+
+---
+
+**Tip:**  
+Combine these utility functions with the form builder and the default view template in `builder.clj` to create dynamic, database-driven forms with minimal code.
+
+For more usage examples, see the commented section at the bottom of `src/myapp/models/form.clj` and `src/myapp/models/util.clj`.
+
+---
+
+## 🐛 Troubleshooting
+
+### Common Issues
+
+| Problem | Cause | Solution |
+|---------|-------|----------|
+| **Generated components not showing** | Server needs to reload routes | Open `src/myapp/core.clj`, save it (no changes needed), then refresh webpage |
+| **Routes not updating** | Server cache | Restart dev server with `lein with-profile dev run` |
+| **Database connection error** | Wrong credentials | Check `resources/private/config.clj` |
+| **Subgrid not opening** | Missing foreign key | Verify FK exists in child table |
+| **Permission denied** | Wrong user role | Check `:rights` setting in generator |
+| **Migration failed** | SQL syntax error | Check database-specific SQL files |
+
+### Debug Commands
+
+```bash
+# Check database connection
+lein repl
+=> (require '[myapp.db :as db])
+=> (db/test-connection :db)
+
+# Verify routes
+=> (require '[myapp.routes.proutes :as routes])
+=> (routes/app-routes)
+
+# Test authentication
+=> (require '[myapp.auth :as auth])
+=> (auth/has-rights? {:user {:role "A"}} [:A :S])
+```
+
+---
+
+## 📚 API Reference
+
+### Quick Command Reference
+
+#### Grid Commands
+```bash
+lein grid <table> "Label:field" ...                    # Basic CRUD
+lein grid pg <table> "Label:field" ... :set-default    # PostgreSQL + save default
+lein grid <table> "Label:field" ... :rights [A S]      # Restricted access
+```
+
+#### Dashboard Commands
+```bash
+lein dashboard <table> "Label:field" ...               # Read-only table
+lein dashboard <table> "Label:field" ... :rights [S]   # System access only
+```
+
+#### Report Commands
+```bash
+lein report <name>                                      # Basic report
+lein report <name> :rights [A S]                       # Admin/System only
+```
+
+#### Subgrid Commands
+```bash
+lein subgrid <child> <parent> <fk> "Label:field" ...   # Master-detail
+lein subgrid <child> <parent> <fk> :rights [A]         # Admin only
+```
+
+### Database Operations
+
+| Command | Description |
+|---------|-------------|
+| `lein migrate [conn]` | Apply pending migrations |
+| `lein rollback [conn]` | Rollback last migration |
+| `lein database [conn]` | Seed test data |
+
+### Connection Keys
+
+| Key | Database | Usage |
+|-----|----------|-------|
+| `db` | MySQL | Default production |
+| `pg` | PostgreSQL | Alternative production |
+| `localdb` | SQLite | Development/testing |
+
+---
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests
+5. Submit a pull request
+
+---
+
+## 📄 License
+
+This project is licensed under the MIT License - see the LICENSE file for details.
+
+---
+
+## 🔗 Resources
+
+- [Leiningen Documentation](https://leiningen.org/)
+- [Clojure Documentation](https://clojure.org/)
+- [Bootstrap 5 Documentation](https://getbootstrap.com/docs/5.0/)
+- [DataTables Documentation](https://datatables.net/)
+
+---
+
+*Generated with ❤️ by LST - Lucero Systems Template*
