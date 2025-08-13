@@ -55,7 +55,7 @@ Below are example screenshots of LST-generated interfaces. These images demonstr
 | ![Screenshot 3](./screenshot-3.png) | Login Form |
 | ![Screenshot 4](./screenshot-4.png) | Change Password Form |
 | ![Screenshot 5](./screenshot-5.png) | Private Page |
-| ![Screenshot 6](./screenshot-6.png) | Reports Menu |
+| ![Screenshot 6](./screenshot-6.png) | Contactos Dashboard |
 | ![Screenshot 7](./screenshot-7.png) | Reports Menu |
 | ![Screenshot 8](./screenshot-8.png) | Users Report |
 | ![Screenshot 9](./screenshot-9.png) | Administration Menu |
