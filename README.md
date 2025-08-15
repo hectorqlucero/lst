@@ -64,8 +64,9 @@ Below are example screenshots of LST-generated interfaces. These images demonstr
 | ![Screenshot 12](./screenshot-12.png) | Siblings Subgrid |
 | ![Screenshot 13](./screenshot-13.png) | Subgrid Edit Record |
 | ![Screenshot 14](./screenshot-14.png) | Subgrid New Record |
-| ![Screenshot 14](./screenshot-15.png) | Grid Edit with thumbnail |
-| ![Screenshot 14](./screenshot-16.png) | Grid Edit with image |
+| ![Screenshot 17](./screenshot-17.png) | Grid showing thumbnails |
+| ![Screenshot 15](./screenshot-15.png) | Grid Edit with thumbnail |
+| ![Screenshot 16](./screenshot-16.png) | Grid Edit with image |
 
 *All screenshots are from a default LST application using Bootstrap 5 styling. You can fully customize the appearance and layout to match your branding.*
 
