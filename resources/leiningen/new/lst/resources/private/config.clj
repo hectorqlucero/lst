@@ -1,4 +1,3 @@
-
 ;; contactos/resources/private/config.clj
 ;;
 ;; Clean, intuitive configuration for single or multiple databases.
@@ -44,6 +43,8 @@
  :base-url     "http://0.0.0.0:3000/"      ;; Base URL
  :img-url      "https://0.0.0.0/uploads/"  ;; Image base URL
  :path         "/uploads/"                 ;; Uploads path (for web)
+ :max-upload-mb 5                            ;; Optional: max image upload size in MB
+ :allowed-image-exts ["jpg" "jpeg" "png" "gif" "bmp" "webp"] ;; Optional: allowed image extensions
  ;; Optional email config
  :email-host   "smtp.example.com"
  :email-user   "user@example.com"

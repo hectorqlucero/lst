@@ -112,6 +112,9 @@
              ;; Data directory for SQLite databases
              ["db/.gitkeep" ""]
 
+             ;; Directory for uploads
+             ["uploads/.gitkeep" ""]
+
              ;; Project files
              ["project.clj" (render "project.clj" data)]
              ["README.md" (render "README.md" data)]

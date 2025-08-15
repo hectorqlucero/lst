@@ -64,6 +64,8 @@ Below are example screenshots of LST-generated interfaces. These images demonstr
 | ![Screenshot 12](./screenshot-12.png) | Siblings Subgrid |
 | ![Screenshot 13](./screenshot-13.png) | Subgrid Edit Record |
 | ![Screenshot 14](./screenshot-14.png) | Subgrid New Record |
+| ![Screenshot 14](./screenshot-15.png) | Grid Edit with thumbnail |
+| ![Screenshot 14](./screenshot-16.png) | Grid Edit with image |
 
 *All screenshots are from a default LST application using Bootstrap 5 styling. You can fully customize the appearance and layout to match your branding.*
 
@@ -480,6 +482,39 @@ A quick reference for where to find and update everything in your generated LST 
 
 ---
 
+
+## 🖼️ Adding Images to Grid Forms
+
+LST makes it easy to display images in your grid forms. To add an image field to a grid or form view, simply use the `build-image-field` utility.
+
+### How to Use
+
+1. **Require the function in your view namespace:**
+
+  ```clojure
+  (require '[yourapp.handlers.admin.<table>.row :refer [build-image-field]])
+  ```
+  Replace `yourapp.handlers.admin.<table>.row` with the appropriate namespace for your grid row.
+
+2. **Call `build-image-field` in your view:**
+
+  ```clojure
+  (build-image-field row)
+  ```
+  Here, `row` is the map representing the current record. This will render the image field in your grid or form.
+
+**Example integration in a view:**
+
+```clojure
+(defn user-view [row]
+  [:div
+  [:h3 (:name row)]
+  (build-image-field row)])
+```
+
+This approach works for any grid or form where you want to display an image associated with a record.
+
+---
 ## 📝 Building Forms
 
 LST provides a powerful form builder (`form.clj`) that lets you create professional, accessible forms using all standard HTML5 field types. Each field is rendered with Bootstrap 5 styling and supports HTML5 validation, accessibility, and modern browser features.

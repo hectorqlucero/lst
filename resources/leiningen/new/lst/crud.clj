@@ -123,9 +123,6 @@
   (let [sp (:subprotocol db-spec)]
     (or (= sp "mysql") (= sp :mysql))))
 
-(defn- postgres? [db-spec]
-  (let [sp (:subprotocol db-spec)]
-    (or (= sp "postgresql") (= sp :postgresql) (= sp "postgres") (= sp :postgres))))
 
 (defn- normalize-insert-result [ins]
   (cond
@@ -274,10 +271,23 @@
 
                 (if exists?
                   true
-                  (let [ins-opts (if (postgres? db*) (assoc q-opts :return-keys true) q-opts)
-                        ins (j/insert! t-con table row ins-opts)]
+                  (let [ins-opts (assoc q-opts :return-keys true)
+                        ins (j/insert! t-con table row ins-opts)
+                        norm (normalize-insert-result ins)
+                        sp (:subprotocol db*)
+                        fallback-id (cond
+                                      (or (= sp "sqlite") (= sp :sqlite) (= sp "sqlite3") (= sp :sqlite3))
+                                      (some-> (j/query t-con ["SELECT last_insert_rowid() AS id"]) first :id)
+                                      (or (= sp "mysql") (= sp :mysql))
+                                      (some-> (j/query t-con ["SELECT last_insert_id() AS id"]) first :id)
+                                      :else nil)
+                        result-map (cond
+                                     (map? norm) norm
+                                     (number? norm) {:id norm}
+                                     fallback-id {:id fallback-id}
+                                     :else nil)]
 
-                    (or (normalize-insert-result ins) true))))
+                    (or result-map true))))
               (pos? cnt)))))
 
       :else
@@ -296,10 +306,23 @@
 
                 (if exists?
                   true
-                  (let [ins-opts (if (postgres? db*) (assoc q-opts :return-keys true) q-opts)
-                        ins (j/insert! t-con table row ins-opts)]
+                  (let [ins-opts (assoc q-opts :return-keys true)
+                        ins (j/insert! t-con table row ins-opts)
+                        norm (normalize-insert-result ins)
+                        sp (:subprotocol db*)
+                        fallback-id (cond
+                                      (or (= sp "sqlite") (= sp :sqlite) (= sp "sqlite3") (= sp :sqlite3))
+                                      (some-> (j/query t-con ["SELECT last_insert_rowid() AS id"]) first :id)
+                                      (or (= sp "mysql") (= sp :mysql))
+                                      (some-> (j/query t-con ["SELECT last_insert_id() AS id"]) first :id)
+                                      :else nil)
+                        result-map (cond
+                                     (map? norm) norm
+                                     (number? norm) {:id norm}
+                                     fallback-id {:id fallback-id}
+                                     :else nil)]
 
-                    (or (normalize-insert-result ins) true))))
+                    (or result-map true))))
               (pos? cnt))))))))
 
 ;; --- schema discovery ---
@@ -630,9 +653,10 @@
                                       (and (string? v) (st/blank? v))
                                       (and (number? v) (= v 0))
                                       (= (str v) "0"))) pk-map))
-            postvars (cond-> (-> (build-postvars table params :conn conn)
-                                 blank->nil)
-                       is-new? (apply dissoc (map keyword pk-fields)))]
+            base-postvars (-> (build-postvars table params :conn conn) blank->nil)
+            postvars (if is-new?
+                       (apply dissoc base-postvars (map keyword pk-fields))
+                       base-postvars)]
         (try
 
           (if (and (map? postvars) (seq postvars))
@@ -649,19 +673,36 @@
               (throw e))))))))
 
 (defn crud-upload-image [table file id path]
-  (let [valid-exts #{"jpg" "jpeg" "png" "gif" "bmp" "webp"}
+  (let [cfg-exts (set (map st/lower-case (or (:allowed-image-exts config) ["jpg" "jpeg" "png" "gif" "bmp" "webp"])))
+        valid-exts cfg-exts
+        max-mb (long (or (:max-upload-mb config) 0))
         tempfile   (:tempfile file)
         size       (:size file)
         orig-name  (:filename file)
         ext-from-name (when orig-name
-                        (-> orig-name (st/split #"\.") last st/lower-case))
-        ext (if (and ext-from-name (valid-exts ext-from-name))
-              (if (= ext-from-name "jpeg") "jpg" ext-from-name)
-              "jpg")
-        image-name (str table "_" id "." ext)]
-    (when (and tempfile (not (zero? size)))
-      (io/copy tempfile (io/file (str path image-name))))
-    image-name))
+                        (-> orig-name (st/split #"\.") last st/lower-case))]
+    (when (and tempfile (pos? (or size 0)))
+      (when (and (pos? max-mb) (> size (* max-mb 1024 1024)))
+        (throw (ex-info (str "File too large (max " max-mb "MB)") {:type :upload-too-large :maxMB max-mb})))
+      (let [ext (if (and ext-from-name (valid-exts ext-from-name))
+                  (if (= ext-from-name "jpeg") "jpg" ext-from-name)
+                  "jpg")
+            image-name (str table "_" id "." ext)
+            target-file (io/file (str path image-name))]
+        (io/make-parents target-file)
+        (io/copy tempfile target-file)
+        image-name))))
+
+;; --- uploads housekeeping ---
+(defn- safe-delete-upload! [^String imagen]
+  (when (and (string? imagen)
+             (not (st/blank? imagen))
+             (not (re-find #"[\\/]" imagen)))
+    (let [f (io/file (str (:uploads config) imagen))]
+      (when (.exists f)
+        (try
+          (.delete f)
+          (catch Exception _))))))
 
 (defn get-id [pk-values-or-id postvars table & {:keys [conn]}]
   (let [pk-fields (get-table-primary-keys table :conn conn)
@@ -674,9 +715,20 @@
                 m (cond
                     (map? res) res
                     (sequential? res) (first res)
-                    :else nil)]
-            (when (map? m)
-              (or (:generated_key m) (:generated-key m) (:id m)))))
+                    :else nil)
+                sp (:subprotocol db*)
+                fallback (cond
+                           (or (= sp "sqlite") (= sp :sqlite) (= sp "sqlite3") (= sp :sqlite3))
+                           (some-> (Query db* ["SELECT last_insert_rowid() AS id"]) first :id)
+                           (or (= sp "mysql") (= sp :mysql))
+                           (some-> (Query db* ["SELECT last_insert_id() AS id"]) first :id)
+                           :else nil)]
+            (or (:generated_key m)
+                (:generated-key m)
+                (:id m)
+                (:last_insert_rowid m)
+                (:scope_identity m)
+                fallback)))
         pk-values-or-id)
 
       (map? pk-values-or-id)
@@ -689,13 +741,26 @@
                   m (cond
                       (map? res) res
                       (sequential? res) (first res)
-                      :else nil)]
-              (or (:generated_key m) (:generated-key m) (:id m) pk-values-or-id)))
+                      :else nil)
+                  sp (:subprotocol db*)
+                  fallback (cond
+                             (or (= sp "sqlite") (= sp :sqlite) (= sp "sqlite3") (= sp :sqlite3))
+                             (some-> (Query db* ["SELECT last_insert_rowid() AS id"]) first :id)
+                             (or (= sp "mysql") (= sp :mysql))
+                             (some-> (Query db* ["SELECT last_insert_id() AS id"]) first :id)
+                             :else nil)]
+              (or (:generated_key m)
+                  (:generated-key m)
+                  (:id m)
+                  (:last_insert_rowid m)
+                  (:scope_identity m)
+                  fallback
+                  pk-values-or-id)))
           pk-values-or-id))
 
       :else pk-values-or-id)))
 
-(defn process-upload-form [params table folder & {:keys [conn]}]
+(defn process-upload-form [params table _folder & {:keys [conn]}]
   (let [pk-fields (get-table-primary-keys table :conn conn)
         pk-map (get-primary-key-map table params :conn conn)
         file (:file params)
@@ -706,26 +771,68 @@
                                   (and (string? v) (st/blank? v))
                                   (and (number? v) (= v 0))
                                   (= (str v) "0"))) pk-map))
-        postvars (cond-> postvars
-                   is-new? (apply dissoc (map keyword pk-fields)))
-        postvars (-> postvars blank->nil)
+        postvars (-> (if is-new?
+                       (apply dissoc postvars (map keyword pk-fields))
+                       postvars)
+                     blank->nil)
         db* (resolve-db conn)]
+
     (if (and (map? postvars) (seq postvars))
-      (let [the-id (if (= 1 (count pk-fields))
-                     (str (get-id (or ((keyword (first pk-fields)) pk-map) 0) postvars table :conn conn))
-                     (str (or (some identity (vals pk-map))
-                              (get-id pk-map postvars table :conn conn))))
-            path (str (:uploads config) folder "/")
-            image-name (crud-upload-image table file the-id path)
-            postvars (cond-> (assoc postvars :imagen image-name)
-                       (and (= 1 (count pk-fields)) the-id)
-                       (assoc (keyword (first pk-fields)) the-id))
-            where-clause (if is-new?
-                           ["1 = 0"]
-                           (let [[clause values] (build-pk-where-clause pk-map)]
-                             (into [clause] values)))
-            result (Save db* (keyword table) postvars where-clause)]
-        (boolean result))
+      (let [single-pk? (= 1 (count pk-fields))]
+        (if (and is-new? single-pk?)
+          ;; New record with single PK: insert first to get ID in this transaction; then upload and update imagen
+          (let [pk-name (keyword (first pk-fields))
+                q-opts (if (mysql? db*) {:entities (j/quoted \`)} {})
+                result (j/with-db-transaction [t-con db*]
+                         (let [ins (j/insert! t-con (keyword table) postvars (assoc q-opts :return-keys true))
+                               norm (normalize-insert-result ins)
+                               sp (:subprotocol db*)
+                               ins-id (or (:generated_key norm)
+                                          (:generated-key norm)
+                                          (:id norm)
+                                          (:last_insert_rowid norm)
+                                          (:scope_identity norm)
+                                          (when (or (= sp "sqlite") (= sp :sqlite) (= sp "sqlite3") (= sp :sqlite3))
+                                            (some-> (j/query t-con ["SELECT last_insert_rowid() AS id"]) first :id))
+                                          (when (or (= sp "mysql") (= sp :mysql))
+                                            (some-> (j/query t-con ["SELECT last_insert_id() AS id"]) first :id)))]
+                           (when-not ins-id (throw (ex-info "Could not retrieve inserted ID" {:table table})))
+                           (let [the-id (str ins-id)
+                                 path (str (:uploads config))
+                                 image-name (when (and the-id (not (st/blank? the-id)))
+                                              (crud-upload-image table file the-id path))]
+
+                             (when image-name
+                               (j/update! t-con (keyword table) {:imagen image-name}
+                                          [(str (name pk-name) " = ?") (try (Long/parseLong the-id) (catch Exception _ the-id))]
+                                          q-opts))
+                             true)))]
+            (boolean result))
+          ;; Existing record or composite key: behave like before
+          (let [the-id (if single-pk?
+                         (str (or ((keyword (first pk-fields)) pk-map) ""))
+                         (str (or (some identity (vals pk-map)) "")))
+                path (str (:uploads config))
+                image-name (when (and the-id (not (st/blank? the-id)))
+                             (crud-upload-image table file the-id path))
+                effective-pk-map (if (and (not is-new?) single-pk?)
+                                   {(keyword (first pk-fields)) (if (re-matches #"^\\d+$" the-id)
+                                                                  (Long/parseLong the-id)
+                                                                  the-id)}
+                                   pk-map)
+                prev-row (when (and (not is-new?) (seq effective-pk-map))
+                           (build-form-row table effective-pk-map :conn conn))
+                postvars (cond-> postvars
+                           image-name (assoc :imagen image-name))
+                [clause values] (build-pk-where-clause effective-pk-map)
+                where-clause (into [clause] values)
+                postvars* (apply dissoc postvars (map keyword pk-fields))
+                result (Save db* (keyword table) postvars* where-clause)]
+            (when (and result image-name prev-row)
+              (let [old (:imagen prev-row)]
+                (when (and (string? old) (not= old image-name))
+                  (safe-delete-upload! old))))
+            (boolean result))))
       (let [[clause values] (build-pk-where-clause pk-map)
             result (Delete db* (keyword table) (into [clause] values))]
         (boolean result)))))
@@ -734,14 +841,24 @@
 (defn build-form-save
   ([params table] (build-form-save params table :conn nil))
   ([params table & {:keys [conn]}]
-   (if (contains? params :file)
-     (process-upload-form params table table :conn conn)
-     (process-regular-form params table :conn conn))))
+   (let [file* (or (:file params) (get params "file"))
+         non-empty-file? (and (map? file*) (pos? (or (:size file*) 0)))]
+
+     (if non-empty-file?
+       ;; normalize to keyword key to keep downstream logic consistent
+       (process-upload-form (assoc params :file file*) table table :conn conn)
+       (process-regular-form params table :conn conn)))))
 
 (defn build-form-delete
   ([table id-or-pk]
    (try
      (let [pk-fields (get-table-primary-keys table)
+           row (if (= 1 (count pk-fields))
+                 (first (Query db (into [(str "SELECT * FROM " table " WHERE id = ?")] [(crud-fix-id id-or-pk)])))
+                 (when (map? id-or-pk)
+                   (let [[clause values] (build-pk-where-clause id-or-pk)]
+                     (first (Query db (into [(str "SELECT * FROM " table " WHERE " clause)] values))))))
+           _ (when-let [img (:imagen row)] (safe-delete-upload! img))
            result (if (= 1 (count pk-fields))
                     (let [id (crud-fix-id id-or-pk)]
                       (Delete db (keyword table) ["id = ?" id]))
@@ -759,6 +876,12 @@
    (try
      (let [pk-fields (get-table-primary-keys table :conn conn)
            db* (resolve-db conn)
+           row (if (= 1 (count pk-fields))
+                 (first (Query db* (into [(str "SELECT * FROM " table " WHERE id = ?")] [(crud-fix-id id-or-pk)])))
+                 (when (map? id-or-pk)
+                   (let [[clause values] (build-pk-where-clause id-or-pk)]
+                     (first (Query db* (into [(str "SELECT * FROM " table " WHERE " clause)] values))))))
+           _ (when-let [img (:imagen row)] (safe-delete-upload! img))
            result (if (= 1 (count pk-fields))
                     (let [id (crud-fix-id id-or-pk)]
                       (Delete db* (keyword table) ["id = ?" id]))

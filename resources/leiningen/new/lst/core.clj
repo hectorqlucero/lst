@@ -13,6 +13,7 @@
    [{{name}}.routes.proutes :refer [proutes]]
    [{{name}}.routes.routes :refer [open-routes]]
    [clojure.string :as str]
+   [clojure.java.io :as io]
    [clojure.data.json :as json]
    [ring.adapter.jetty :as jetty]
    [ring.middleware.defaults :refer [site-defaults wrap-defaults]]
@@ -151,6 +152,15 @@
   (wrap-login (wrap-routes proutes))
   (route/not-found "Not Found"))
 
+;; Ensure the uploads directory (and parents) exist, based on config
+(defn ensure-upload-dirs! []
+  (try
+    (when-let [p (:uploads config)]
+      (let [f (io/file (str p))]
+        (when-not (.exists f)
+          (.mkdirs f))))
+    (catch Throwable _)))
+
 ;; Application configuration
 ;; The order of middleware matters: defaults/multipart first, exception handling outermost.
 (def app
@@ -168,6 +178,7 @@
 (defn -main
   "Starts the Jetty HTTP server using the configured port."
   []
+  (ensure-upload-dirs!)
   (jetty/run-jetty app {:port (:port config)}))
 
 (comment

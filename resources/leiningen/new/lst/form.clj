@@ -1,6 +1,8 @@
 (ns {{name}}.models.form
   (:require
    [ring.util.anti-forgery :refer [anti-forgery-field]]
+   [clojure.java.io :as io]
+   [clojure.string :as str]
    [{{name}}.models.crud :refer [config]]))
 
 ;; =============================================================================
@@ -116,11 +118,17 @@
       :accept "image/*"}]]
    [:div.text-center.mb-3
     [:div.image-preview-container.d-inline-block.position-relative
-     [:img#image1.img-thumbnail.shadow-sm.rounded
-      {:width "95"
-       :height "71"
-       :src (str (:path config) (:imagen row))
-       :onError "this.src='/images/placeholder_profile.png'"}]
+     (let [imagen (:imagen row)
+           uploads (:uploads config)
+           mtime (when (and imagen (not (str/blank? imagen)))
+                   (try (.lastModified (io/file (str uploads imagen))) (catch Exception _ nil)))
+           qs (when (and mtime (pos? (long mtime))) (str "?v=" mtime))
+           src (str (:path config) (or imagen "") (or qs ""))]
+       [:img#image1.img-thumbnail.shadow-sm.rounded
+        {:width "95"
+         :height "71"
+         :src src
+         :onError "this.src='/images/placeholder_profile.png'"}])
      [:div.position-absolute.top-0.end-0.translate-middle
       [:span.badge.bg-primary.rounded-pill
        [:i.bi.bi-search-plus]]]]]))
