@@ -445,13 +445,12 @@ After generating a subgrid, integrate it into the parent view:
         table-id "users_table"
         href "/admin/users"
         args {:new true :edit true :delete true
-              :subgrids [(create-subgrid-config
-                           {:title "User Contacts"
-                            :table-name "user_contacts"
-                            :foreign-key "user_id"
-                            :href "/admin/usercontactsusers"
-                            :icon "bi bi-people"
-                            :label "Contacts"})]}]
+              :subgrids [{:title "User Contacts"
+                          :table-name "user_contacts"
+                          :foreign-key "user_id"
+                          :href "/admin/usercontactsusers"
+                          :icon "bi bi-people"
+                          :label "Contacts"}]}]
     (build-grid-with-subgrids title rows table-id fields href args)))
 ```
 
