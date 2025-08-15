@@ -494,9 +494,9 @@ LST makes it easy to display images in your grid forms. To add an image field to
 1. **Require the function in your view namespace:**
 
   ```clojure
-  (require '[yourapp.handlers.admin.<table>.row :refer [build-image-field]])
+  (require '[yourapp.models.form :refer [build-image-field]])
   ```
-  Replace `yourapp.handlers.admin.<table>.row` with the appropriate namespace for your grid row.
+  Replace `yourapp.models.form` with the appropriate namespace for your grid.
 
 2. **Call `build-image-field` in your view:**
 
