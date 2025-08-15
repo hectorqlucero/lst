@@ -168,6 +168,8 @@ Edit `resources/private/config.clj` with your database credentials:
  :base-url     "http://0.0.0.0:3000/"      ;; Base URL
  :img-url      "https://0.0.0.0/uploads/"  ;; Image base URL
  :path         "/uploads/"                 ;; Uploads path (for web)
+ :max-upload-mb 5
+ :allowed-image-exts ["jpg" "jpeg" "png" "gif" "bmp" "webp"]
  ;; Optional email config
  :email-host   "smtp.example.com"
  :email-user   "user@example.com"
