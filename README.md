@@ -1,3 +1,105 @@
+# Ragtime Migrations for Parent/Child Tables (Quick Copy)
+
+Each column shows minimal migration files (UP/DOWN) for the parent and child tables. Copy each code block into its own file name shown above it.
+
+| PostgreSQL | MySQL | SQLite |
+|---|---|---|
+|**001-parent.postgresql.down.sql**<br>```sql
+DROP TABLE IF EXISTS parent;
+```|**001-parent.mysql.down.sql**<br>```sql
+DROP TABLE IF EXISTS parent;
+```|**001-parent.sqlite.down.sql**<br>```sql
+DROP TABLE IF EXISTS parent;
+```|
+|**001-parent.postgresql.up.sql**<br>```sql
+CREATE TABLE IF NOT EXISTS parent (
+  id SERIAL PRIMARY KEY,
+  name TEXT,
+  created_on DATE,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  event_time TIME,
+  is_active BOOLEAN DEFAULT FALSE,
+  amount NUMERIC(10,2),
+  note TEXT
+);
+```|**001-parent.mysql.up.sql**<br>```sql
+CREATE TABLE IF NOT EXISTS parent (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  name VARCHAR(100),
+  created_on DATE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  event_time TIME,
+  is_active BOOLEAN DEFAULT FALSE,
+  amount DECIMAL(10,2),
+  note TEXT
+)
+ENGINE=InnoDB;
+```|**001-parent.sqlite.up.sql**<br>```sql
+-- Enable foreign keys per connection
+PRAGMA foreign_keys = ON;
+
+CREATE TABLE IF NOT EXISTS parent (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  name TEXT,
+  created_on TEXT,
+  created_at TEXT DEFAULT (datetime('now')),
+  event_time TEXT,
+  is_active INTEGER DEFAULT 0,
+  amount NUMERIC(10,2),
+  note TEXT
+);
+```|
+|**002-child.postgresql.down.sql**<br>```sql
+DROP TABLE IF EXISTS child;
+```|**002-child.mysql.down.sql**<br>```sql
+DROP TABLE IF EXISTS child;
+```|**002-child.sqlite.down.sql**<br>```sql
+DROP TABLE IF EXISTS child;
+```|
+|**002-child.postgresql.up.sql**<br>```sql
+CREATE TABLE IF NOT EXISTS child (
+  id SERIAL PRIMARY KEY,
+  parent_id INTEGER,
+  name TEXT,
+  created_on DATE,
+  created_at TIMESTAMPTZ DEFAULT NOW(),
+  event_time TIME,
+  is_active BOOLEAN DEFAULT FALSE,
+  amount NUMERIC(10,2),
+  note TEXT,
+  FOREIGN KEY (parent_id) REFERENCES parent(id)
+);
+```|**002-child.mysql.up.sql**<br>```sql
+CREATE TABLE IF NOT EXISTS child (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  parent_id INT,
+  name VARCHAR(100),
+  created_on DATE,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  event_time TIME,
+  is_active BOOLEAN DEFAULT FALSE,
+  amount DECIMAL(10,2),
+  note TEXT,
+  FOREIGN KEY (parent_id) REFERENCES parent(id)
+)
+ENGINE=InnoDB;
+```|**002-child.sqlite.up.sql**<br>```sql
+-- Enable foreign keys per connection
+PRAGMA foreign_keys = ON;
+
+CREATE TABLE IF NOT EXISTS child (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  parent_id INTEGER,
+  name TEXT,
+  created_on TEXT,
+  created_at TEXT DEFAULT (datetime('now')),
+  event_time TEXT,
+  is_active INTEGER DEFAULT 0,
+  amount NUMERIC(10,2),
+  note TEXT,
+  FOREIGN KEY (parent_id) REFERENCES parent(id)
+);
+```|
 # LST - Lucero Systems Template
 
 > A professional Leiningen template for rapid Clojure web application development
