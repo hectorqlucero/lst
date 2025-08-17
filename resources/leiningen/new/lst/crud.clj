@@ -2,7 +2,14 @@
   (:require
    [clojure.java.io :as io]
    [clojure.java.jdbc :as j]
-   [clojure.string :as st]))
+   [clojure.string :as st]
+   [{{name}}.models.db :as db]))
+
+;; Reusable regex patterns (private constants)
+(def ^:private true-re  #"(?i)^(true|on|1)$")
+(def ^:private false-re #"(?i)^(false|off|0)$")
+(def ^:private int-re   #"^-?\d+$")
+(def ^:private float-re #"^-?\d+(\.\d+)?$")
 
 ;; Try to load optional drivers eagerly (safe if absent)
 (try (Class/forName "org.sqlite.JDBC") (catch Throwable _))
@@ -34,64 +41,77 @@
                    "{{name}}-session-key")]
     (ensure-16-bytes secret)))
 
+;; Ensure SQLite enforces foreign keys on every connection by appending a
+;; connection parameter to the JDBC URL. SQLite's PRAGMA foreign_keys is
+;; per-connection and not persisted in the DB file, so setting it at the
+;; URL level ensures all connections created by java.jdbc have it ON.
+;; Supported by org.xerial/sqlite-jdbc.
+(defn- sqlite-ensure-fk-param [subname]
+  (let [s (str subname)]
+    (if (re-find #"(?:\?|&)foreign_keys=(?:on|true|1)" s)
+      s
+      (str s (if (st/includes? s "?") "&" "?") "foreign_keys=on"))))
+
 (defn build-db-spec [cfg]
   (let [dbtype (or (:db-type cfg) (:db-protocol cfg))
         base   {:user (:db-user cfg) :password (:db-pwd cfg)}]
-    (cond
-      (or (= dbtype "mysql") (= dbtype :mysql))
-      (merge base
-             {:classname    (or (:db-class cfg) "com.mysql.cj.jdbc.Driver")
-              :subprotocol  "mysql"
-              :subname      (:db-name cfg)
-              :useSSL                          false
-              :useTimezone                     true
-              :useLegacyDatetimeCode           false
-              :serverTimezone                  "UTC"
-              :noTimezoneConversionForTimeType true
-              :dumpQueriesOnException          true
-              :autoDeserialize                 true
-              :useDirectRowUnpack              false
-              :cachePrepStmts                  true
-              :cacheCallableStmts              true
-              :cacheServerConfiguration        true
-              :useLocalSessionState            true
-              :elideSetAutoCommits             true
-              :alwaysSendSetIsolation          false
-              :enableQueryTimeouts             false
-              :zeroDateTimeBehavior            "CONVERT_TO_NULL"})
-
-      (or (= dbtype "postgresql") (= dbtype :postgresql) (= dbtype "postgres") (= dbtype :postgres))
-      (merge base
-             {:classname   (or (:db-class cfg) "org.postgresql.Driver")
-              :subprotocol "postgresql"
-              :subname     (:db-name cfg)})
-
-      (or (= dbtype "sqlite") (= dbtype :sqlite) (= dbtype "sqlite3") (= dbtype :sqlite3))
-      (merge base
-             {:classname   (or (:db-class cfg) "org.sqlite.JDBC")
-              :subprotocol "sqlite"
-              :subname     (:db-name cfg)})
-
-      (or (= dbtype "sqlserver") (= dbtype :sqlserver) (= dbtype "mssql") (= dbtype :mssql))
-      (merge base
-             {:classname   (or (:db-class cfg) "com.microsoft.sqlserver.jdbc.SQLServerDriver")
-              :subprotocol "sqlserver"
-              :subname     (:db-name cfg)})
-
-      (or (= dbtype "h2") (= dbtype :h2))
-      (merge base
-             {:classname   (or (:db-class cfg) "org.h2.Driver")
-              :subprotocol "h2"
-              :subname     (:db-name cfg)})
-
-      (or (= dbtype "oracle") (= dbtype :oracle))
-      (merge base
-             {:classname   (or (:db-class cfg) "oracle.jdbc.OracleDriver")
-              :subprotocol "oracle:thin"
-              :subname     (:db-name cfg)})
-
-      :else (throw (ex-info (str "Unsupported db-type: " dbtype) {:dbtype dbtype})))))
-
+    (letfn [(mysql-spec []
+              (merge base
+                     {:classname    (or (:db-class cfg) "com.mysql.cj.jdbc.Driver")
+                      :subprotocol  "mysql"
+                      :subname      (:db-name cfg)
+                      :useSSL                          false
+                      :useTimezone                     true
+                      :useLegacyDatetimeCode           false
+                      :serverTimezone                  "UTC"
+                      :noTimezoneConversionForTimeType true
+                      :dumpQueriesOnException          true
+                      :autoDeserialize                 true
+                      :useDirectRowUnpack              false
+                      :cachePrepStmts                  true
+                      :cacheCallableStmts              true
+                      :cacheServerConfiguration        true
+                      :useLocalSessionState            true
+                      :elideSetAutoCommits             true
+                      :alwaysSendSetIsolation          false
+                      :enableQueryTimeouts             false
+                      :zeroDateTimeBehavior            "CONVERT_TO_NULL"}))
+            (postgres-spec []
+              (merge base
+                     {:classname   (or (:db-class cfg) "org.postgresql.Driver")
+                      :subprotocol "postgresql"
+                      :subname     (:db-name cfg)}))
+            (sqlite-spec []
+              (merge base
+                     {:classname   (or (:db-class cfg) "org.sqlite.JDBC")
+                      :subprotocol "sqlite"
+                      :subname     (sqlite-ensure-fk-param (:db-name cfg))}))
+            (sqlserver-spec []
+              (merge base
+                     {:classname   (or (:db-class cfg) "com.microsoft.sqlserver.jdbc.SQLServerDriver")
+                      :subprotocol "sqlserver"
+                      :subname     (:db-name cfg)}))
+            (h2-spec []
+              (merge base
+                     {:classname   (or (:db-class cfg) "org.h2.Driver")
+                      :subprotocol "h2"
+                      :subname     (:db-name cfg)}))
+            (oracle-spec []
+              (merge base
+                     {:classname   (or (:db-class cfg) "oracle.jdbc.OracleDriver")
+                      :subprotocol "oracle:thin"
+                      :subname     (:db-name cfg)}))]
+      (cond
+        (or (= dbtype "mysql") (= dbtype :mysql))                      (mysql-spec)
+        (or (= dbtype "postgresql") (= dbtype :postgresql)
+            (= dbtype "postgres") (= dbtype :postgres))                (postgres-spec)
+        (or (= dbtype "sqlite") (= dbtype :sqlite)
+            (= dbtype "sqlite3") (= dbtype :sqlite3))                  (sqlite-spec)
+        (or (= dbtype "sqlserver") (= dbtype :sqlserver)
+            (= dbtype "mssql") (= dbtype :mssql))                      (sqlserver-spec)
+        (or (= dbtype "h2") (= dbtype :h2))                            (h2-spec)
+        (or (= dbtype "oracle") (= dbtype :oracle))                    (oracle-spec)
+        :else (throw (ex-info (str "Unsupported db-type: " dbtype) {:dbtype dbtype}))))))
 
 ;; Helper to resolve keyword indirection in :connections
 (defn- resolve-conn [connections v]
@@ -103,10 +123,11 @@
 (def dbs
   (if (and (:connections config) (map? (:connections config)))
     (into {}
-          (for [[k v] (:connections config)]
-            (let [resolved (resolve-conn (:connections config) v)]
-              (when (map? resolved)
-                [k (build-db-spec resolved)]))))
+          (keep (fn [[k v]]
+                  (let [resolved (resolve-conn (:connections config) v)]
+                    (when (map? resolved)
+                      [k (build-db-spec resolved)])))
+                (:connections config)))
     {:default (build-db-spec config)}))
 
 (def db (or (get dbs :default) (first (vals dbs))))
@@ -119,16 +140,49 @@
   ([] db)
   ([conn] (or (get dbs (or conn :default)) db)))
 
-(defn- mysql? [db-spec]
-  (let [sp (:subprotocol db-spec)]
-    (or (= sp "mysql") (= sp :mysql))))
-
-
 (defn- normalize-insert-result [ins]
   (cond
     (map? ins) ins
     (sequential? ins) (first ins)
     :else ins))
+
+;; --- small helpers extracted for Save / CRUD ---
+(defn- update-count' [result]
+  (cond
+    (sequential? result) (long (or (first result) 0))
+    (number? result) (long result)
+    :else 0))
+
+(defn- row-exists? [t-con db-spec t wherev qopts]
+  (let [clause (first wherev)
+        values (rest wherev)
+        sql (str "SELECT 1 FROM " (db/table-sql-name db-spec t) " WHERE " clause " LIMIT 1")
+        rs (j/query t-con (into [sql] values) qopts)]
+    (seq rs)))
+
+(defn- insert-with-id [t-con table row q-opts]
+  (let [ins (j/insert! t-con table row (assoc q-opts :return-keys true))
+        norm (normalize-insert-result ins)]
+    (cond
+      (map? norm) norm
+      (number? norm) {:id norm}
+      :else norm)))
+
+(defn- save-with-db [db* table row where]
+  (let [q-opts (db/q-opts db*)]
+    (j/with-db-transaction [t-con db*]
+      (let [result (j/update! t-con table row where q-opts)
+            cnt (update-count' result)]
+        (if (zero? cnt)
+          (let [exists? (row-exists? t-con db* table where q-opts)]
+            (if exists?
+              true
+              (let [ins-result (insert-with-id t-con table row q-opts)
+                    fallback-id (db/last-insert-id t-con db*)]
+                (or (when (map? ins-result) ins-result)
+                    (when fallback-id {:id fallback-id})
+                    true))))
+          (pos? cnt))))))
 
 ;; --- CRUD wrappers (multi-arity) ---
 (defn Query [& args]
@@ -137,14 +191,14 @@
     (and (= 2 (count args)) (map? (first args)))
     (let [db* (first args)
           sql (second args)
-          q-opts (if (mysql? db*) {:entities (j/quoted \`)} {})]
+          q-opts (db/q-opts db*)]
       (j/query db* sql q-opts))
 
     :else
     (let [sql (first args)
           opts (apply hash-map (rest args))
           db* (resolve-db (:conn opts))
-          q-opts (if (mysql? db*) {:entities (j/quoted \`)} {})]
+          q-opts (db/q-opts db*)]
       (j/query db* sql q-opts))))
 
 (defn Query! [& args]
@@ -153,14 +207,14 @@
     (and (= 2 (count args)) (map? (first args)))
     (let [db* (first args)
           sql (second args)
-          q-opts (if (mysql? db*) {:entities (j/quoted \`)} {})]
+          q-opts (db/q-opts db*)]
       (j/execute! db* sql q-opts))
 
     :else
     (let [sql (first args)
           opts (apply hash-map (rest args))
           db* (resolve-db (:conn opts))
-          q-opts (if (mysql? db*) {:entities (j/quoted \`)} {})]
+          q-opts (db/q-opts db*)]
       (j/execute! db* sql q-opts))))
 
 (defn Insert [& args]
@@ -170,7 +224,7 @@
     (let [db* (first args)
           table (second args)
           row (nth args 2)
-          q-opts (if (mysql? db*) {:entities (j/quoted \`)} {})]
+          q-opts (db/q-opts db*)]
       (j/insert! db* table row q-opts))
 
     :else
@@ -178,7 +232,7 @@
           row (second args)
           opts (apply hash-map (drop 2 args))
           db* (resolve-db (:conn opts))
-          q-opts (if (mysql? db*) {:entities (j/quoted \`)} {})]
+          q-opts (db/q-opts db*)]
       (j/insert! db* table row q-opts))))
 
 (defn Insert-multi [& args]
@@ -204,7 +258,7 @@
           table (second args)
           row (nth args 2)
           where (nth args 3)
-          q-opts (when (mysql? db*) {:entities (j/quoted \`)})]
+          q-opts (db/q-opts db*)]
       (j/update! db* table row where q-opts))
 
     :else
@@ -213,7 +267,7 @@
           where (nth args 2)
           opts (apply hash-map (drop 3 args))
           db* (resolve-db (:conn opts))
-          q-opts (when (mysql? db*) {:entities (j/quoted \`)})]
+          q-opts (db/q-opts db*)]
       (j/update! db* table row where q-opts))))
 
 (defn Delete [& args]
@@ -224,7 +278,7 @@
       (let [db* (first args)
             table (second args)
             where (nth args 2)
-            q-opts (if (mysql? db*) {:entities (j/quoted \`)} {})]
+            q-opts (db/q-opts db*)]
         (j/delete! db* table where q-opts))
 
       :else
@@ -232,7 +286,7 @@
             where (second args)
             opts (apply hash-map (drop 2 args))
             db* (resolve-db (:conn opts))
-            q-opts (if (mysql? db*) {:entities (j/quoted \`)} {})]
+            q-opts (db/q-opts db*)]
         (j/delete! db* table where q-opts)))
     (catch Exception e
       (println "[ERROR] Delete failed:" (.getMessage e))
@@ -240,125 +294,30 @@
       nil)))
 
 (defn Save [& args]
-  (letfn [(table-sql-name [db-spec t]
-            (let [tname (if (keyword? t) (name t) (str t))]
-              (if (mysql? db-spec) (str "`" tname "`") tname)))
-          (exists-row? [t-con db-spec t wherev qopts]
-            (let [clause (first wherev)
-                  values (rest wherev)
-                  sql (str "SELECT 1 FROM " (table-sql-name db-spec t) " WHERE " clause " LIMIT 1")
-                  rs (j/query t-con (into [sql] values) qopts)]
-              (seq rs)))
-          (update-count [result]
-            (cond
-              (sequential? result) (long (or (first result) 0))
-              (number? result) (long result)
-              :else 0))]
-    (cond
-      ;; (Save db table row where)
-      (and (= 4 (count args)) (map? (first args)))
-      (let [db* (first args)
-            table (second args)
-            row (nth args 2)
-            where (nth args 3)
-            q-opts (if (mysql? db*) {:entities (j/quoted \`)} {})]
-        (j/with-db-transaction [t-con db*]
-          (let [result (j/update! t-con table row where q-opts)
-                cnt (update-count result)]
+  (cond
+    ;; (Save db table row where)
+    (and (= 4 (count args)) (map? (first args)))
+    (let [db* (first args)
+          table (second args)
+          row (nth args 2)
+          where (nth args 3)]
+      (save-with-db db* table row where))
 
-            (if (zero? cnt)
-              (let [exists? (exists-row? t-con db* table where q-opts)]
-
-                (if exists?
-                  true
-                  (let [ins-opts (assoc q-opts :return-keys true)
-                        ins (j/insert! t-con table row ins-opts)
-                        norm (normalize-insert-result ins)
-                        sp (:subprotocol db*)
-                        fallback-id (cond
-                                      (or (= sp "sqlite") (= sp :sqlite) (= sp "sqlite3") (= sp :sqlite3))
-                                      (some-> (j/query t-con ["SELECT last_insert_rowid() AS id"]) first :id)
-                                      (or (= sp "mysql") (= sp :mysql))
-                                      (some-> (j/query t-con ["SELECT last_insert_id() AS id"]) first :id)
-                                      :else nil)
-                        result-map (cond
-                                     (map? norm) norm
-                                     (number? norm) {:id norm}
-                                     fallback-id {:id fallback-id}
-                                     :else nil)]
-
-                    (or result-map true))))
-              (pos? cnt)))))
-
-      :else
-      (let [table (first args)
-            row (second args)
-            where (nth args 2)
-            opts (apply hash-map (drop 3 args))
-            db* (resolve-db (:conn opts))
-            q-opts (if (mysql? db*) {:entities (j/quoted \`)} {})]
-        (j/with-db-transaction [t-con db*]
-          (let [result (j/update! t-con table row where q-opts)
-                cnt (update-count result)]
-
-            (if (zero? cnt)
-              (let [exists? (exists-row? t-con db* table where q-opts)]
-
-                (if exists?
-                  true
-                  (let [ins-opts (assoc q-opts :return-keys true)
-                        ins (j/insert! t-con table row ins-opts)
-                        norm (normalize-insert-result ins)
-                        sp (:subprotocol db*)
-                        fallback-id (cond
-                                      (or (= sp "sqlite") (= sp :sqlite) (= sp "sqlite3") (= sp :sqlite3))
-                                      (some-> (j/query t-con ["SELECT last_insert_rowid() AS id"]) first :id)
-                                      (or (= sp "mysql") (= sp :mysql))
-                                      (some-> (j/query t-con ["SELECT last_insert_id() AS id"]) first :id)
-                                      :else nil)
-                        result-map (cond
-                                     (map? norm) norm
-                                     (number? norm) {:id norm}
-                                     fallback-id {:id fallback-id}
-                                     :else nil)]
-
-                    (or result-map true))))
-              (pos? cnt))))))))
+    :else
+    (let [table (first args)
+          row (second args)
+          where (nth args 2)
+          opts (apply hash-map (drop 3 args))
+          db* (resolve-db (:conn opts))]
+      (save-with-db db* table row where))))
 
 ;; --- schema discovery ---
 (defn get-table-describe [table & {:keys [conn]}]
   (let [db* (resolve-db conn)
-        dbtype (:subprotocol db*)]
-    (cond
-      (or (= dbtype "mysql") (= dbtype :mysql))
-      (Query db* (str "DESCRIBE " table))
-
-      (or (= dbtype "postgresql") (= dbtype :postgresql) (= dbtype "postgres") (= dbtype :postgres))
-      (let [sql (str "SELECT column_name as field, data_type as type, is_nullable as null, column_default as default, '' as extra, '' as privileges, '' as comment, '' as key "
-                     "FROM information_schema.columns "
-                     "WHERE table_name = '" table "' "
-                     "AND table_schema = ANY (current_schemas(true)) "
-                     "ORDER BY ordinal_position")
-            rows (Query db* sql)]
-        (when (empty? rows)
-          (println "[WARN] No columns found for table" table "on Postgres. Check search_path and schema. Conn:" (or conn :default)))
-        rows)
-
-      (or (= dbtype "sqlite") (= dbtype :sqlite) (= dbtype "sqlite3") (= dbtype :sqlite3))
-      (let [sql (str "PRAGMA table_info(" table ")")
-            rows (Query db* sql)]
-        (map (fn [r]
-               {:field (:name r)
-                :type  (:type r)
-                :null  (if (= 1 (:notnull r)) "NO" "YES")
-                :default (:dflt_value r)
-                :extra ""
-                :privileges ""
-                :comment ""
-                :key (when (= 1 (:pk r)) "PRI")})
-             rows))
-
-      :else (throw (ex-info (str "Unsupported dbtype for describe: " dbtype) {:dbtype dbtype})))))
+        rows (db/describe-table db* table (fn [sql] (Query db* sql)))]
+    (when (and (db/postgres? db*) (empty? rows))
+      (println "[WARN] No columns found for table" table "on Postgres. Check search_path and schema. Conn:" (or conn :default)))
+    rows))
 
 (defn get-table-columns [table & {:keys [conn]}]
   (map #(keyword (:field %)) (get-table-describe table :conn conn)))
@@ -419,9 +378,43 @@
 
 ;; --- field processing ---
 
+(defn- normalize-ftype [field-type]
+  (-> field-type st/lower-case (st/replace #"\(.*\)" "") st/trim))
+
+(defn- char->value [^String v]
+  (let [v (st/trim v)
+        vu (st/upper-case v)]
+    (cond
+      (st/blank? v) nil
+      (re-matches true-re v)  "T"
+      (re-matches false-re v) "F"
+      :else vu)))
+
+(defn- parse-int-like [^String s]
+  (cond
+    (st/blank? s) 0
+    (re-matches true-re s)  1
+    (re-matches false-re s) 0
+    (re-matches int-re s) (try (Long/parseLong s) (catch Exception _ 0))
+    :else 0))
+
+(defn- parse-float-like [^String s]
+  (cond
+    (st/blank? s) 0.0
+    (re-matches float-re s) (try (Double/parseDouble s) (catch Exception _ 0.0))
+    :else 0.0))
+
+(defn- parse-bool-like [^String s]
+  (cond
+    (st/blank? s) false
+    (re-matches true-re s)  true
+    (re-matches false-re s) false
+    (re-matches int-re s) (not= s "0")
+    :else false))
+
 (defn process-field [params field field-type]
   (let [value (str ((keyword field) params))
-        ftype (-> field-type st/lower-case (st/replace #"\(.*\)" "") st/trim)]
+        ftype (normalize-ftype field-type)]
     (cond
       ;; String-like (include Postgres types)
       (or (st/includes? ftype "varchar")
@@ -434,18 +427,7 @@
 
       ;; Strict CHAR only (likely MySQL char(N)). Normalize booleans if applicable; otherwise, don't truncate unless it is clearly a single char input.
       (= ftype "char")
-      (let [v (st/trim value)
-            vu (st/upper-case v)]
-        (cond
-          (st/blank? v) nil
-          (re-matches #"(?i)true" v) "T"
-          (re-matches #"(?i)on" v)   "T"
-          (re-matches #"(?i)1" v)    "T"
-          (re-matches #"(?i)false" v) "F"
-          (re-matches #"(?i)off" v)   "F"
-          (re-matches #"(?i)0" v)     "F"
-          ;; preserve full string to avoid accidental truncation for non-boolean CHAR columns
-          :else vu))
+      (char->value value)
 
       ;; Integer types
       (or (st/includes? field-type "int")
@@ -453,23 +435,13 @@
           (st/includes? field-type "smallint")
           (st/includes? field-type "mediumint")
           (st/includes? field-type "bigint"))
-      (cond
-        (st/blank? value) 0
-        (re-matches #"(?i)true" value) 1
-        (re-matches #"(?i)on" value)   1
-        (re-matches #"(?i)false" value) 0
-        (re-matches #"(?i)off" value)   0
-        (re-matches #"^-?\d+$" value) (try (Long/parseLong value) (catch Exception _ 0))
-        :else 0)
+      (parse-int-like value)
 
       ;; Floating point
       (or (st/includes? field-type "float")
           (st/includes? field-type "double")
           (st/includes? field-type "decimal"))
-      (cond
-        (st/blank? value) 0.0
-        (re-matches #"^-?\d+(\.\d+)?$" value) (try (Double/parseDouble value) (catch Exception _ 0.0))
-        :else 0.0)
+      (parse-float-like value)
 
       ;; Year
       (st/includes? field-type "year")
@@ -503,14 +475,7 @@
       (or (st/includes? field-type "bit")
           (st/includes? field-type "bool")
           (st/includes? field-type "boolean"))
-      (cond
-        (st/blank? value) false
-        (re-matches #"(?i)true" value)  true
-        (re-matches #"(?i)on" value)    true
-        (re-matches #"(?i)false" value) false
-        (re-matches #"(?i)off" value)   false
-        (re-matches #"^-?\d+$" value) (not= value "0")
-        :else false)
+      (parse-bool-like value)
 
       :else value)))
 
@@ -530,12 +495,9 @@
         (println "[WARN] build-postvars empty for" table "params" (keys params) "cols" (map :field td) "conn" (or conn :default)))
       m)))
 
-(defn build-form-field [d]
-  (let [field (:field d)
-        field-type (:type d)]
-    (cond
-      (= field-type "time") (str "TIME_FORMAT(" field "," "'%H:%i') as " field)
-      :else field)))
+;; Vendor-aware time field projection for SELECTs used by forms
+(defn build-form-field [db* d]
+  (db/time-projection db* (:field d) (:type d)))
 
 (defn get-table-key [d]
   (when (seq d)
@@ -545,29 +507,13 @@
 (defn get-table-primary-keys
   ([table] (get-table-primary-keys table :conn :default))
   ([table & {:keys [conn]}]
-   (let [describe (get-table-describe table :conn conn)]
-     (cond
-       ;; MySQL describe has :key
-       (some #(or (= (:key %) "PRI") (= (:key %) "PRIMARY")) describe)
-       (->> describe (filter #(or (= (:key %) "PRI") (= (:key %) "PRIMARY"))) (map :field) vec)
-
-       ;; Postgres: pg_index
-       (seq describe)
-       (let [db* (resolve-db conn)
-             sql (str "SELECT a.attname as field "
-                      "FROM pg_index i "
-                      "JOIN pg_attribute a ON a.attrelid = i.indrelid AND a.attnum = ANY(i.indkey) "
-                      "WHERE i.indrelid = '" table "'::regclass AND i.indisprimary;")
-             pk-cols (Query db* sql)
-             pks (mapv :field pk-cols)
-             pks (if (seq pks)
-                   pks
-                   (let [fields (map :field describe)]
-                     (when (some #(= % "id") fields) ["id"])))]
-
-         (or pks []))
-
-       :else []))))
+   (let [db* (resolve-db conn)
+         describe (get-table-describe table :conn conn)
+         pks (db/primary-keys db* table describe (fn [sql] (Query db* sql)))]
+     (vec (or (seq pks)
+              (when (some #(= (name %) "id") (map (comp keyword :field) describe))
+                ["id"])
+              [])))))
 
 (defn get-primary-key-map
   ([table params] (get-primary-key-map table params :conn :default))
@@ -591,8 +537,9 @@
    (let [describe (get-table-describe table :conn conn)
          pk-fields (get-table-primary-keys table :conn conn)]
      (when (seq pk-fields)
-       (let [head "SELECT "
-             body (apply str (interpose "," (map #(build-form-field %) describe)))
+       (let [db* (resolve-db conn)
+             head "SELECT "
+             body (apply str (interpose "," (map #(build-form-field db* %) describe)))
              pk-map (cond
                       (map? id-or-pk-map) id-or-pk-map
                       (= 1 (count pk-fields)) {(keyword (first pk-fields)) id-or-pk-map}
@@ -601,7 +548,6 @@
            (let [[where-clause values] (build-pk-where-clause pk-map)
                  foot (str " FROM " table " WHERE " where-clause)
                  sql (str head body foot)
-                 db* (resolve-db conn)
                  row (Query db* (into [sql] values))]
              (first row)))))
      (when (empty? pk-fields)
@@ -626,51 +572,54 @@
     {}))
 
 (defn process-regular-form [params table & {:keys [conn]}]
-  (let [pk-fields (get-table-primary-keys table :conn conn)
-        db* (resolve-db conn)]
-    (if (= 1 (count pk-fields))
-      (let [id (crud-fix-id (:id params))
-            postvars (cond-> (-> (build-postvars table params :conn conn)
-                                 blank->nil)
-                       (= id 0) (dissoc :id))
-            where-clause (if (= id 0) ["1 = 0"] ["id = ?" id])]
-        (try
-
-          (if (and (map? postvars) (seq postvars))
-            (boolean (Save db* (keyword table) postvars where-clause))
-            false)
-          (catch Exception e
-            (let [cause (or (.getCause e) e)
-                  sqlstate (try (when (instance? java.sql.SQLException cause)
-                                  (.getSQLState ^java.sql.SQLException cause))
-                                (catch Throwable _ nil))]
-              (try (println "[ERROR] Save failed for" table "where" where-clause "sqlstate" sqlstate "message" (.getMessage cause)) (catch Throwable _))
-              (throw e)))))
-      (let [pk-map (get-primary-key-map table params :conn conn)
-            is-new? (or (empty? pk-map)
-                        (every? (fn [[_ v]]
-                                  (or (nil? v)
-                                      (and (string? v) (st/blank? v))
-                                      (and (number? v) (= v 0))
-                                      (= (str v) "0"))) pk-map))
-            base-postvars (-> (build-postvars table params :conn conn) blank->nil)
-            postvars (if is-new?
-                       (apply dissoc base-postvars (map keyword pk-fields))
-                       base-postvars)]
-        (try
-
-          (if (and (map? postvars) (seq postvars))
-            (let [[clause values] (when-not is-new? (build-pk-where-clause pk-map))
-                  where-clause (if is-new? ["1 = 0"] (into [clause] values))]
-              (boolean (Save db* (keyword table) postvars where-clause)))
-            false)
-          (catch Exception e
-            (let [cause (or (.getCause e) e)
-                  sqlstate (try (when (instance? java.sql.SQLException cause)
-                                  (.getSQLState ^java.sql.SQLException cause))
-                                (catch Throwable _ nil))]
-              (try (println "[ERROR] Save failed for" table "sqlstate" sqlstate "message" (.getMessage cause)) (catch Throwable _))
-              (throw e))))))))
+  (letfn [(single-id-where [id] (if (= id 0) ["1 = 0"] ["id = ?" id]))
+          (pk-is-new? [m]
+            (or (empty? m)
+                (every? (fn [[_ v]]
+                          (or (nil? v)
+                              (and (string? v) (st/blank? v))
+                              (and (number? v) (= v 0))
+                              (= (str v) "0"))) m)))
+          (try-save [db* table postvars where-clause]
+            (try
+              (if (and (map? postvars) (seq postvars))
+                (boolean (Save db* (keyword table) postvars where-clause))
+                false)
+              (catch Exception e
+                (let [cause (or (.getCause e) e)
+                      sqlstate (try (when (instance? java.sql.SQLException cause)
+                                      (.getSQLState ^java.sql.SQLException cause))
+                                    (catch Throwable _ nil))]
+                  (try (println "[ERROR] Save failed for" table "where" where-clause "sqlstate" sqlstate "message" (.getMessage cause)) (catch Throwable _))
+                  (throw e)))))]
+    (let [pk-fields (get-table-primary-keys table :conn conn)
+          db* (resolve-db conn)]
+      (if (= 1 (count pk-fields))
+        (let [id (crud-fix-id (:id params))
+              postvars (cond-> (-> (build-postvars table params :conn conn)
+                                   blank->nil)
+                         (= id 0) (dissoc :id))
+              where-clause (single-id-where id)]
+          (try-save db* table postvars where-clause))
+        (let [pk-map (get-primary-key-map table params :conn conn)
+              is-new? (pk-is-new? pk-map)
+              base-postvars (-> (build-postvars table params :conn conn) blank->nil)
+              postvars (if is-new?
+                         (apply dissoc base-postvars (map keyword pk-fields))
+                         base-postvars)]
+          (try
+            (if (and (map? postvars) (seq postvars))
+              (let [[clause values] (when-not is-new? (build-pk-where-clause pk-map))
+                    where-clause (if is-new? ["1 = 0"] (into [clause] values))]
+                (boolean (Save db* (keyword table) postvars where-clause)))
+              false)
+            (catch Exception e
+              (let [cause (or (.getCause e) e)
+                    sqlstate (try (when (instance? java.sql.SQLException cause)
+                                    (.getSQLState ^java.sql.SQLException cause))
+                                  (catch Throwable _ nil))]
+                (try (println "[ERROR] Save failed for" table "sqlstate" sqlstate "message" (.getMessage cause)) (catch Throwable _))
+                (throw e)))))))))
 
 (defn crud-upload-image [table file id path]
   (let [cfg-exts (set (map st/lower-case (or (:allowed-image-exts config) ["jpg" "jpeg" "png" "gif" "bmp" "webp"])))
@@ -715,20 +664,12 @@
                 m (cond
                     (map? res) res
                     (sequential? res) (first res)
-                    :else nil)
-                sp (:subprotocol db*)
-                fallback (cond
-                           (or (= sp "sqlite") (= sp :sqlite) (= sp "sqlite3") (= sp :sqlite3))
-                           (some-> (Query db* ["SELECT last_insert_rowid() AS id"]) first :id)
-                           (or (= sp "mysql") (= sp :mysql))
-                           (some-> (Query db* ["SELECT last_insert_id() AS id"]) first :id)
-                           :else nil)]
+                    :else nil)]
             (or (:generated_key m)
                 (:generated-key m)
                 (:id m)
                 (:last_insert_rowid m)
-                (:scope_identity m)
-                fallback)))
+                (:scope_identity m))))
         pk-values-or-id)
 
       (map? pk-values-or-id)
@@ -741,101 +682,87 @@
                   m (cond
                       (map? res) res
                       (sequential? res) (first res)
-                      :else nil)
-                  sp (:subprotocol db*)
-                  fallback (cond
-                             (or (= sp "sqlite") (= sp :sqlite) (= sp "sqlite3") (= sp :sqlite3))
-                             (some-> (Query db* ["SELECT last_insert_rowid() AS id"]) first :id)
-                             (or (= sp "mysql") (= sp :mysql))
-                             (some-> (Query db* ["SELECT last_insert_id() AS id"]) first :id)
-                             :else nil)]
+                      :else nil)]
               (or (:generated_key m)
                   (:generated-key m)
                   (:id m)
                   (:last_insert_rowid m)
                   (:scope_identity m)
-                  fallback
                   pk-values-or-id)))
           pk-values-or-id))
 
       :else pk-values-or-id)))
 
 (defn process-upload-form [params table _folder & {:keys [conn]}]
-  (let [pk-fields (get-table-primary-keys table :conn conn)
-        pk-map (get-primary-key-map table params :conn conn)
-        file (:file params)
-        postvars (dissoc (build-postvars table params :conn conn) :file)
-        is-new? (or (empty? pk-map)
-                    (every? (fn [[_ v]]
-                              (or (nil? v)
-                                  (and (string? v) (st/blank? v))
-                                  (and (number? v) (= v 0))
-                                  (= (str v) "0"))) pk-map))
-        postvars (-> (if is-new?
-                       (apply dissoc postvars (map keyword pk-fields))
-                       postvars)
-                     blank->nil)
-        db* (resolve-db conn)]
-
-    (if (and (map? postvars) (seq postvars))
-      (let [single-pk? (= 1 (count pk-fields))]
-        (if (and is-new? single-pk?)
-          ;; New record with single PK: insert first to get ID in this transaction; then upload and update imagen
-          (let [pk-name (keyword (first pk-fields))
-                q-opts (if (mysql? db*) {:entities (j/quoted \`)} {})
-                result (j/with-db-transaction [t-con db*]
-                         (let [ins (j/insert! t-con (keyword table) postvars (assoc q-opts :return-keys true))
-                               norm (normalize-insert-result ins)
-                               sp (:subprotocol db*)
-                               ins-id (or (:generated_key norm)
-                                          (:generated-key norm)
-                                          (:id norm)
-                                          (:last_insert_rowid norm)
-                                          (:scope_identity norm)
-                                          (when (or (= sp "sqlite") (= sp :sqlite) (= sp "sqlite3") (= sp :sqlite3))
-                                            (some-> (j/query t-con ["SELECT last_insert_rowid() AS id"]) first :id))
-                                          (when (or (= sp "mysql") (= sp :mysql))
-                                            (some-> (j/query t-con ["SELECT last_insert_id() AS id"]) first :id)))]
-                           (when-not ins-id (throw (ex-info "Could not retrieve inserted ID" {:table table})))
-                           (let [the-id (str ins-id)
-                                 path (str (:uploads config))
-                                 image-name (when (and the-id (not (st/blank? the-id)))
-                                              (crud-upload-image table file the-id path))]
-
-                             (when image-name
-                               (j/update! t-con (keyword table) {:imagen image-name}
-                                          [(str (name pk-name) " = ?") (try (Long/parseLong the-id) (catch Exception _ the-id))]
-                                          q-opts))
-                             true)))]
-            (boolean result))
-          ;; Existing record or composite key: behave like before
-          (let [the-id (if single-pk?
-                         (str (or ((keyword (first pk-fields)) pk-map) ""))
-                         (str (or (some identity (vals pk-map)) "")))
-                path (str (:uploads config))
-                image-name (when (and the-id (not (st/blank? the-id)))
-                             (crud-upload-image table file the-id path))
-                effective-pk-map (if (and (not is-new?) single-pk?)
-                                   {(keyword (first pk-fields)) (if (re-matches #"^\\d+$" the-id)
-                                                                  (Long/parseLong the-id)
-                                                                  the-id)}
-                                   pk-map)
-                prev-row (when (and (not is-new?) (seq effective-pk-map))
-                           (build-form-row table effective-pk-map :conn conn))
-                postvars (cond-> postvars
-                           image-name (assoc :imagen image-name))
-                [clause values] (build-pk-where-clause effective-pk-map)
-                where-clause (into [clause] values)
-                postvars* (apply dissoc postvars (map keyword pk-fields))
-                result (Save db* (keyword table) postvars* where-clause)]
-            (when (and result image-name prev-row)
-              (let [old (:imagen prev-row)]
-                (when (and (string? old) (not= old image-name))
-                  (safe-delete-upload! old))))
-            (boolean result))))
-      (let [[clause values] (build-pk-where-clause pk-map)
-            result (Delete db* (keyword table) (into [clause] values))]
-        (boolean result)))))
+  (letfn [(insert-then-upload-and-update! [db* table pk-name postvars file]
+            (let [q-opts (db/q-opts db*)]
+              (j/with-db-transaction [t-con db*]
+                (let [ins (j/insert! t-con (keyword table) postvars (assoc q-opts :return-keys true))
+                      norm (normalize-insert-result ins)
+                      ins-id (or (:generated_key norm)
+                                 (:generated-key norm)
+                                 (:id norm)
+                                 (:last_insert_rowid norm)
+                                 (:scope_identity norm)
+                                 (db/last-insert-id t-con db*))]
+                  (when-not ins-id (throw (ex-info "Could not retrieve inserted ID" {:table table})))
+                  (let [the-id (str ins-id)
+                        path (str (:uploads config))
+                        image-name (when (and the-id (not (st/blank? the-id)))
+                                     (crud-upload-image table file the-id path))]
+                    (when image-name
+                      (j/update! t-con (keyword table) {:imagen image-name}
+                                 [(str (name pk-name) " = ?") (try (Long/parseLong the-id) (catch Exception _ the-id))]
+                                 q-opts))
+                    true)))))
+          (existing-or-composite-upload! [db* table pk-fields pk-map postvars is-new? file conn]
+            (let [single-pk? (= 1 (count pk-fields))
+                  the-id (if single-pk?
+                           (str (or ((keyword (first pk-fields)) pk-map) ""))
+                           (str (or (some identity (vals pk-map)) "")))
+                  path (str (:uploads config))
+                  image-name (when (and the-id (not (st/blank? the-id)))
+                               (crud-upload-image table file the-id path))
+                  effective-pk-map (if (and (not is-new?) single-pk?)
+                                     {(keyword (first pk-fields)) (if (re-matches int-re the-id)
+                                                                    (Long/parseLong the-id)
+                                                                    the-id)}
+                                     pk-map)
+                  prev-row (when (and (not is-new?) (seq effective-pk-map))
+                             (build-form-row table effective-pk-map :conn conn))
+                  postvars (cond-> postvars image-name (assoc :imagen image-name))
+                  [clause values] (build-pk-where-clause effective-pk-map)
+                  where-clause (into [clause] values)
+                  postvars* (apply dissoc postvars (map keyword pk-fields))
+                  result (Save db* (keyword table) postvars* where-clause)]
+              (when (and result image-name prev-row)
+                (let [old (:imagen prev-row)]
+                  (when (and (string? old) (not= old image-name))
+                    (safe-delete-upload! old))))
+              (boolean result)))]
+    (let [pk-fields (get-table-primary-keys table :conn conn)
+          pk-map (get-primary-key-map table params :conn conn)
+          file (:file params)
+          postvars (dissoc (build-postvars table params :conn conn) :file)
+          is-new? (or (empty? pk-map)
+                      (every? (fn [[_ v]]
+                                (or (nil? v)
+                                    (and (string? v) (st/blank? v))
+                                    (and (number? v) (= v 0))
+                                    (= (str v) "0"))) pk-map))
+          postvars (-> (if is-new?
+                         (apply dissoc postvars (map keyword pk-fields))
+                         postvars)
+                       blank->nil)
+          db* (resolve-db conn)]
+      (if (and (map? postvars) (seq postvars))
+        (let [single-pk? (= 1 (count pk-fields))]
+          (if (and is-new? single-pk?)
+            (boolean (insert-then-upload-and-update! db* table (keyword (first pk-fields)) postvars file))
+            (existing-or-composite-upload! db* table pk-fields pk-map postvars is-new? file conn)))
+        (let [[clause values] (build-pk-where-clause pk-map)
+              result (Delete db* (keyword table) (into [clause] values))]
+          (boolean result))))))
 
 ;; --- public API ---
 (defn build-form-save
@@ -849,52 +776,61 @@
        (process-upload-form (assoc params :file file*) table table :conn conn)
        (process-regular-form params table :conn conn)))))
 
+(defn- select-row [db* table id-or-pk pk-fields]
+  (if (= 1 (count pk-fields))
+    (first (Query db* (into [(str "SELECT * FROM " table " WHERE id = ?")] [(crud-fix-id id-or-pk)])))
+    (when (map? id-or-pk)
+      (let [[clause values] (build-pk-where-clause id-or-pk)]
+        (first (Query db* (into [(str "SELECT * FROM " table " WHERE " clause)] values)))))))
+
+(defn- cascade-delete-images! [db* table row]
+  (let [query-fn (fn [sql]
+                   (if (vector? sql)
+                     (Query db* sql)
+                     (Query db* sql)))]
+    (try
+      (db/cascade-delete-child-images! db* table row query-fn safe-delete-upload!)
+      (when-let [childs (get (:cascade-image-delete config) (keyword table))]
+        (doseq [{:keys [table fk image-col]} childs]
+          (let [fkcol (or fk "id")
+                icol  (or image-col "imagen")
+                pval  ((keyword (or (first (get-table-primary-keys table)) "id")) row)
+                sql   (str "SELECT " icol " FROM " table " WHERE " fkcol " = ?")
+                rows  (Query db* [sql pval])]
+            (doseq [r rows]
+              (when-let [im ((keyword icol) r)]
+                (safe-delete-upload! im))))))
+      (catch Exception _ nil))))
+
+(defn- perform-delete [db* table id-or-pk pk-fields]
+  (if (= 1 (count pk-fields))
+    (let [id (crud-fix-id id-or-pk)]
+      (Delete db* (keyword table) ["id = ?" id]))
+    (if (map? id-or-pk)
+      (let [pk-map id-or-pk
+            [clause values] (build-pk-where-clause pk-map)]
+        (Delete db* (keyword table) (into [clause] values)))
+      nil)))
+
+(defn- build-form-delete* [db* table id-or-pk pk-fields]
+  (try
+    (let [row (select-row db* table id-or-pk pk-fields)]
+      (when-let [img (:imagen row)] (safe-delete-upload! img))
+      (when row (cascade-delete-images! db* table row))
+      (boolean (seq (perform-delete db* table id-or-pk pk-fields))))
+    (catch Exception e
+      (println "[ERROR] build-form-delete failed:" (.getMessage e))
+      (println "[ERROR] Exception details:" e)
+      false)))
+
 (defn build-form-delete
   ([table id-or-pk]
-   (try
-     (let [pk-fields (get-table-primary-keys table)
-           row (if (= 1 (count pk-fields))
-                 (first (Query db (into [(str "SELECT * FROM " table " WHERE id = ?")] [(crud-fix-id id-or-pk)])))
-                 (when (map? id-or-pk)
-                   (let [[clause values] (build-pk-where-clause id-or-pk)]
-                     (first (Query db (into [(str "SELECT * FROM " table " WHERE " clause)] values))))))
-           _ (when-let [img (:imagen row)] (safe-delete-upload! img))
-           result (if (= 1 (count pk-fields))
-                    (let [id (crud-fix-id id-or-pk)]
-                      (Delete db (keyword table) ["id = ?" id]))
-                    (if (map? id-or-pk)
-                      (let [pk-map id-or-pk
-                            [clause values] (build-pk-where-clause pk-map)]
-                        (Delete db (keyword table) (into [clause] values)))
-                      nil))]
-       (boolean (seq result)))
-     (catch Exception e
-       (println "[ERROR] build-form-delete failed:" (.getMessage e))
-       (println "[ERROR] Exception details:" e)
-       false)))
+   (let [pk-fields (get-table-primary-keys table)]
+     (build-form-delete* db table id-or-pk pk-fields)))
   ([table id-or-pk & {:keys [conn]}]
-   (try
-     (let [pk-fields (get-table-primary-keys table :conn conn)
-           db* (resolve-db conn)
-           row (if (= 1 (count pk-fields))
-                 (first (Query db* (into [(str "SELECT * FROM " table " WHERE id = ?")] [(crud-fix-id id-or-pk)])))
-                 (when (map? id-or-pk)
-                   (let [[clause values] (build-pk-where-clause id-or-pk)]
-                     (first (Query db* (into [(str "SELECT * FROM " table " WHERE " clause)] values))))))
-           _ (when-let [img (:imagen row)] (safe-delete-upload! img))
-           result (if (= 1 (count pk-fields))
-                    (let [id (crud-fix-id id-or-pk)]
-                      (Delete db* (keyword table) ["id = ?" id]))
-                    (if (map? id-or-pk)
-                      (let [pk-map id-or-pk
-                            [clause values] (build-pk-where-clause pk-map)]
-                        (Delete db* (keyword table) (into [clause] values)))
-                      nil))]
-       (boolean (seq result)))
-     (catch Exception e
-       (println "[ERROR] build-form-delete failed:" (.getMessage e))
-       (println "[ERROR] Exception details:" e)
-       false))))
+   (let [pk-fields (get-table-primary-keys table :conn conn)
+         db* (resolve-db conn)]
+     (build-form-delete* db* table id-or-pk pk-fields))))
 
 ;; --- small helpers for composite keys ---
 (defn has-composite-primary-key?

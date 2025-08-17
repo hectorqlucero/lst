@@ -84,6 +84,7 @@
              ["src/{{sanitized}}/handlers/reports/users/view.clj" (render "reports-users-view.clj" data)]
 
              ;; Models
+             ["src/{{sanitized}}/models/db.clj" (render "db.clj" data)]
              ["src/{{sanitized}}/models/cdb.clj" (render "cdb.clj" data)]
              ["src/{{sanitized}}/models/crud.clj" (render "crud.clj" data)]
              ["src/{{sanitized}}/models/form.clj" (render "form.clj" data)]
@@ -91,6 +92,11 @@
              ["src/{{sanitized}}/models/routes.clj" (render "models-routes.clj" data)]
              ["src/{{sanitized}}/models/email.clj" (render "email.clj" data)]
              ["src/{{sanitized}}/models/util.clj" (render "util.clj" data)]
+
+             ;; Databases
+             ["src/{{sanitized}}/models/db/sqlite.clj" (render "sqlite.clj" data)]
+             ["src/{{sanitized}}/models/db/mysql.clj" (render "mysql.clj" data)]
+             ["src/{{sanitized}}/models/db/postgres.clj" (render "postgres.clj" data)]
 
              ;; Routes
              ["src/{{sanitized}}/routes/proutes.clj" (render "proutes.clj" data)]
@@ -105,6 +111,8 @@
 
              ;; Test
              ["test/{{sanitized}}/core_test.clj" (render "core_test.clj" data)]
+             ["test/{{sanitized}}/db_test.clj" (render "db_test.clj" data)]
+             ["test/{{sanitized}}/db_vendor_test.clj" (render "db_vendor_test.clj" data)]
 
              ;; Dev
              ["dev/{{sanitized}}/dev.clj" (render "dev.clj" data)]

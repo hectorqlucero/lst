@@ -497,9 +497,6 @@ DROP TABLE IF EXISTS parent;
 
 001-parent.sqlite.up.sql
 ```sql
--- Enable foreign keys per connection
-PRAGMA foreign_keys = ON;
-
 CREATE TABLE IF NOT EXISTS parent (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   name TEXT,
@@ -519,9 +516,6 @@ DROP TABLE IF EXISTS child;
 
 002-child.sqlite.up.sql
 ```sql
--- Enable foreign keys per connection
-PRAGMA foreign_keys = ON;
-
 CREATE TABLE IF NOT EXISTS child (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
   parent_id INTEGER,
