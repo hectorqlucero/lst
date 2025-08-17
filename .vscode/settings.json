@@ -26,5 +26,8 @@
     "java.progressReports.enabled": false,
     "java.import.maven.enabled": false,
     "java.import.gradle.enabled": false,
-    "java.jdt.ls.vmargs": "-Xms128m -Xmx1024m -XX:+UseParallelGC -XX:MaxMetaspaceSize=512m -Xlog:disable"
+    "java.jdt.ls.vmargs": "-Xms128m -Xmx768m -XX:+UseParallelGC -XX:MaxMetaspaceSize=384m -Xlog:disable",
+    "java.compile.nullAnalysis.mode": "disabled",
+    "java.completion.enabled": false,
+    "java.symbols.includeSourceMethodDeclarations": false
 }
