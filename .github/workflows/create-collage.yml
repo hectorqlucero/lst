@@ -23,8 +23,8 @@ jobs:
           sudo apt-get install -y imagemagick
 
       - name: Build collage
-  id: prep
-  run: |
+        id: prep
+        run: |
           mkdir -p docs
           frames=(
             screenshot-2.png
@@ -42,7 +42,9 @@ jobs:
             [ -f "$f" ] && use_frames+=("$f")
           done
           if [ ${#use_frames[@]} -eq 0 ]; then
-            echo "No screenshots found; nothing to do." && echo "skip=true" >> $GITHUB_OUTPUT && exit 0
+            echo "No screenshots found; nothing to do."
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
           montage "${use_frames[@]}" -geometry 600x -tile 3x -background none docs/collage.png
 
