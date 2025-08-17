@@ -231,6 +231,10 @@ Notes:
 
 ## 🆕 What’s New
 
+### v0.1.5 — 2025-08-17
+
+- Add publish workflow to Clojars (tag-triggered and manual), version bump to 0.1.4 for template artifact
+
 ### v0.1.4 — 2025-08-17
 
 - Fixed generated app’s `project.clj` namespaces (use dotted `{{name}}.core`, `{{name}}.dev`) so parsing succeeds; verified tests pass

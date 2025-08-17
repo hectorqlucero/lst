@@ -3,6 +3,10 @@ All notable changes to this project will be documented in this file. This change
 
 ## [Unreleased]
 
+## [0.1.5] - 2025-08-17
+### Added
+- GitHub Actions workflow to publish to Clojars on tag or manual dispatch
+
 ## [0.1.4] - 2025-08-17
 ### Fixed
 - Template `project.clj` now uses dotted namespaces (no stray spaces), allowing generated apps to parse and run tests
@@ -25,6 +29,7 @@ All notable changes to this project will be documented in this file. This change
 - Files from the new template.
 - Widget maker public API - `make-widget-sync`.
 
-[Unreleased]: https://github.com/hectorqlucero/lst/compare/v0.1.4...HEAD
+[Unreleased]: https://github.com/hectorqlucero/lst/compare/v0.1.5...HEAD
+[0.1.5]: https://github.com/hectorqlucero/lst/compare/v0.1.4...v0.1.5
 [0.1.4]: https://github.com/hectorqlucero/lst/compare/v0.1.3...v0.1.4
 [0.1.1]: https://github.com/your-name/ls/compare/0.1.0...0.1.1
