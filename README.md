@@ -306,7 +306,12 @@ lein clean && lein deps && lein install
 
 ```bash
 # 2. Create your new application
+# Option A: using the locally installed template (after step 1)
 lein new lst myapp
+
+# Option B: directly from Clojars (no local install needed)
+lein new org.clojars.hector/lst myapp
+
 cd myapp
 ```
 
