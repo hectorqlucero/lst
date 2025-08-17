@@ -3,9 +3,9 @@ set -euo pipefail
 
 # Local helper to build docs/demo.gif from repository screenshots using ImageMagick.
 # Usage: scripts/make-demo-gif.sh [fps]
-# Default FPS is 8. Requires `convert` (ImageMagick) installed.
+# Default FPS is 5 (slower). Requires `convert` (ImageMagick) installed.
 
-FPS=${1:-8}
+FPS=${1:-5}
 if ! command -v convert >/dev/null 2>&1; then
   echo "Error: ImageMagick 'convert' is required. Install it and retry." >&2
   exit 1
@@ -37,8 +37,8 @@ if [[ ${#use_frames[@]} -eq 0 ]]; then
 fi
 
 # Map FPS to ImageMagick delay (centiseconds per frame)
-if ! [[ "$FPS" =~ ^[0-9]+$ ]]; then FPS=8; fi
-DELAY=$(( 100 / (FPS>0?FPS:8) ))
+if ! [[ "$FPS" =~ ^[0-9]+$ ]]; then FPS=5; fi
+DELAY=$(( 100 / (FPS>0?FPS:5) ))
 
 # Build optimized GIF at a readable width
 convert \

@@ -132,7 +132,7 @@ Two ways to build `docs/demo.gif` from the repository screenshots:
   - Run the helper script:
 
 ```bash
-scripts/make-demo-gif.sh 8   # change FPS as desired
+scripts/make-demo-gif.sh 5   # default 5 fps; increase for faster playback
 ```
 
 Notes:
