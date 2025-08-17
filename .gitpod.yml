@@ -1,0 +1,18 @@
+image: gitpod/workspace-full:latest
+
+ports:
+  - port: 3000
+    onOpen: open-preview
+
+tasks:
+  - name: Setup Lein and build template
+    init: |
+      curl -fsSL https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein -o /workspace/lein
+      chmod +x /workspace/lein
+      sudo mv /workspace/lein /usr/local/bin/lein
+      lein -v
+      lein clean && lein deps && lein install
+    command: |
+      lein new lst gpapp
+      cd gpapp
+      echo "Run 'lein with-profile dev run' to start the server, then open the Port 3000 preview."

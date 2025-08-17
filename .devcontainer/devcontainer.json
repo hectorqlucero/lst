@@ -1,0 +1,20 @@
+{
+    "name": "LST Dev",
+    "image": "mcr.microsoft.com/devcontainers/base:ubuntu",
+    "features": {
+        "ghcr.io/devcontainers/features/git:1": {}
+    },
+    "postCreateCommand": "bash .devcontainer/setup.sh",
+    "forwardPorts": [
+        3000
+    ],
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "betterthantomorrow.calva",
+                "richardwillis.vscode-gradle",
+                "redhat.java"
+            ]
+        }
+    }
+}

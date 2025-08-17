@@ -15,6 +15,7 @@
   <a href="./LICENSE"><img alt="License" src="https://img.shields.io/badge/License-MIT-black.svg"></a>
   <a href="https://github.com/hectorqlucero/lst/releases"><img alt="Latest Release" src="https://img.shields.io/github/v/release/hectorqlucero/lst?display_name=tag&sort=semver"></a>
   <a href="https://github.com/hectorqlucero/lst/releases"><img alt="Release date" src="https://img.shields.io/github/release-date/hectorqlucero/lst"></a>
+  <a href="https://github.com/hectorqlucero/lst/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/hectorqlucero/lst/actions/workflows/ci.yml/badge.svg?branch=main"></a>
   <a href="https://github.com/hectorqlucero/lst/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/hectorqlucero/lst?style=social"></a>
   <a href="https://github.com/hectorqlucero/lst/issues"><img alt="Open issues" src="https://img.shields.io/github/issues/hectorqlucero/lst"></a>
   <a href="https://github.com/hectorqlucero/lst/pulls"><img alt="Open pull requests" src="https://img.shields.io/github/issues-pr/hectorqlucero/lst"></a>
@@ -38,6 +39,8 @@
   • <a href="https://github.com/hectorqlucero/lst/releases/latest">Latest release</a>
   • <a href="https://github.com/hectorqlucero/lst/releases">Changelog</a>
 </p>
+
+<p align="center"><sub>Like this? ⭐ Star and 🔱 Fork to support development.</sub></p>
 
 ---
 
@@ -65,6 +68,16 @@
 - [Releases](#releases)
 - [Changelog](#changelog)
 - [Resources](#resources)
+
+---
+
+## ⚡ Try it now
+
+- Use this template: https://github.com/new?template_name=lst&template_owner=hectorqlucero
+- Open in Gitpod: https://gitpod.io/#https://github.com/hectorqlucero/lst
+- Open in Codespaces: https://codespaces.new/hectorqlucero/lst?quickstart=1
+
+Prefer local? See Quick Start below.
 
 ---
 
