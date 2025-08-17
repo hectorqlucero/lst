@@ -1,0 +1,60 @@
+name: Create collage
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths:
+      - 'screenshot-*.png'
+      - '.github/workflows/create-collage.yml'
+
+permissions:
+  contents: write
+
+jobs:
+  build-collage:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install ImageMagick
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y imagemagick
+
+      - name: Build collage
+        run: |
+          mkdir -p docs
+          frames=(
+            screenshot-2.png
+            screenshot-5.png
+            screenshot-6.png
+            screenshot-8.png
+            screenshot-10.png
+            screenshot-12.png
+            screenshot-15.png
+            screenshot-16.png
+            screenshot-17.png
+          )
+          use_frames=()
+          for f in "${frames[@]}"; do
+            [ -f "$f" ] && use_frames+=("$f")
+          done
+          if [ ${#use_frames[@]} -eq 0 ]; then
+            echo "No screenshots found." && exit 0
+          fi
+          montage "${use_frames[@]}" -geometry 600x -tile 3x -background none docs/collage.png
+
+      - name: Commit collage
+        if: success() && hashFiles('docs/collage.png') != ''
+        run: |
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add docs/collage.png
+          if git diff --cached --quiet; then
+            echo "No changes to commit."
+            exit 0
+          fi
+          git commit -m "chore(docs): add/update collage.png (auto-generated)"
+          git push

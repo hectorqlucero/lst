@@ -9,6 +9,13 @@
 </p>
 
 <p align="center">
+  <img src="./docs/collage.png" alt="LST UI collage" width="85%" />
+  <br/>
+  <sub>A quick glimpse of the generated UI (login, dashboards, grids, subgrids).</sub>
+  <br/>
+</p>
+
+<p align="center">
   <a href="https://clojure.org/"><img alt="Clojure" src="https://img.shields.io/badge/Clojure-1.10+-blue.svg"></a>
   <a href="https://openjdk.org/"><img alt="Java" src="https://img.shields.io/badge/Java-17+-orange.svg"></a>
   <a href="https://leiningen.org/"><img alt="Leiningen" src="https://img.shields.io/badge/Leiningen-2.9.0+-green.svg"></a>
