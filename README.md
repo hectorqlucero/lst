@@ -107,9 +107,38 @@ Below are example screenshots of LST-generated interfaces. These images demonstr
 
 ## 🎬 Demo
 
-- Live demo: coming soon
-- Quick tour: see the screenshots above or the theme previews in the [Themes](#themes) section
-- Optional: add a GIF of a quick theme switch or CRUD flow here (e.g., `docs/demo.gif`)
+Below is an auto-generated GIF that gives a quick tour of the login, dashboard, grids, subgrids, and image fields.
+
+<p align="center">
+  <img src="./docs/demo.gif" alt="LST demo walkthrough" width="100%" />
+  <br/>
+  <sub>If the GIF is missing, run the workflow below or the local script to create it.</sub>
+  <br/>
+  <sub>Tip: Click the image to view it full size.</sub>
+  <br/>
+</p>
+
+### Generate or update the demo GIF
+
+Two ways to build `docs/demo.gif` from the repository screenshots:
+
+1) GitHub Actions (recommended)
+  - Go to Actions → "Create demo GIF" → Run workflow.
+  - Optionally set fps (default 8).
+  - The job commits `docs/demo.gif` back to `main`.
+
+2) Locally with ImageMagick
+  - Ensure ImageMagick is installed (the `convert` tool).
+  - Run the helper script:
+
+```bash
+scripts/make-demo-gif.sh 8   # change FPS as desired
+```
+
+Notes:
+- The script and workflow curate a subset of `screenshot-*.png` files in a clear narrative order.
+- If you add or rename screenshots, regenerate the GIF to update the walkthrough.
+- For a smaller file, lower the output width or FPS in the script/workflow.
 
 ---
 
