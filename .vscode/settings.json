@@ -29,5 +29,16 @@
     "java.jdt.ls.vmargs": "-Xms128m -Xmx768m -XX:+UseParallelGC -XX:MaxMetaspaceSize=384m -Xlog:disable",
     "java.compile.nullAnalysis.mode": "disabled",
     "java.completion.enabled": false,
-    "java.symbols.includeSourceMethodDeclarations": false
+    "java.symbols.includeSourceMethodDeclarations": false,
+    // Prevent formatters from breaking Leiningen template files
+    "files.associations": {
+        "**/resources/leiningen/new/**/*.clj": "plaintext"
+    },
+    "[plaintext]": {
+        "editor.formatOnSave": false
+    },
+    // Also guard Calva formatter just in case
+    "calva.fmt.formatOnSave": false,
+    // Disable format on save for the template project.clj explicitly
+    "editor.formatOnSave": false
 }

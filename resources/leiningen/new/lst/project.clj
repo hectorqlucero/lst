@@ -1,3 +1,4 @@
+;; Template for generated project's project.clj
 (defproject {{name}} "0.1.0"
   :description "{{name}}" ; Change me
   :url "http://example.com/FIXME" ; Change me - optional
@@ -34,16 +35,16 @@
                  [ring/ring-defaults "0.6.0"]
                  [ring/ring-devel "1.14.2"]
                  [ring/ring-codec "1.3.0"]]
-  :main ^:skip-aot {{name}} .core
-  :aot [{{name}} .core]
+       :main ^:skip-aot {{name}}.core
+       :aot [{{name}}.core]
   :plugins [[lein-ancient "0.7.0"]
             [lein-pprint "1.3.2"]]
   :uberjar-name "{{name}}.jar"
   :target-path "target/%s"
-  :ring {:handler {{name}} .core
+       :ring {:handler {{name}}.core
          :auto-reload? true
          :auto-refresh? false}
-  :resources-paths ["shared" "resources"]
+  :resource-paths ["shared" "resources"]
   :aliases {"migrate"  ["run" "-m" "{{name}}.migrations/migrate" "--"]
             "rollback" ["run" "-m" "{{name}}.migrations/rollback" "--"]
             ;; Forward any extra args to the seeder fn, e.g.:
@@ -58,5 +59,5 @@
             "subgrid"  ["run" "-m" "{{name}}.builder/build-subgrid"]}
   :profiles {:uberjar {:aot :all
                        :jvm-opts ["-Dclojure.compiler.direct-linking=true"]}
-             :dev {:source-paths ["src" "dev"]
-                   :main {{name}} .dev}})
+               :dev {:source-paths ["src" "dev"]
+                      :main {{name}}.dev}})
