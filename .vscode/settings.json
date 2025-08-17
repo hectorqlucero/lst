@@ -7,10 +7,16 @@
     },
     "files.watcherExclude": {
         "**/target/**": true,
-        "**/.git/**": true
+        "**/.git/**": true,
+        "**/node_modules/**": true,
+        "**/.calva/**": true,
+        "**/.lsp/**": true
     },
     "search.exclude": {
-        "**/target/**": true
+        "**/target/**": true,
+        "**/docs/**": true,
+        "**/*.png": true,
+        "**/*.gif": true
     },
     // Keep extensions quieter
     "redhat.telemetry.enabled": false,

@@ -1,0 +1,10 @@
+{
+    "recommendations": [
+        "betterthantomorrow.calva",
+        "borkdude.clj-kondo",
+        "editorconfig.editorconfig"
+    ],
+    "unwantedRecommendations": [
+        "redhat.java"
+    ]
+}
