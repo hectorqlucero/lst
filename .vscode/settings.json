@@ -1,3 +1,24 @@
 {
-    "java.configuration.updateBuildConfiguration": "automatic"
+    "java.configuration.updateBuildConfiguration": "automatic",
+    // Reduce VS Code load for this repo
+    "files.exclude": {
+        "target": true,
+        "**/.git": true
+    },
+    "files.watcherExclude": {
+        "**/target/**": true,
+        "**/.git/**": true
+    },
+    "search.exclude": {
+        "**/target/**": true
+    },
+    // Keep extensions quieter
+    "redhat.telemetry.enabled": false,
+    // Java extension: lower overhead
+    "java.referencesCodeLens.enabled": false,
+    "java.implementationsCodeLens.enabled": false,
+    "java.progressReports.enabled": false,
+    "java.import.maven.enabled": false,
+    "java.import.gradle.enabled": false,
+    "java.jdt.ls.vmargs": "-Xms128m -Xmx1024m -XX:+UseParallelGC -XX:MaxMetaspaceSize=512m -Xlog:disable"
 }
