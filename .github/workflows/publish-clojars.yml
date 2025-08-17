@@ -1,0 +1,34 @@
+name: Publish to Clojars
+
+on:
+  workflow_dispatch:
+  push:
+    tags:
+      - 'v*'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    if: ${{ github.ref_type == 'tag' }}
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Install Leiningen
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein -o ~/lein
+          chmod +x ~/lein
+          sudo mv ~/lein /usr/local/bin/lein
+          lein -v
+      - name: Deploy to Clojars
+        env:
+          CLOJARS_USERNAME: ${{ secrets.CLOJARS_USERNAME }}
+          CLOJARS_PASSWORD: ${{ secrets.CLOJARS_PASSWORD }}
+        run: |
+          if [ -z "$CLOJARS_USERNAME" ] || [ -z "$CLOJARS_PASSWORD" ]; then
+            echo "Clojars credentials not configured; skipping deploy." && exit 0
+          fi
+          lein deploy clojars
