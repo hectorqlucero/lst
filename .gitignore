@@ -9,3 +9,6 @@ pom.xml.asc
 /.nrepl-port
 .hgignore
 .hg/
+
+# Generated sample app used for CI/demo
+/ciapp/
