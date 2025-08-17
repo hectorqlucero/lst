@@ -17,6 +17,7 @@
 - [Core Concepts](#core-concepts)
 - [Generator Commands](#generator-commands)
 - [Database Support](#database-support)
+ - [Testing](#testing)
 - [Access Control](#access-control)
 - [Integrating Subgrids](#integrating-subgrids)
 - [Troubleshooting](#troubleshooting)
@@ -529,6 +530,71 @@ CREATE TABLE IF NOT EXISTS child (
   FOREIGN KEY (parent_id) REFERENCES parent(id)
 );
 ```
+
+---
+
+## 🧪 Testing
+
+LST includes a focused test suite to validate routing helpers and database vendor abstractions. Tests are generated with every new app and run with the standard Leiningen workflow.
+
+### What’s covered
+
+- `core_test.clj` (namespace: `myapp.core-test`)
+  - Verifies Compojure resource/file route helpers return valid Ring handlers.
+- `db_test.clj` (namespace: `myapp.db-test`)
+  - Time projection formatting per vendor (MySQL/PostgreSQL/SQLite).
+  - Query options by vendor (entity quoting, etc.).
+  - SQLite table description mapping to a common describe format.
+  - Primary key detection across vendors.
+  - Cascading deletion of child images (SQLite path), using query stubs.
+- `db_vendor_test.clj` (namespace: `myapp.db-vendor-test`)
+  - Vendor-specific describe-table execution semantics (MySQL/PostgreSQL).
+  - `last-insert-id` behavior (MySQL/SQLite implemented, PostgreSQL returns `nil`).
+  - Cascading deletion of child images for MySQL and PostgreSQL paths.
+
+All tests use in-memory stubs and do not require a live database connection.
+
+### Run tests (generated app)
+
+From your generated app directory (e.g., `myapp/`):
+
+```bash
+# Run all tests
+lein test
+
+# Run a specific namespace
+lein test myapp.core-test
+lein test myapp.db-test
+lein test myapp.db-vendor-test
+
+# Run a single test var
+lein test :only myapp.db-test/time-projection-test
+lein test :only myapp.db-vendor-test/last-insert-id-tests
+```
+
+Notes:
+- Replace `myapp` with your application’s actual namespace root.
+- These tests mock JDBC calls and vendor queries, so they don’t rely on your `resources/private/config.clj` settings.
+
+### Run tests (template contributors)
+
+Because this repository is a Leiningen template, the test sources live under the template path and are materialized into a generated project. To exercise them:
+
+```bash
+# 1) Install the template locally
+lein clean && lein deps && lein install
+
+# 2) Generate a fresh app from the template
+lein new lst myapp
+cd myapp
+
+# 3) Run the test suite
+lein test
+```
+
+Optional tips:
+- Run with profiles explicitly if needed: `lein with-profile test test`.
+- For more verbose output, re-run failing namespaces individually as shown above.
 
 ---
 
