@@ -4,11 +4,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Contactos App</title>
+    <title>Contactos Home</title>
     <!-- Bootswatch theme (default: Flatly) -->
-    <link id="bootswatch-theme" rel="stylesheet" href="https://bootswatch.com/5/flatly/bootstrap.min.css">
-    <!-- App CSS -->
-    <link rel="stylesheet" href="app.css">
+    <link id="bootswatch-theme" rel="stylesheet" href="vendor/bootswatch-flatly.min.css">
+    <link rel="stylesheet" href="vendor/app.css">
 </head>
 
 <body>
@@ -49,16 +48,23 @@
     </nav>
     <div class="container">
         <h1 class="mb-4">Welcome to Contactos</h1>
-        <p>This is your main app page. The Bootswatch theme can be changed using the dropdown above.</p>
+        <p>This is your home page. Use the theme selector in the navbar to change the look instantly.</p>
         <button class="btn btn-primary">A Bootstrap Button</button>
     </div>
-    <script src="jquery-3.7.1.min.js"></script>
-    <script src="app.js"></script>
+    <script src="vendor/jquery-3.7.1.min.js"></script>
     <script>
+        const themeMap = {
+            flatly: 'vendor/bootswatch-flatly.min.css',
+            superhero: 'vendor/bootswatch-superhero.min.css',
+            yeti: 'vendor/bootswatch-yeti.min.css',
+            // fallback to CDN for others
+        };
         $(function () {
             $('#theme-select').on('change', function () {
                 var theme = this.value;
-                $('#bootswatch-theme').attr('href', `https://bootswatch.com/5/${theme}/bootstrap.min.css`);
+                var local = themeMap[theme];
+                var href = local ? local : `https://bootswatch.com/5/${theme}/bootstrap.min.css`;
+                $('#bootswatch-theme').attr('href', href);
             });
         });
     </script>

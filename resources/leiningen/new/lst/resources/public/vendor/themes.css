@@ -1,0 +1,378 @@
+/* Bootstrap 5 Themes: Professional, Pleasing, and Modern */
+
+/* 1. Default (Bootstrap) - No override */
+
+/* 2. Cerulean (Blue, Clean) */
+.theme-cerulean {
+    --bs-primary: #2FA4E7;
+    --bs-primary-rgb: 47, 164, 231;
+    --bs-secondary: #E9ECEF;
+    --bs-secondary-rgb: 233, 236, 239;
+    --bs-success: #73A839;
+    --bs-success-rgb: 115, 168, 57;
+    --bs-info: #033C73;
+    --bs-info-rgb: 3, 60, 115;
+    --bs-warning: #DD5600;
+    --bs-warning-rgb: 221, 86, 0;
+    --bs-danger: #C71C22;
+    --bs-danger-rgb: 199, 28, 34;
+    --bs-light: #F4F8FB;
+    --bs-light-rgb: 244, 248, 251;
+    --bs-dark: #222222;
+    --bs-dark-rgb: 34, 34, 34;
+    --bs-body-bg: var(--bs-light);
+    --bs-body-color: #212529;
+}
+
+/* 3. Slate (Dark, Professional) */
+.theme-slate {
+    --bs-primary: #3A3F44;
+    --bs-primary-rgb: 58, 63, 68;
+    --bs-secondary: #6C757D;
+    --bs-secondary-rgb: 108, 117, 125;
+    --bs-success: #28A745;
+    --bs-success-rgb: 40, 167, 69;
+    --bs-info: #17A2B8;
+    --bs-info-rgb: 23, 162, 184;
+    --bs-warning: #FFC107;
+    --bs-warning-rgb: 255, 193, 7;
+    --bs-danger: #DC3545;
+    --bs-danger-rgb: 220, 53, 69;
+    --bs-light: #F8F9FA;
+    --bs-light-rgb: 248, 249, 250;
+    --bs-dark: #212529;
+    --bs-dark-rgb: 33, 37, 41;
+    --bs-body-bg: #212529;
+    --bs-body-color: #f8f9fa;
+}
+
+/* 4. Minty (Fresh, Green) */
+.theme-minty {
+    --bs-primary: #78C2AD;
+    --bs-primary-rgb: 120, 194, 173;
+    --bs-secondary: #F3969A;
+    --bs-secondary-rgb: 243, 150, 154;
+    --bs-success: #63CC82;
+    --bs-success-rgb: 99, 204, 130;
+    --bs-info: #56C2D6;
+    --bs-info-rgb: 86, 194, 214;
+    --bs-warning: #FFCE67;
+    --bs-warning-rgb: 255, 206, 103;
+    --bs-danger: #FF7851;
+    --bs-danger-rgb: 255, 120, 81;
+    --bs-light: #F4F8FB;
+    --bs-light-rgb: 244, 248, 251;
+    --bs-dark: #222222;
+    --bs-dark-rgb: 34, 34, 34;
+    --bs-body-bg: var(--bs-light);
+    --bs-body-color: #212529;
+}
+
+/* 5. Lux (Minimal, Elegant) */
+.theme-lux {
+    --bs-primary: #1A1A1A;
+    --bs-primary-rgb: 26, 26, 26;
+    --bs-secondary: #868E96;
+    --bs-secondary-rgb: 134, 142, 150;
+    --bs-success: #28A745;
+    --bs-success-rgb: 40, 167, 69;
+    --bs-info: #17A2B8;
+    --bs-info-rgb: 23, 162, 184;
+    --bs-warning: #FFC107;
+    --bs-warning-rgb: 255, 193, 7;
+    --bs-danger: #DC3545;
+    --bs-danger-rgb: 220, 53, 69;
+    --bs-light: #F8F9FA;
+    --bs-light-rgb: 248, 249, 250;
+    --bs-dark: #343A40;
+    --bs-dark-rgb: 52, 58, 64;
+    --bs-body-bg: var(--bs-light);
+    --bs-body-color: #212529;
+}
+
+/* 6. Cyborg (Dark, Futuristic) */
+.theme-cyborg {
+    --bs-primary: #2A9FD6;
+    --bs-primary-rgb: 42, 159, 214;
+    --bs-secondary: #222222;
+    --bs-secondary-rgb: 34, 34, 34;
+    --bs-success: #77B300;
+    --bs-success-rgb: 119, 179, 0;
+    --bs-info: #9933CC;
+    --bs-info-rgb: 153, 51, 204;
+    --bs-warning: #FF8800;
+    --bs-warning-rgb: 255, 136, 0;
+    --bs-danger: #CC0000;
+    --bs-danger-rgb: 204, 0, 0;
+    --bs-light: #222222;
+    --bs-light-rgb: 34, 34, 34;
+    --bs-dark: #111111;
+    --bs-dark-rgb: 17, 17, 17;
+    --bs-body-bg: #222222;
+    --bs-body-color: #eeeeee;
+}
+
+/* 7. Sandstone (Warm, Earthy) */
+.theme-sandstone {
+    --bs-primary: #93C54B;
+    --bs-primary-rgb: 147, 197, 75;
+    --bs-secondary: #F7F7F9;
+    --bs-secondary-rgb: 247, 247, 249;
+    --bs-success: #29B573;
+    --bs-success-rgb: 41, 181, 115;
+    --bs-info: #62C2E4;
+    --bs-info-rgb: 98, 194, 228;
+    --bs-warning: #F47C3C;
+    --bs-warning-rgb: 244, 124, 60;
+    --bs-danger: #D9534F;
+    --bs-danger-rgb: 217, 83, 79;
+    --bs-light: #F7F7F9;
+    --bs-light-rgb: 247, 247, 249;
+    --bs-dark: #222222;
+    --bs-dark-rgb: 34, 34, 34;
+    --bs-body-bg: var(--bs-light);
+    --bs-body-color: #212529;
+}
+
+/* 8. Superhero (Dark, Vibrant) */
+.theme-superhero {
+    --bs-primary: #DF691A;
+    --bs-primary-rgb: 223, 105, 26;
+    --bs-secondary: #222222;
+    --bs-secondary-rgb: 34, 34, 34;
+    --bs-success: #5CB85C;
+    --bs-success-rgb: 92, 184, 92;
+    --bs-info: #5BC0DE;
+    --bs-info-rgb: 91, 192, 222;
+    --bs-warning: #F0AD4E;
+    --bs-warning-rgb: 240, 173, 78;
+    --bs-danger: #D9534F;
+    --bs-danger-rgb: 217, 83, 79;
+    --bs-light: #222222;
+    --bs-light-rgb: 34, 34, 34;
+    --bs-dark: #111111;
+    --bs-dark-rgb: 17, 17, 17;
+    --bs-body-bg: #222222;
+    --bs-body-color: #ffffff;
+}
+
+/* 9. Flatly (Modern, Flat) */
+.theme-flatly {
+    --bs-primary: #2C3E50;
+    --bs-primary-rgb: 44, 62, 80;
+    --bs-secondary: #18BC9C;
+    --bs-secondary-rgb: 24, 188, 156;
+    --bs-success: #27AE60;
+    --bs-success-rgb: 39, 174, 96;
+    --bs-info: #3498DB;
+    --bs-info-rgb: 52, 152, 219;
+    --bs-warning: #F39C12;
+    --bs-warning-rgb: 243, 156, 18;
+    --bs-danger: #E74C3C;
+    --bs-danger-rgb: 231, 76, 60;
+    --bs-light: #ECF0F1;
+    --bs-light-rgb: 236, 240, 241;
+    --bs-dark: #2C3E50;
+    --bs-dark-rgb: 44, 62, 80;
+    --bs-body-bg: var(--bs-light);
+    --bs-body-color: #212529;
+}
+
+/* 10. Yeti (Cool, Blue) */
+.theme-yeti {
+    --bs-primary: #008CBA;
+    --bs-primary-rgb: 0, 140, 186;
+    --bs-secondary: #E7E9ED;
+    --bs-secondary-rgb: 231, 233, 237;
+    --bs-success: #43AC6A;
+    --bs-success-rgb: 67, 172, 106;
+    --bs-info: #5BC0EB;
+    --bs-info-rgb: 91, 192, 235;
+    --bs-warning: #F0AD4E;
+    --bs-warning-rgb: 240, 173, 78;
+    --bs-danger: #D9534F;
+    --bs-danger-rgb: 217, 83, 79;
+    --bs-light: #E7E9ED;
+    --bs-light-rgb: 231, 233, 237;
+    --bs-dark: #222222;
+    --bs-dark-rgb: 34, 34, 34;
+    --bs-body-bg: var(--bs-light);
+    --bs-body-color: #212529;
+}
+
+/* Add new theme names to config.clj :theme for selection. */
+
+/* -------------------------------------------------------
+     Dark theme DataTables readability tweaks
+     Improves contrast for dashboards, subgrids, and reports
+     ------------------------------------------------------- */
+.theme-slate .dataTables_wrapper .dataTables_length select,
+.theme-slate .dataTables_wrapper .dataTables_filter input,
+.theme-cyborg .dataTables_wrapper .dataTables_length select,
+.theme-cyborg .dataTables_wrapper .dataTables_filter input,
+.theme-superhero .dataTables_wrapper .dataTables_length select,
+.theme-superhero .dataTables_wrapper .dataTables_filter input {
+    background-color: #2b2f34;
+    color: #e9ecef;
+    border-color: #495057;
+}
+
+.theme-slate table.dataTable,
+.theme-cyborg table.dataTable,
+.theme-superhero table.dataTable {
+    color: #e9ecef;
+    background-color: #2b2f34;
+}
+
+.theme-slate table.dataTable thead th,
+.theme-cyborg table.dataTable thead th,
+.theme-superhero table.dataTable thead th {
+    background-color: #2f353a;
+    color: #f1f3f5;
+    border-color: #495057;
+}
+
+.theme-slate table.dataTable tbody td,
+.theme-cyborg table.dataTable tbody td,
+.theme-superhero table.dataTable tbody td {
+    border-color: #3a3f44;
+}
+
+.theme-slate table.dataTable tbody tr:nth-child(odd),
+.theme-cyborg table.dataTable tbody tr:nth-child(odd),
+.theme-superhero table.dataTable tbody tr:nth-child(odd) {
+    background-color: #2b2f34;
+}
+
+.theme-slate table.dataTable tbody tr:nth-child(even),
+.theme-cyborg table.dataTable tbody tr:nth-child(even),
+.theme-superhero table.dataTable tbody tr:nth-child(even) {
+    background-color: #24282d;
+}
+
+.theme-slate table.dataTable tbody tr:hover,
+.theme-cyborg table.dataTable tbody tr:hover,
+.theme-superhero table.dataTable tbody tr:hover {
+    background-color: #364049;
+}
+
+.theme-slate .dataTables_wrapper .dataTables_info,
+.theme-slate .dataTables_wrapper .dataTables_paginate,
+.theme-slate .dataTables_wrapper .dataTables_length,
+.theme-slate .dataTables_wrapper .dataTables_filter,
+.theme-cyborg .dataTables_wrapper .dataTables_info,
+.theme-cyborg .dataTables_wrapper .dataTables_paginate,
+.theme-cyborg .dataTables_wrapper .dataTables_length,
+.theme-cyborg .dataTables_wrapper .dataTables_filter,
+.theme-superhero .dataTables_wrapper .dataTables_info,
+.theme-superhero .dataTables_wrapper .dataTables_paginate,
+.theme-superhero .dataTables_wrapper .dataTables_length,
+.theme-superhero .dataTables_wrapper .dataTables_filter {
+    color: #dee2e6 !important;
+}
+
+.theme-slate .dataTables_wrapper .dataTables_paginate .paginate_button,
+.theme-cyborg .dataTables_wrapper .dataTables_paginate .paginate_button,
+.theme-superhero .dataTables_wrapper .dataTables_paginate .paginate_button {
+    color: #f1f3f5 !important;
+    border-color: rgba(255, 255, 255, 0.15);
+}
+
+.theme-slate .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+.theme-slate .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover,
+.theme-cyborg .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+.theme-cyborg .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover,
+.theme-superhero .dataTables_wrapper .dataTables_paginate .paginate_button.current,
+.theme-superhero .dataTables_wrapper .dataTables_paginate .paginate_button.current:hover {
+    background: var(--bs-primary) !important;
+    color: #fff !important;
+    border-color: var(--bs-primary) !important;
+}
+
+.theme-slate .dataTables_wrapper .dataTables_paginate .paginate_button:hover,
+.theme-cyborg .dataTables_wrapper .dataTables_paginate .paginate_button:hover,
+.theme-superhero .dataTables_wrapper .dataTables_paginate .paginate_button:hover {
+    background: rgba(var(--bs-primary-rgb), 0.15) !important;
+    color: #fff !important;
+    border-color: var(--bs-primary) !important;
+}
+
+.theme-slate .dt-buttons .btn,
+.theme-cyborg .dt-buttons .btn,
+.theme-superhero .dt-buttons .btn {
+    background-color: var(--bs-primary);
+    border-color: var(--bs-primary);
+    color: #fff;
+}
+
+.theme-slate .dt-buttons .btn:hover,
+.theme-cyborg .dt-buttons .btn:hover,
+.theme-superhero .dt-buttons .btn:hover {
+    filter: brightness(1.1);
+}
+
+/* Stronger, variable-driven table overrides for dark themes */
+.theme-slate table.table,
+.theme-slate table.dataTable {
+    --bs-table-bg: #2b2f34;
+    --bs-table-color: #e9ecef;
+    --bs-table-striped-bg: #24282d;
+    --bs-table-striped-color: #e9ecef;
+    --bs-table-hover-bg: #364049;
+    --bs-table-hover-color: #f8f9fa;
+    --bs-table-border-color: #3a3f44;
+    background-color: var(--bs-table-bg) !important;
+    color: var(--bs-table-color) !important;
+    border-color: var(--bs-table-border-color) !important;
+}
+
+.theme-cyborg table.table,
+.theme-cyborg table.dataTable {
+    --bs-table-bg: #2b2f34;
+    --bs-table-color: #e9ecef;
+    --bs-table-striped-bg: #24282d;
+    --bs-table-striped-color: #e9ecef;
+    --bs-table-hover-bg: #364049;
+    --bs-table-hover-color: #f8f9fa;
+    --bs-table-border-color: #3a3f44;
+    background-color: var(--bs-table-bg) !important;
+    color: var(--bs-table-color) !important;
+    border-color: var(--bs-table-border-color) !important;
+}
+
+.theme-superhero table.table,
+.theme-superhero table.dataTable {
+    --bs-table-bg: #2b2f34;
+    --bs-table-color: #e9ecef;
+    --bs-table-striped-bg: #24282d;
+    --bs-table-striped-color: #e9ecef;
+    --bs-table-hover-bg: #364049;
+    --bs-table-hover-color: #f8f9fa;
+    --bs-table-border-color: #3a3f44;
+    background-color: var(--bs-table-bg) !important;
+    color: var(--bs-table-color) !important;
+    border-color: var(--bs-table-border-color) !important;
+}
+
+.theme-slate .table-striped>tbody>tr:nth-of-type(odd),
+.theme-cyborg .table-striped>tbody>tr:nth-of-type(odd),
+.theme-superhero .table-striped>tbody>tr:nth-of-type(odd) {
+    background-color: #24282d !important;
+    color: #e9ecef !important;
+}
+
+.theme-slate .table-hover>tbody>tr:hover,
+.theme-cyborg .table-hover>tbody>tr:hover,
+.theme-superhero .table-hover>tbody>tr:hover {
+    background-color: #364049 !important;
+    color: #f8f9fa !important;
+}
+
+.theme-slate table.dataTable tbody td,
+.theme-cyborg table.dataTable tbody td,
+.theme-superhero table.dataTable tbody td,
+.theme-slate table.dataTable thead th,
+.theme-cyborg table.dataTable thead th,
+.theme-superhero table.dataTable thead th {
+    border-color: #3a3f44 !important;
+}

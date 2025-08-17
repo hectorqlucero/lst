@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bootswatch Theme Switcher Example</title>
+    <!-- Default theme: Flatly -->
+    <link id="bootswatch-theme" rel="stylesheet" href="https://bootswatch.com/5/flatly/bootstrap.min.css">
+</head>
+
+<body>
+    <div class="container py-5">
+        <h1 class="mb-4">Bootswatch Theme Switcher</h1>
+        <label for="theme-select" class="form-label">Choose a theme:</label>
+        <select id="theme-select" class="form-select" style="max-width: 300px;">
+            <option value="flatly">Flatly</option>
+            <option value="cerulean">Cerulean</option>
+            <option value="cosmo">Cosmo</option>
+            <option value="cyborg">Cyborg</option>
+            <option value="darkly">Darkly</option>
+            <option value="journal">Journal</option>
+            <option value="litera">Litera</option>
+            <option value="lumen">Lumen</option>
+            <option value="lux">Lux</option>
+            <option value="materia">Materia</option>
+            <option value="minty">Minty</option>
+            <option value="morph">Morph</option>
+            <option value="pulse">Pulse</option>
+            <option value="quartz">Quartz</option>
+            <option value="sandstone">Sandstone</option>
+            <option value="simplex">Simplex</option>
+            <option value="sketchy">Sketchy</option>
+            <option value="slate">Slate</option>
+            <option value="solar">Solar</option>
+            <option value="spacelab">Spacelab</option>
+            <option value="superhero">Superhero</option>
+            <option value="united">United</option>
+            <option value="vapor">Vapor</option>
+            <option value="yeti">Yeti</option>
+            <option value="zephyr">Zephyr</option>
+        </select>
+        <div class="mt-4">
+            <p>This is a demo page. Select a theme from the dropdown above to see it applied instantly!</p>
+            <button class="btn btn-primary">A Bootstrap Button</button>
+        </div>
+    </div>
+    <script>
+        document.getElementById('theme-select').addEventListener('change', function () {
+            var theme = this.value;
+            document.getElementById('bootswatch-theme').href = `https://bootswatch.com/5/${theme}/bootstrap.min.css`;
+        });
+    </script>
+</body>
+
+</html>

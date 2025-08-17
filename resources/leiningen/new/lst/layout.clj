@@ -89,6 +89,38 @@
     [:i.bi.bi-box-arrow-right.me-1]
     (str "Logout " (user-name request))]])
 
+;; THEME SWITCHER
+(def theme-options
+  [["default" "Default"]
+   ["cerulean" "Cerulean"]
+   ["slate" "Slate"]
+   ["minty" "Minty"]
+   ["lux" "Lux"]
+   ["cyborg" "Cyborg"]
+   ["sandstone" "Sandstone"]
+   ["superhero" "Superhero"]
+   ["flatly" "Flatly"]
+   ["yeti" "Yeti"]])
+
+(defn theme-switcher []
+  [:li.nav-item.dropdown.ms-2
+   [:a.nav-link.dropdown-toggle.fw-semibold.px-3.py-2.rounded.transition
+    {:href "#"
+     :id "themeSwitcher"
+     :data-id "theme"
+     :role "button"
+     :data-bs-toggle "dropdown"
+     :aria-expanded "false"}
+    [:i.bi.bi-palette-fill.me-1]
+    [:span#currentThemeLabel "Theme"]]
+   [:ul.dropdown-menu.dropdown-menu-end.shadow-lg.border-0.rounded.mt-2
+    {:aria-labelledby "themeSwitcher"}
+    (for [[value label] theme-options]
+      [:li
+       [:a.dropdown-item.theme-option
+        {:href "#" :data-theme value}
+        label]])]])
+
 ;; MENU FUNCTIONS
 (defn menus-private [request]
   (let [{:keys [nav-links dropdowns]} menu-config]
@@ -108,10 +140,11 @@
         (create-nav-links request nav-links)
         (create-dropdown request (:reports dropdowns))
         (create-dropdown request (:admin dropdowns))
+        (theme-switcher)
         (logout-button request)]]]]))
 
 (defn menus-public []
-  [:nav.navbar.navbar-expand-lg.navbar-light.bg-white.shadow.fixed-top
+  [:nav.navbar.navbar-expand-lg.navbar-dark.bg-primary.shadow.fixed-top
    [:div.container-fluid
     (brand-logo)
     [:button.navbar-toggler
@@ -125,6 +158,7 @@
     [:div#mainNavbar.collapse.navbar-collapse
      [:ul.navbar-nav.ms-auto.align-items-lg-center.gap-2
       (build-link {} "/" "Home")
+      (theme-switcher)
       [:li.nav-item.ms-3
        [:a.btn.btn-outline-primary.btn-sm.px-3.rounded-pill.fw-semibold
         {:href "/home/login"}
@@ -137,14 +171,16 @@
     (brand-logo)]])
 
 ;; ASSETS (CDN)
+;; Add themes.css to the CSS includes
 (defn app-css []
   (list
    [:link {:rel "stylesheet" :href "/vendor/bootstrap.min.css"}]
-   [:link {:rel "stylesheet" :href "/vendor/dataTables.bootstrap5.min.css"}]
+   [:link {:rel "stylesheet" :id "dt-theme-css" :href "/vendor/dataTables.bootstrap5.min.css"}]
    [:link {:rel "stylesheet" :href "/vendor/buttons.bootstrap5.min.css"}]
    [:link {:rel "stylesheet" :href "/vendor/jquery.dataTables.min.css"}]
    [:link {:rel "stylesheet" :href "/vendor/buttons.dataTables.min.css"}]
    [:link {:rel "stylesheet" :href "/vendor/bootstrap-icons.css"}]
+   [:link {:rel "stylesheet" :href "/vendor/themes.css"}]
    [:link {:rel "stylesheet" :href "/vendor/app.css"}])) ; <-- your custom CSS
 
 (defn app-js []
@@ -163,6 +199,8 @@
    [:script {:src "/vendor/app.js"}])) ; <-- your custom JS
 
 ;; LAYOUT FUNCTIONS
+
+;; Add theme class to <body> using (:theme config)
 (defn application [request title ok js & content]
   (html5 {:ng-app (:site-name config) :lang "en"}
          [:head
@@ -171,10 +209,10 @@
           [:meta {:name "viewport" :content "width=device-width, initial-scale=1"}]
           (app-css)
           [:link {:rel "shortcut icon" :type "image/x-icon" :href "data:image/x-icon;,"}]]
-         [:body
+         [:body {:class (str "theme-" (or (:theme config) "default"))}
           [:div {:style "height: 70px;"}]
           [:div.container-fluid.pt-3
-           {:style "min-height: 100vh; background: #f8fafc;"}
+           {:style "min-height: 100vh;"}
            (cond
              (= ok -1) (menus-none)
              (= ok 0) (menus-public)

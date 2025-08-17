@@ -1,4 +1,4 @@
-;; contactos/resources/private/config.clj
+;; {{name}}/resources/private/config.clj
 ;;
 ;; Clean, intuitive configuration for single or multiple databases.
 ;;
@@ -28,8 +28,8 @@
              :db-pwd    "your_password"}
 
   ;; --- Default connection used by the app ---
-  :main :postgres ; Used for migrations
-  :default :postgres ; Used for generators (lein grid, lein dashboard, etc.)
+  :main :sqlite ; Used for migrations
+  :default :sqlite ; Used for generators (lein grid, lein dashboard, etc.)
   :db :mysql
   :pg :postgres
   :localdb :sqlite}
@@ -45,6 +45,8 @@
  :path         "/uploads/"                 ;; Uploads path (for web)
  :max-upload-mb 5                            ;; Optional: max image upload size in MB
  :allowed-image-exts ["jpg" "jpeg" "png" "gif" "bmp" "webp"] ;; Optional: allowed image extensions
+ ;; --- Theme selection ---
+ :theme "cerulean" ;; Options: "default" (Bootstrap), "cerulean", "slate", "minty", "lux", "cyborg", "sandstone", "superhero", "flatly", "yeti"
  ;; Optional email config
  :email-host   "smtp.example.com"
  :email-user   "user@example.com"

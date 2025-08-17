@@ -14,10 +14,11 @@
 - [Features](#features)
 - [Quick Start](#quick-start)
 - [Configuration](#configuration)
+- [Themes](#themes)
 - [Core Concepts](#core-concepts)
 - [Generator Commands](#generator-commands)
 - [Database Support](#database-support)
- - [Testing](#testing)
+- [Testing](#testing)
 - [Access Control](#access-control)
 - [Integrating Subgrids](#integrating-subgrids)
 - [Troubleshooting](#troubleshooting)
@@ -214,6 +215,54 @@ After running `lein database`, these test users are available:
 | system@example.com | system | System | Full system access |
 
 ---
+
+## 🎨 Themes
+
+LST includes multiple Bootstrap 5 themes and a built‑in theme switcher in the navbar. Set a default theme in `config.clj`, then change it anytime from the dropdown.
+
+### Set the default theme
+
+Edit `resources/private/config.clj` in your generated app and set `:theme` to one of the supported values:
+
+```clojure
+;; resources/private/config.clj (excerpt)
+{:theme "cerulean" ;; Options: "default" (Bootstrap), "cerulean", "slate", "minty", "lux", "cyborg", "sandstone", "superhero", "flatly", "yeti"
+ ;; ...other settings...
+}
+```
+
+The selected theme is applied via a `theme-<name>` class on `<body>` and corresponding styles are loaded automatically by the layout.
+
+### Switch themes from the navbar
+
+Use the Theme dropdown in the top navbar to switch instantly—no reload required. The default is whatever you set in `:theme`.
+
+### Available themes (previews)
+
+Below are thumbnails of the bundled themes available in this template:
+
+| Theme | Preview |
+|-------|---------|
+| Default (Bootstrap) | ![default](./default.png) |
+| Cerulean | ![cerulean](./cerulean.png) |
+| Cyborg | ![cyborg](./cyborg.png) |
+| Flatly | ![flatly](./flatly.png) |
+| Lux | ![lux](./lux.png) |
+| Minty | ![minty](./minty.png) |
+| Sandstone | ![sandstone](./sandstone.png) |
+| Slate | ![slate](./slate.png) |
+| Superhero | ![superhero](./superhero.png) |
+| Yeti | ![yeti](./yeti.png) |
+
+Notes:
+- If you don’t set `:theme`, the app falls back to `default`.
+- The theme switcher control is included by default in the layout’s navbar; no extra setup is needed.
+
+---
+
+
+
+
 
 ## 🧠 Core Concepts
 
@@ -597,6 +646,7 @@ Optional tips:
 - For more verbose output, re-run failing namespaces individually as shown above.
 
 ---
+
 
 ## 🔐 Access Control
 

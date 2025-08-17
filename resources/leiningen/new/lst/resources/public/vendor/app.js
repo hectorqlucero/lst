@@ -1,4 +1,86 @@
 $(document).ready(function () {
+  // Theme handling: apply saved theme or config-provided default
+  (function initTheme() {
+    try {
+      var saved = localStorage.getItem('theme');
+      var body = document.body;
+      var classes = Array.from(body.classList);
+      var current = classes.find(function (c) { return c.indexOf('theme-') === 0; });
+      var fallback = current || 'theme-default';
+      var desired = saved ? ('theme-' + saved) : fallback;
+
+      classes.filter(function (c) { return c.indexOf('theme-') === 0; })
+        .forEach(function (c) { body.classList.remove(c); });
+      body.classList.add(desired);
+
+      // Update dropdown label and active item
+      var themeName = (saved || (fallback.replace('theme-', '')) || 'default');
+      var labelSpan = document.getElementById('currentThemeLabel');
+      if (labelSpan) {
+        labelSpan.textContent = titleCase(themeName);
+      }
+      markActiveTheme(themeName);
+
+      // Switch DataTables theme CSS when available
+      switchDataTablesTheme(themeName);
+    } catch (e) { /* ignore */ }
+  })();
+
+  // Handle theme selection clicks
+  $(document).on('click', '.theme-option', function (e) {
+    e.preventDefault();
+    var theme = $(this).data('theme');
+    if (!theme) return;
+    try {
+      localStorage.setItem('theme', theme);
+      var body = document.body;
+      Array.from(body.classList).forEach(function (c) {
+        if (c.indexOf('theme-') === 0) body.classList.remove(c);
+      });
+      body.classList.add('theme-' + theme);
+
+      // Update label and active UI state
+      var labelSpan = document.getElementById('currentThemeLabel');
+      if (labelSpan) labelSpan.textContent = titleCase(theme);
+      markActiveTheme(theme);
+
+      // Switch DataTables theme CSS when available
+      switchDataTablesTheme(theme);
+    } catch (e) { /* ignore */ }
+  });
+
+  function titleCase(s) {
+    try {
+      if (!s) return 'Theme';
+      return s.charAt(0).toUpperCase() + s.slice(1);
+    } catch (_) { return 'Theme'; }
+  }
+
+  function markActiveTheme(theme) {
+    try {
+      document.querySelectorAll('.theme-option').forEach(function (el) {
+        el.classList.remove('active');
+        if (el.dataset.theme === theme) {
+          el.classList.add('active');
+        }
+      });
+    } catch (_) { /* ignore */ }
+  }
+
+  function switchDataTablesTheme(theme) {
+    try {
+      var link = document.getElementById('dt-theme-css');
+      if (!link) return;
+      // Mapping for available DataTables themed CSS
+      var map = {
+        flatly: '/vendor/datatables-flatly.min.css',
+        yeti: '/vendor/datatables-yeti.min.css',
+        superhero: '/vendor/datatables-superhero.min.css'
+      };
+      var href = map[theme] || '/vendor/dataTables.bootstrap5.min.css';
+      if (link.getAttribute('href') !== href) link.setAttribute('href', href);
+    } catch (_) { /* ignore */ }
+  }
   // Global flags
   var isFormSubmitting = false;
   var allowSubgridModalClose = false;
