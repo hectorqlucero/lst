@@ -76,6 +76,7 @@
 - [Quick Start](#quick-start)
 - [Demo](#demo)
 - [What’s New](#whats-new)
+- [Quickstart in the cloud](#quickstart-in-the-cloud)
 - [Configuration](#configuration)
 - [Themes](#themes)
 - [Core Concepts](#core-concepts)
@@ -103,6 +104,41 @@
 - Open in Codespaces: https://codespaces.new/hectorqlucero/lst?quickstart=1
 
 Prefer local? See Quick Start below.
+
+---
+
+## ☁️ Quickstart in the cloud
+
+Pick one of the zero-setup options and get running in under a minute:
+
+### Gitpod
+
+1) Open: https://gitpod.io/#https://github.com/hectorqlucero/lst
+2) Generate a sample app and run (in the Gitpod terminal):
+
+```bash
+lein new lst gpapp && cd gpapp && lein with-profile dev run
+```
+
+### Codespaces
+
+1) Open: https://codespaces.new/hectorqlucero/lst?quickstart=1
+2) Generate and run:
+
+```bash
+lein new lst csapp && cd csapp && lein with-profile dev run
+```
+
+### Devcontainer (local VS Code)
+
+1) Open folder in Dev Container
+2) After setup, go to generated `ciapp/` or create your own and run:
+
+```bash
+lein with-profile dev run
+```
+
+Then open http://localhost:3000
 
 ---
 
@@ -607,7 +643,7 @@ CREATE TABLE IF NOT EXISTS parent (
 );
 ```
 
-## 📦 Releases
+002-child.postgresql.down.sql
 ```sql
 DROP TABLE IF EXISTS child;
 ```
@@ -627,12 +663,6 @@ CREATE TABLE IF NOT EXISTS child (
   FOREIGN KEY (parent_id) REFERENCES parent(id)
 );
 ```
-
-## 🧾 Changelog
-
-See all release notes at https://github.com/hectorqlucero/lst/releases
-
----
 
 001-parent.mysql.down.sql
 ```sql
@@ -1098,7 +1128,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 
-## � Releases
+## 📦 Releases
 
 Publish a release to improve discoverability and trust (enables the Latest Release badge):
 
@@ -1112,7 +1142,13 @@ This triggers the “Release on tag” workflow which creates a GitHub Release w
 
 ---
 
-## �🔗 Resources
+## 🧾 Changelog
+
+See all release notes at https://github.com/hectorqlucero/lst/releases
+
+---
+
+## 🔗 Resources
 
 - [Leiningen Documentation](https://leiningen.org/)
 - [Clojure Documentation](https://clojure.org/)
