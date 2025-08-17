@@ -5,10 +5,11 @@ on:
     inputs:
       fps:
         description: Frames per second (lower = slower)
-  required: false
-  default: '3'
+        required: false
+        default: '3'
   push:
-    branches: [ main ]
+    branches:
+      - main
     paths:
       - 'screenshot-*.png'
 
@@ -19,63 +20,44 @@ jobs:
   build-gif:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+        name: Checkout
 
       - name: Install ImageMagick
         run: |
           sudo apt-get update
           sudo apt-get install -y imagemagick
 
-      - name: Prepare frames
-        id: prep
+      - id: prep
+        name: Prepare frames
         run: |
           mkdir -p docs
-          # Curate a subset of screenshots for the demo order
-          frames=(
-            screenshot-2.png  # Login
-            screenshot-5.png  # Private page
-            screenshot-6.png  # Dashboard
-            screenshot-8.png  # Users report
-            screenshot-10.png # Grid
-            screenshot-12.png # Subgrid
-            screenshot-15.png # Grid edit with thumbnail
-            screenshot-16.png # Grid edit with image
-            screenshot-17.png # Thumbnails grid
-          )
-          # Filter only those that exist
-          use_frames=()
-          for f in "${frames[@]}"; do
-            if [ -f "$f" ]; then use_frames+=("$f"); fi
-          done
-          if [ ${#use_frames[@]} -eq 0 ]; then
-            echo "No frames found; nothing to do." && echo "skip=true" >> $GITHUB_OUTPUT && exit 0
+          # If you want a curated order, list them explicitly; otherwise glob all
+          if ls screenshot-*.png >/dev/null 2>&1; then
+            ls -1 screenshot-*.png > frames.txt
+          else
+            echo "skip=true" >> "$GITHUB_OUTPUT"
+            exit 0
           fi
-          printf '%s\n' "${use_frames[@]}" > frames.txt
 
       - name: Build GIF
-        if: success() && steps.prep.outputs.skip != 'true'
+        if: steps.prep.outputs.skip != 'true'
         run: |
-          if [ -f frames.txt ]; then
-            # fps to delay mapping: delay in ImageMagick is in 1/100s per frame
-            FPS_INPUT='${{ github.event.inputs.fps }}'
-            if [ -z "$FPS_INPUT" ]; then FPS=3; else FPS="$FPS_INPUT"; fi
-            if ! echo "$FPS" | grep -Eq '^[0-9]+$'; then FPS=3; fi
-            if [ "$FPS" -le 0 ]; then FPS=3; fi
-            # Calculate delay (in centiseconds). Example: fps=3 => delay=33
-            DELAY=$(( 100 / FPS ))
-            # Create an optimized GIF
-            convert \
-              -dispose previous \
-              -delay "$DELAY" \
-              -loop 0 \
-              -resize 1200x \
-              @frames.txt \
-              -layers Optimize docs/demo.gif
-          fi
+          FPS_INPUT='${{ github.event.inputs.fps }}'
+          if [ -z "$FPS_INPUT" ]; then FPS=3; else FPS="$FPS_INPUT"; fi
+          if ! echo "$FPS" | grep -Eq '^[0-9]+$'; then FPS=3; fi
+          if [ "$FPS" -le 0 ]; then FPS=3; fi
+          DELAY=$(( 100 / FPS ))
+          convert \
+            -dispose previous \
+            -delay "$DELAY" \
+            -loop 0 \
+            -resize 1200x \
+            @frames.txt \
+            -layers Optimize docs/demo.gif
 
       - name: Commit GIF
-        if: success() && hashFiles('docs/demo.gif') != ''
+        if: hashFiles('docs/demo.gif') != ''
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"

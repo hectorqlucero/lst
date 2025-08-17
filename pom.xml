@@ -18,7 +18,7 @@
     <url>https://github.com/hectorqlucero/lst</url>
     <connection>scm:git:git://github.com/hectorqlucero/lst.git</connection>
     <developerConnection>scm:git:ssh://git@github.com/hectorqlucero/lst.git</developerConnection>
-    <tag>1cb16aefca15a93147b04624ca66ea1714e665aa</tag>
+    <tag>6190cd593a82ae21214faeaf7266681b5302a42e</tag>
   </scm>
   <build>
     <sourceDirectory>src</sourceDirectory>
