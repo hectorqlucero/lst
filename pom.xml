@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>lst</groupId>
-  <artifactId>lein-template</artifactId>
+  <groupId>org.clojars.hector</groupId>
+  <artifactId>lein-template.lst</artifactId>
   <packaging>jar</packaging>
-  <version>0.1.4</version>
-  <name>lein-template</name>
+  <version>0.1.5</version>
+  <name>lein-template.lst</name>
   <description>LST Skeleton Web App</description>
   <url>http://github.com/hectorqlucero/lst</url>
   <licenses>

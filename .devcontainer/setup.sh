@@ -22,3 +22,4 @@ cd ciapp
 lein test || true
 
 printf "\nDevcontainer setup complete. Run: cd ciapp && lein with-profile dev run\n"
+printf "Note: After publishing to Clojars, you can also run 'lein new org.clojars.hector/lst <name>' anywhere.\n"

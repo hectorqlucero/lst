@@ -107,6 +107,18 @@ Prefer local? See Quick Start below.
 
 ---
 
+## 📦 Install from Clojars
+
+Once published, you can generate a new app directly from the registry:
+
+```bash
+lein new org.clojars.hector/lst myapp
+```
+
+For local development of this template (contributing here), use the steps in Quick Start to `lein install` and then run `lein new lst myapp`.
+
+---
+
 ## ☁️ Quickstart in the cloud
 
 Pick one of the zero-setup options and get running in under a minute:

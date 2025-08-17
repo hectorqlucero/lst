@@ -33,9 +33,11 @@ jobs:
       - name: Ensure clean workspace
         run: |
           rm -rf ciapp
-      - name: Generate sample project
+    - name: Generate sample project
         run: |
-          lein new lst ciapp
+      # For CI against the current repo, we install locally above and use the short name.
+      # After publishing to Clojars, remote users can run: lein new org.clojars.hector/lst <name>
+      lein new lst ciapp
       - name: Run tests in generated project
         working-directory: ./ciapp
         run: |

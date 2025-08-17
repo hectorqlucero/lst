@@ -6,6 +6,8 @@ All notable changes to this project will be documented in this file. This change
 ## [0.1.5] - 2025-08-17
 ### Added
 - GitHub Actions workflow to publish to Clojars on tag or manual dispatch
+### Changed
+- Move template coordinates to verified group `org.clojars.hector/lein-template.lst` and bump version to 0.1.5
 
 ## [0.1.4] - 2025-08-17
 ### Fixed

@@ -16,3 +16,4 @@ tasks:
       lein new lst gpapp
       cd gpapp
       echo "Run 'lein with-profile dev run' to start the server, then open the Port 3000 preview."
+  echo "Note: After this template is published to Clojars, you can also run 'lein new org.clojars.hector/lst <name>' anywhere."
