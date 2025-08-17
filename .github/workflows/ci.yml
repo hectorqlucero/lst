@@ -30,6 +30,9 @@ jobs:
       - name: Fetch deps and install template
         run: |
           lein clean && lein deps && lein install
+      - name: Ensure clean workspace
+        run: |
+          rm -rf ciapp
       - name: Generate sample project
         run: |
           lein new lst ciapp
