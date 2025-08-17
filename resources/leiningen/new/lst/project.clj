@@ -34,13 +34,13 @@
                  [ring/ring-defaults "0.6.0"]
                  [ring/ring-devel "1.14.2"]
                  [ring/ring-codec "1.3.0"]]
-  :main ^:skip-aot {{name}} .core
-  :aot [{{name}} .core]
+  :main ^:skip-aot {{name}}.core
+  :aot [{{name}}.core]
   :plugins [[lein-ancient "0.7.0"]
             [lein-pprint "1.3.2"]]
   :uberjar-name "{{name}}.jar"
   :target-path "target/%s"
-  :ring {:handler {{name}} .core
+  :ring {:handler {{name}}.core
          :auto-reload? true
          :auto-refresh? false}
   :resources-paths ["shared" "resources"]
@@ -59,4 +59,4 @@
   :profiles {:uberjar {:aot :all
                        :jvm-opts ["-Dclojure.compiler.direct-linking=true"]}
              :dev {:source-paths ["src" "dev"]
-                   :main {{name}} .dev}})
+                   :main {{name}}.dev}})
