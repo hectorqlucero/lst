@@ -1,0 +1,47 @@
+{
+    "folders": [
+        {
+            "path": "."
+        }
+    ],
+    "settings": {
+        "java.configuration.updateBuildConfiguration": "automatic",
+        "files.exclude": {
+            "target": true,
+            "**/.git": true
+        },
+        "files.watcherExclude": {
+            "**/target/**": true,
+            "**/.git/**": true,
+            "**/node_modules/**": true,
+            "**/.calva/**": true,
+            "**/.lsp/**": true
+        },
+        "search.exclude": {
+            "**/target/**": true,
+            "**/docs/**": true,
+            "**/*.png": true,
+            "**/*.gif": true
+        },
+        "redhat.telemetry.enabled": false,
+        "java.referencesCodeLens.enabled": false,
+        "java.implementationsCodeLens.enabled": false,
+        "java.progressReports.enabled": false,
+        "java.import.maven.enabled": false,
+        "java.import.gradle.enabled": false,
+        "java.jdt.ls.vmargs": "-Xms128m -Xmx768m -XX:+UseParallelGC -XX:MaxMetaspaceSize=384m -Xlog:disable",
+        "java.compile.nullAnalysis.mode": "disabled",
+        "java.completion.enabled": false,
+        "java.symbols.includeSourceMethodDeclarations": false
+    },
+    "extensions": {
+        "recommendations": [
+            "betterthantomorrow.calva",
+            "borkdude.clj-kondo",
+            "editorconfig.editorconfig"
+        ],
+        "unwantedRecommendations": [
+            "redhat.java"
+        ]
+    }
+}
