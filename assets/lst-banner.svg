@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="300" viewBox="0 0 1200 300" role="img" aria-labelledby="title desc">
+  <title id="title">LST - Lucero Systems Template</title>
+  <desc id="desc">A modern banner for the LST Leiningen template</desc>
+  <defs>
+    <linearGradient id="g" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#0ea5e9"/>
+      <stop offset="100%" stop-color="#6366f1"/>
+    </linearGradient>
+    <linearGradient id="glow" x1="0" y1="0" x2="1" y2="0">
+      <stop offset="0%" stop-color="#a5b4fc" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#93c5fd" stop-opacity="0.0"/>
+    </linearGradient>
+  </defs>
+  <rect width="1200" height="300" fill="url(#g)" rx="16"/>
+  <g opacity="0.2">
+    <circle cx="150" cy="260" r="180" fill="url(#glow)"/>
+    <circle cx="1050" cy="40" r="180" fill="url(#glow)"/>
+  </g>
+  <g transform="translate(80, 85)">
+    <rect x="0" y="0" width="90" height="90" rx="14" fill="#111827" opacity="0.18"/>
+    <text x="15" y="68" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="64" font-weight="800" fill="#ffffff">LST</text>
+  </g>
+  <g transform="translate(200, 110)">
+    <text x="0" y="0" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="42" font-weight="700" fill="#ffffff">Lucero Systems Template</text>
+    <text x="0" y="44" font-family="Segoe UI, Roboto, Helvetica, Arial, sans-serif" font-size="18" fill="#e5e7eb">A professional Leiningen template for rapid Clojure web apps</text>
+  </g>
+</svg>

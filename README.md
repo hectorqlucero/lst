@@ -1,10 +1,34 @@
-# LST - Lucero Systems Template
+<p align="center">
+  <img src="./assets/lst-banner.svg" alt="LST - Lucero Systems Template banner" width="100%" />
+</p>
 
-> A professional Leiningen template for rapid Clojure web application development
+<h1 align="center">LST - Lucero Systems Template</h1>
 
-[![Clojure](https://img.shields.io/badge/Clojure-1.10+-blue.svg)](https://clojure.org/)
-[![Java](https://img.shields.io/badge/Java-17+-orange.svg)](https://openjdk.org/)
-[![Leiningen](https://img.shields.io/badge/Leiningen-2.9.0+-green.svg)](https://leiningen.org/)
+<p align="center">
+  <em>⚡ Rapidly scaffold production‑ready Clojure web apps with a professional, themed UI.</em>
+</p>
+
+<p align="center">
+  <a href="https://clojure.org/"><img alt="Clojure" src="https://img.shields.io/badge/Clojure-1.10+-blue.svg"></a>
+  <a href="https://openjdk.org/"><img alt="Java" src="https://img.shields.io/badge/Java-17+-orange.svg"></a>
+  <a href="https://leiningen.org/"><img alt="Leiningen" src="https://img.shields.io/badge/Leiningen-2.9.0+-green.svg"></a>
+  <a href="./LICENSE"><img alt="License" src="https://img.shields.io/badge/License-MIT-black.svg"></a>
+  <a href="https://github.com/hectorqlucero/lst/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/hectorqlucero/lst?style=social"></a>
+  <a href="https://github.com/hectorqlucero/lst/issues"><img alt="Open issues" src="https://img.shields.io/github/issues/hectorqlucero/lst"></a>
+  <a href="https://github.com/hectorqlucero/lst/pulls"><img alt="Open pull requests" src="https://img.shields.io/github/issues-pr/hectorqlucero/lst"></a>
+  <a href="https://github.com/hectorqlucero/lst/fork"><img alt="Forks" src="https://img.shields.io/github/forks/hectorqlucero/lst?style=social"></a>
+  <a href="https://github.com/hectorqlucero/lst/watchers"><img alt="Watchers" src="https://img.shields.io/github/watchers/hectorqlucero/lst?style=social"></a>
+  <a href="https://github.com/hectorqlucero/lst/commits"><img alt="Last commit" src="https://img.shields.io/github/last-commit/hectorqlucero/lst"></a>
+  <a href="https://github.com/hectorqlucero/lst/graphs/contributors"><img alt="Contributors" src="https://img.shields.io/github/contributors/hectorqlucero/lst"></a>
+  <a href="https://github.com/hectorqlucero/lst/issues"><img alt="PRs Welcome" src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg"></a>
+</p>
+
+<p align="center">
+  <a href="#-screenshots">📸 Screenshots</a> •
+  <a href="#-demo">🎬 Demo</a> •
+  <a href="#-quick-start">🚀 Quick Start</a> •
+  <a href="#-features">✨ Features</a>
+</p>
 
 ---
 
@@ -13,6 +37,7 @@
 - [Overview](#overview)
 - [Features](#features)
 - [Quick Start](#quick-start)
+- [Demo](#demo)
 - [Configuration](#configuration)
 - [Themes](#themes)
 - [Core Concepts](#core-concepts)
@@ -33,7 +58,13 @@
 
 ## 🎯 Overview
 
-**LST** is a powerful Leiningen template that scaffolds full-stack, database-backed Clojure web applications with enterprise-grade features. Generate complete CRUD interfaces, dashboards, and reports in seconds with a consistent MVC architecture.
+LST is a professional Leiningen template for building full‑stack, database‑backed Clojure web applications in minutes—not weeks. It generates complete CRUD grids, dashboards, and reports with a clean MVC structure, Bootstrap 5 themes, DataTables, built‑in auth, and multi‑database support.
+
+Elevator pitch:
+- Generate working admin apps in minutes (CRUD, dashboards, reports)
+- Modern Bootstrap 5 themes with a live theme switcher
+- Works with MySQL, PostgreSQL, and SQLite
+- Strong defaults, clear structure, easy customization
 
 ### What You Get
 
@@ -71,6 +102,14 @@ Below are example screenshots of LST-generated interfaces. These images demonstr
 | ![Screenshot 17](./screenshot-17.png) | Grid showing thumbnails |
 
 *All screenshots are from a default LST application using Bootstrap 5 styling. You can fully customize the appearance and layout to match your branding.*
+
+---
+
+## 🎬 Demo
+
+- Live demo: coming soon
+- Quick tour: see the screenshots above or the theme previews in the [Themes](#themes) section
+- Optional: add a GIF of a quick theme switch or CRUD flow here (e.g., `docs/demo.gif`)
 
 ---
 
