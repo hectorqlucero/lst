@@ -231,6 +231,12 @@ Notes:
 
 ## 🆕 What’s New
 
+### v0.1.4 — 2025-08-17
+
+- Fixed generated app’s `project.clj` namespaces (use dotted `{{name}}.core`, `{{name}}.dev`) so parsing succeeds; verified tests pass
+- Prevented VS Code/formatters from inserting spaces in template files (workspace settings)
+- CI hygiene: remove any leftover `ciapp/` before generation; ignore `ciapp/` in git
+
 ### v0.1.3 — 2025-08-17
 
 - Standardized licensing to MIT across repo and template (About tab, root, and generated apps now consistent)
