@@ -231,6 +231,11 @@ Notes:
 
 ## 🆕 What’s New
 
+### v0.1.3 — 2025-08-17
+
+- Standardized licensing to MIT across repo and template (About tab, root, and generated apps now consistent)
+- Fixed README formatting issues (misplaced sections, code fences) and improved badges
+- Aligned template metadata and LICENSE content to MIT
 ### v0.1.0
 
 - New banner/logo and polished README with full feature overview
