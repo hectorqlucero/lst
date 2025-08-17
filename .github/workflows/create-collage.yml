@@ -2,6 +2,10 @@ name: Create collage
 
 on:
   workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths:
+      - 'screenshot-*.png'
 
 permissions:
   contents: write
@@ -19,7 +23,8 @@ jobs:
           sudo apt-get install -y imagemagick
 
       - name: Build collage
-        run: |
+  id: prep
+  run: |
           mkdir -p docs
           frames=(
             screenshot-2.png
@@ -37,12 +42,12 @@ jobs:
             [ -f "$f" ] && use_frames+=("$f")
           done
           if [ ${#use_frames[@]} -eq 0 ]; then
-            echo "No screenshots found." && exit 0
+            echo "No screenshots found; nothing to do." && echo "skip=true" >> $GITHUB_OUTPUT && exit 0
           fi
           montage "${use_frames[@]}" -geometry 600x -tile 3x -background none docs/collage.png
 
       - name: Commit collage
-        if: success() && hashFiles('docs/collage.png') != ''
+        if: success() && steps.prep.outputs.skip != 'true' && hashFiles('docs/collage.png') != ''
         run: |
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"

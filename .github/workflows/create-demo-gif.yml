@@ -7,6 +7,10 @@ on:
         description: Frames per second (lower = slower)
   required: false
   default: '3'
+  push:
+    branches: [ main ]
+    paths:
+      - 'screenshot-*.png'
 
 permissions:
   contents: write
@@ -23,7 +27,7 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y imagemagick
 
-      - name: Prepare frames
+  - name: Prepare frames
         id: prep
         run: |
           mkdir -p docs
@@ -45,12 +49,12 @@ jobs:
             if [ -f "$f" ]; then use_frames+=("$f"); fi
           done
           if [ ${#use_frames[@]} -eq 0 ]; then
-            echo "No frames found; exiting early." && exit 0
+            echo "No frames found; nothing to do." && echo "skip=true" >> $GITHUB_OUTPUT && exit 0
           fi
           printf '%s\n' "${use_frames[@]}" > frames.txt
 
       - name: Build GIF
-        if: success()
+        if: success() && steps.prep.outputs.skip != 'true'
         run: |
           if [ -f frames.txt ]; then
             # fps to delay mapping: delay in ImageMagick is in 1/100s per frame
