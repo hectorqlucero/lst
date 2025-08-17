@@ -16,6 +16,24 @@
 </p>
 
 <p align="center">
+  <a href="https://github.com/new?template_name=lst&template_owner=hectorqlucero">
+    <img src="./assets/use-this-template.svg" alt="Use this template" width="70%" />
+  </a>
+</p>
+
+---
+
+## 🌟 Why LST?
+
+- Built for production admin apps: CRUD, dashboards, reports, and subgrids out of the box
+- Database‑agnostic: MySQL, PostgreSQL, SQLite with vendor‑aware helpers and migrations
+- Fast theming: Bootstrap 5 themes with a built‑in navbar switcher and previews
+- Solid defaults: Auth, layout, menu, form/grid builders; organized MVC structure
+- Trustworthy template: CI validates a generated app and tests run green
+
+---
+
+<p align="center">
   <a href="https://clojure.org/"><img alt="Clojure" src="https://img.shields.io/badge/Clojure-1.10+-blue.svg"></a>
   <a href="https://openjdk.org/"><img alt="Java" src="https://img.shields.io/badge/Java-17+-orange.svg"></a>
   <a href="https://leiningen.org/"><img alt="Leiningen" src="https://img.shields.io/badge/Leiningen-2.9.0+-green.svg"></a>
