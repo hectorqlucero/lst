@@ -12,3 +12,35 @@ pom.xml.asc
 
 # Generated sample app used for CI/demo
 /ciapp/
+
+# Editor/IDE artifacts
+/.calva/output-window
+/.calva/
+/.idea/
+/*.iml
+/.project
+/.classpath
+/.settings/
+# VS Code: ignore everything except shared settings
+/.vscode/*
+!/.vscode/settings.json
+!/.vscode/extensions.json
+.DS_Store
+
+# Clojure tooling caches and histories
+/.cpcache/
+/.clj-kondo/.cache/
+/.lsp/
+.nrepl-history
+.rebel_readline_history
+
+# Dev containers
+/.devcontainer/
+
+# Env and direnv
+/.env
+/.env.*
+/.direnv/
+
+# Logs
+*.log
