@@ -3,4 +3,7 @@
   :url "http://github.com/hectorqlucero/lst"
   :license {:name "MIT License"
             :url "https://opensource.org/licenses/MIT"}
+  :deploy-repositories [["clojars" {:url "https://repo.clojars.org"
+                                     :username :env/CLOJARS_USERNAME
+                                     :password :env/CLOJARS_PASSWORD}]]
   :eval-in-leiningen true)
