@@ -4,7 +4,7 @@
   <groupId>org.clojars.hector</groupId>
   <artifactId>lein-template.lst</artifactId>
   <packaging>jar</packaging>
-  <version>0.1.5</version>
+  <version>0.1.6</version>
   <name>lein-template.lst</name>
   <description>LST Skeleton Web App</description>
   <url>http://github.com/hectorqlucero/lst</url>
