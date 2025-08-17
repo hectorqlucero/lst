@@ -1034,7 +1034,21 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 
 ---
 
-## 🔗 Resources
+## � Releases
+
+Publish a release to improve discoverability and trust (enables the Latest Release badge):
+
+```bash
+# Tag and push your first release
+git tag v0.1.0
+git push origin v0.1.0
+```
+
+This triggers the “Release on tag” workflow which creates a GitHub Release with auto-generated notes.
+
+---
+
+## �🔗 Resources
 
 - [Leiningen Documentation](https://leiningen.org/)
 - [Clojure Documentation](https://clojure.org/)
