@@ -14,6 +14,7 @@
   <a href="https://leiningen.org/"><img alt="Leiningen" src="https://img.shields.io/badge/Leiningen-2.9.0+-green.svg"></a>
   <a href="./LICENSE"><img alt="License" src="https://img.shields.io/badge/License-MIT-black.svg"></a>
   <a href="https://github.com/hectorqlucero/lst/releases"><img alt="Latest Release" src="https://img.shields.io/github/v/release/hectorqlucero/lst?display_name=tag&sort=semver"></a>
+  <a href="https://github.com/hectorqlucero/lst/releases"><img alt="Release date" src="https://img.shields.io/github/release-date/hectorqlucero/lst"></a>
   <a href="https://github.com/hectorqlucero/lst/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/hectorqlucero/lst?style=social"></a>
   <a href="https://github.com/hectorqlucero/lst/issues"><img alt="Open issues" src="https://img.shields.io/github/issues/hectorqlucero/lst"></a>
   <a href="https://github.com/hectorqlucero/lst/pulls"><img alt="Open pull requests" src="https://img.shields.io/github/issues-pr/hectorqlucero/lst"></a>
@@ -35,6 +36,7 @@
   <a href="#-whats-new">🆕 What's New</a> •
   <a href="https://github.com/new?template_name=lst&template_owner=hectorqlucero">Use this template →</a>
   • <a href="https://github.com/hectorqlucero/lst/releases/latest">Latest release</a>
+  • <a href="https://github.com/hectorqlucero/lst/releases">Changelog</a>
 </p>
 
 ---
@@ -61,6 +63,7 @@
 - [Contributing](#contributing)
 - [License](#license)
 - [Releases](#releases)
+- [Changelog](#changelog)
 - [Resources](#resources)
 
 ---
@@ -133,7 +136,7 @@ Two ways to build `docs/demo.gif` from the repository screenshots:
 
 1) GitHub Actions (recommended)
   - Go to Actions → "Create demo GIF" → Run workflow.
-  - Optionally set fps (default 8).
+  - Optionally set fps (default 3).
   - The job commits `docs/demo.gif` back to `main`.
 
 2) Locally with ImageMagick
@@ -566,7 +569,7 @@ CREATE TABLE IF NOT EXISTS parent (
 );
 ```
 
-002-child.postgresql.down.sql
+## 📦 Releases
 ```sql
 DROP TABLE IF EXISTS child;
 ```
@@ -587,7 +590,11 @@ CREATE TABLE IF NOT EXISTS child (
 );
 ```
 
-##### MySQL
+## 🧾 Changelog
+
+See all release notes at https://github.com/hectorqlucero/lst/releases
+
+---
 
 001-parent.mysql.down.sql
 ```sql
