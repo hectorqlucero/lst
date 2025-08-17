@@ -1,0 +1,39 @@
+name: Bug Report
+description: File a bug report to help us improve
+labels: [bug]
+body:
+  - type: textarea
+    id: description
+    attributes:
+      label: Description
+      description: A clear and concise description of the bug.
+      placeholder: What happened?
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Steps to Reproduce
+      description: How can we reproduce the behavior?
+      placeholder: 1) ..., 2) ..., 3) ...
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: LST version
+      placeholder: e.g., v0.1.0 or commit SHA
+  - type: dropdown
+    id: db
+    attributes:
+      label: Database
+      options:
+        - MySQL
+        - PostgreSQL
+        - SQLite
+  - type: textarea
+    id: logs
+    attributes:
+      label: Logs
+      description: Paste relevant logs or stack traces.
+      render: shell

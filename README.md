@@ -13,6 +13,7 @@
   <a href="https://openjdk.org/"><img alt="Java" src="https://img.shields.io/badge/Java-17+-orange.svg"></a>
   <a href="https://leiningen.org/"><img alt="Leiningen" src="https://img.shields.io/badge/Leiningen-2.9.0+-green.svg"></a>
   <a href="./LICENSE"><img alt="License" src="https://img.shields.io/badge/License-MIT-black.svg"></a>
+  <a href="https://github.com/hectorqlucero/lst/releases"><img alt="Latest Release" src="https://img.shields.io/github/v/release/hectorqlucero/lst?display_name=tag&sort=semver"></a>
   <a href="https://github.com/hectorqlucero/lst/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/hectorqlucero/lst?style=social"></a>
   <a href="https://github.com/hectorqlucero/lst/issues"><img alt="Open issues" src="https://img.shields.io/github/issues/hectorqlucero/lst"></a>
   <a href="https://github.com/hectorqlucero/lst/pulls"><img alt="Open pull requests" src="https://img.shields.io/github/issues-pr/hectorqlucero/lst"></a>
@@ -21,13 +22,17 @@
   <a href="https://github.com/hectorqlucero/lst/commits"><img alt="Last commit" src="https://img.shields.io/github/last-commit/hectorqlucero/lst"></a>
   <a href="https://github.com/hectorqlucero/lst/graphs/contributors"><img alt="Contributors" src="https://img.shields.io/github/contributors/hectorqlucero/lst"></a>
   <a href="https://github.com/hectorqlucero/lst/issues"><img alt="PRs Welcome" src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg"></a>
+  <a href="https://github.com/new?template_name=lst&template_owner=hectorqlucero"><img alt="Use this template" src="https://img.shields.io/badge/Use%20this%20template-Generate-blue?logo=github"></a>
+  <a href="https://gitpod.io/#https://github.com/hectorqlucero/lst"><img alt="Gitpod ready" src="https://img.shields.io/badge/Gitpod-Ready--to--Code-FFAE33?logo=gitpod"></a>
+  <a href="https://codespaces.new/hectorqlucero/lst?quickstart=1"><img alt="Open in Codespaces" src="https://img.shields.io/badge/Codespaces-Ready-181717?logo=github"></a>
 </p>
 
 <p align="center">
   <a href="#-screenshots">📸 Screenshots</a> •
   <a href="#-demo">🎬 Demo</a> •
   <a href="#-quick-start">🚀 Quick Start</a> •
-  <a href="#-features">✨ Features</a>
+  <a href="#-features">✨ Features</a> •
+  <a href="https://github.com/new?template_name=lst&template_owner=hectorqlucero">Use this template →</a>
 </p>
 
 ---

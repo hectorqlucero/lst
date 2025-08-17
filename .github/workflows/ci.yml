@@ -1,0 +1,39 @@
+name: Lint & Test
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: Cache Maven
+        uses: actions/cache@v4
+        with:
+          path: ~/.m2/repository
+          key: ${{ runner.os }}-maven-${{ hashFiles('**/pom.xml') }}
+          restore-keys: |
+            ${{ runner.os }}-maven-
+      - name: Install Leiningen
+        run: |
+          curl -fsSL https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein -o ~/lein
+          chmod +x ~/lein
+          sudo mv ~/lein /usr/local/bin/lein
+          lein -v
+      - name: Fetch deps and install template
+        run: |
+          lein clean && lein deps && lein install
+      - name: Generate sample project
+        run: |
+          lein new lst ciapp
+      - name: Run tests in generated project
+        working-directory: ./ciapp
+        run: |
+          lein test
