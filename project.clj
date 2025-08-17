@@ -5,5 +5,6 @@
             :url "https://opensource.org/licenses/MIT"}
   :deploy-repositories [["clojars" {:url "https://repo.clojars.org"
                                      :username :env/CLOJARS_USERNAME
-                                     :password :env/CLOJARS_PASSWORD}]]
+                                     :password :env/CLOJARS_PASSWORD
+                                     :sign-releases false}]]
   :eval-in-leiningen true)
