@@ -132,8 +132,9 @@ Two ways to build `docs/demo.gif` from the repository screenshots:
   - Run the helper script:
 
 ```bash
-scripts/make-demo-gif.sh 5   # default 5 fps; increase for faster playback
+scripts/make-demo-gif.sh 3   # default 3 fps; increase for faster playback
 ```
+Tip: Try 4–5 fps for medium speed, 8–10 fps for fast.
 
 Notes:
 - The script and workflow curate a subset of `screenshot-*.png` files in a clear narrative order.

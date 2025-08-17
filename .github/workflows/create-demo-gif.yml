@@ -6,7 +6,7 @@ on:
       fps:
         description: Frames per second (lower = slower)
         required: false
-        default: '5'
+  default: '3'
   push:
     branches: [ main ]
     paths:
@@ -59,10 +59,10 @@ jobs:
         run: |
           if [ -f frames.txt ]; then
             # fps to delay mapping: delay in ImageMagick is in 1/100s per frame
-            FPS=${{ github.event.inputs.fps || '5' }}
-            if ! echo "$FPS" | grep -Eq '^[0-9]+$'; then FPS=8; fi
-            # Calculate delay (in centiseconds). Example: fps=8 => delay=12.5 (~13)
-            DELAY=$(( 100 / (FPS>0?FPS:8) ))
+            FPS=${{ github.event.inputs.fps || '3' }}
+            if ! echo "$FPS" | grep -Eq '^[0-9]+$'; then FPS=3; fi
+            # Calculate delay (in centiseconds). Example: fps=3 => delay=33
+            DELAY=$(( 100 / (FPS>0?FPS:3) ))
             # Create an optimized GIF
             convert \
               -dispose previous \
