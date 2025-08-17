@@ -5,13 +5,8 @@ on:
     inputs:
       fps:
         description: Frames per second (lower = slower)
-        required: false
+  required: false
   default: '3'
-  push:
-    branches: [ main ]
-    paths:
-      - 'screenshot-*.png'
-      - '.github/workflows/create-demo-gif.yml'
 
 permissions:
   contents: write

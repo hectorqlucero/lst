@@ -2,11 +2,6 @@ name: Create collage
 
 on:
   workflow_dispatch:
-  push:
-    branches: [ main ]
-    paths:
-      - 'screenshot-*.png'
-      - '.github/workflows/create-collage.yml'
 
 permissions:
   contents: write
