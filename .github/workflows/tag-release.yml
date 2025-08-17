@@ -1,9 +1,14 @@
-name: Release on tag
+name: Release on tag or dispatch
 
 on:
   push:
     tags:
       - 'v*'
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Tag to release (e.g., v0.1.2). Leave empty to use ref name.
+        required: false
 
 permissions:
   contents: write
@@ -16,16 +21,10 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Create GitHub Release
-        uses: actions/create-release@v1
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        uses: softprops/action-gh-release@v2
         with:
-          tag_name: ${{ github.ref_name }}
-          release_name: ${{ github.ref_name }}
-          body: |
-            Automated release for ${{ github.ref_name }}.
-
-            See the auto-generated notes below for details.
+          tag_name: ${{ github.event.inputs.tag || github.ref_name }}
+          name: ${{ github.event.inputs.tag || github.ref_name }}
+          generate_release_notes: true
           draft: false
           prerelease: false
-          generate_release_notes: true
