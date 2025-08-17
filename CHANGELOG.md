@@ -3,6 +3,12 @@ All notable changes to this project will be documented in this file. This change
 
 ## [Unreleased]
 
+## [0.1.6] - 2025-08-17
+### Published
+- Published Leiningen template to Clojars as `org.clojars.hector/lein-template.lst` (users run `lein new org.clojars.hector/lst <name>`)
+### Changed
+- Disable signing for CI deploys to Clojars (`:sign-releases false`)
+
 ## [0.1.5] - 2025-08-17
 ### Added
 - GitHub Actions workflow to publish to Clojars on tag or manual dispatch
@@ -31,7 +37,8 @@ All notable changes to this project will be documented in this file. This change
 - Files from the new template.
 - Widget maker public API - `make-widget-sync`.
 
-[Unreleased]: https://github.com/hectorqlucero/lst/compare/v0.1.5...HEAD
+[Unreleased]: https://github.com/hectorqlucero/lst/compare/v0.1.6...HEAD
+[0.1.6]: https://github.com/hectorqlucero/lst/compare/v0.1.5...v0.1.6
 [0.1.5]: https://github.com/hectorqlucero/lst/compare/v0.1.4...v0.1.5
 [0.1.4]: https://github.com/hectorqlucero/lst/compare/v0.1.3...v0.1.4
 [0.1.1]: https://github.com/your-name/ls/compare/0.1.0...0.1.1

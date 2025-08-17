@@ -41,6 +41,7 @@
   <a href="https://github.com/hectorqlucero/lst/releases"><img alt="Latest Release" src="https://img.shields.io/github/v/release/hectorqlucero/lst?display_name=tag&sort=semver"></a>
   <a href="https://github.com/hectorqlucero/lst/releases"><img alt="Release date" src="https://img.shields.io/github/release-date/hectorqlucero/lst"></a>
   <a href="https://github.com/hectorqlucero/lst/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/hectorqlucero/lst/actions/workflows/ci.yml/badge.svg?branch=main"></a>
+  <a href="https://clojars.org/org.clojars.hector/lein-template.lst"><img alt="Clojars" src="https://img.shields.io/clojars/v/org.clojars.hector/lein-template.lst.svg"></a>
   <a href="https://github.com/hectorqlucero/lst/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/hectorqlucero/lst?style=social"></a>
   <a href="https://github.com/hectorqlucero/lst/issues"><img alt="Open issues" src="https://img.shields.io/github/issues/hectorqlucero/lst"></a>
   <a href="https://github.com/hectorqlucero/lst/pulls"><img alt="Open pull requests" src="https://img.shields.io/github/issues-pr/hectorqlucero/lst"></a>
