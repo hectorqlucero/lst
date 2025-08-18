@@ -13,7 +13,18 @@ tasks:
       lein -v
       lein clean && lein deps && lein install
     command: |
-      lein new lst gpapp
+      if [ ! -d gpapp ]; then
+        lein new lst gpapp
+      fi
       cd gpapp
       echo "Run 'lein with-profile dev run' to start the server, then open the Port 3000 preview."
   echo "Note: After this template is published to Clojars, you can also run 'lein new org.clojars.hector/lst <name>' anywhere."
+  - name: Run dev server
+    command: |
+      # Wait for the project to be created by the setup task
+      until [ -f gpapp/project.clj ]; do
+        echo "Waiting for gpapp to be ready..."
+        sleep 2
+      done
+      cd gpapp
+      lein with-profile dev run
