@@ -51,8 +51,6 @@
   <a href="https://github.com/hectorqlucero/lst/graphs/contributors"><img alt="Contributors" src="https://img.shields.io/github/contributors/hectorqlucero/lst"></a>
   <a href="https://github.com/hectorqlucero/lst/issues"><img alt="PRs Welcome" src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg"></a>
   <a href="https://github.com/new?template_name=lst&template_owner=hectorqlucero"><img alt="Use this template" src="https://img.shields.io/badge/Use%20this%20template-Generate-blue?logo=github"></a>
-  <a href="https://gitpod.io/#https://github.com/hectorqlucero/lst"><img alt="Gitpod ready" src="https://img.shields.io/badge/Gitpod-Ready--to--Code-FFAE33?logo=gitpod"></a>
-  <a href="https://codespaces.new/hectorqlucero/lst?quickstart=1"><img alt="Open in Codespaces" src="https://img.shields.io/badge/Codespaces-Ready-181717?logo=github"></a>
 </p>
 
 <p align="center">
@@ -77,7 +75,6 @@
 - [Quick Start](#quick-start)
 - [Demo](#demo)
 - [What’s New](#whats-new)
-- [Quickstart in the cloud](#quickstart-in-the-cloud)
 - [Configuration](#configuration)
 - [Themes](#themes)
 - [Core Concepts](#core-concepts)
@@ -101,8 +98,6 @@
 ## ⚡ Try it now
 
 - Use this template: https://github.com/new?template_name=lst&template_owner=hectorqlucero
-- Open in Gitpod: https://gitpod.io/#https://github.com/hectorqlucero/lst
-- Open in Codespaces: https://codespaces.new/hectorqlucero/lst?quickstart=1
 
 Prefer local? See Quick Start below.
 
@@ -120,40 +115,7 @@ For local development of this template (contributing here), use the steps in Qui
 
 ---
 
-## ☁️ Quickstart in the cloud
 
-Pick one of the zero-setup options and get running in under a minute:
-
-### Gitpod
-
-1) Open: https://gitpod.io/#https://github.com/hectorqlucero/lst
-2) Generate a sample app and run (in the Gitpod terminal):
-
-```bash
-lein new lst gpapp && cd gpapp && lein with-profile dev run
-```
-
-### Codespaces
-
-1) Open: https://codespaces.new/hectorqlucero/lst?quickstart=1
-2) Generate and run:
-
-```bash
-lein new lst csapp && cd csapp && lein with-profile dev run
-```
-
-### Devcontainer (local VS Code)
-
-1) Open folder in Dev Container
-2) After setup, go to generated `ciapp/` or create your own and run:
-
-```bash
-lein with-profile dev run
-```
-
-Then open http://localhost:3000
-
----
 
 ## 🎯 Overview
 
