@@ -273,6 +273,8 @@ Edit `resources/private/config.clj` with your database credentials:
  :path         "/uploads/"                 ;; Uploads path (for web)
  :max-upload-mb 5
  :allowed-image-exts ["jpg" "jpeg" "png" "gif" "bmp" "webp"]
+   ;; --- UI Theme ---
+   :theme "cerulean" ;; Options: "default" (Bootstrap), "cerulean", "slate", "minty", "lux", "cyborg", "sandstone", "superhero", "flatly", "yeti"
  ;; Optional email config
  :email-host   "smtp.example.com"
  :email-user   "user@example.com"
@@ -294,6 +296,7 @@ Edit `resources/private/config.clj` with your database credentials:
 | `:base-url` | Base URL for the application | ⚠️ Recommended |
 | `:img-url` | Base URL for images | ⚠️ If serving images |
 | `:path` | Web path for uploads | ⚠️ If using file uploads |
+| `:theme` | Default UI theme (see Themes section) | ⚠️ Recommended |
 | `:email-*` | SMTP email configuration | ⚠️ If sending emails |
 
 ### Database Setup Commands
