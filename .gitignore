@@ -21,10 +21,8 @@ pom.xml.asc
 /.project
 /.classpath
 /.settings/
-# VS Code: ignore everything except shared settings
-/.vscode/*
-!/.vscode/settings.json
-!/.vscode/extensions.json
+# VS Code
+/.vscode/
 .DS_Store
 
 # Clojure tooling caches and histories
