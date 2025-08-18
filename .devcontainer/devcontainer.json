@@ -1,0 +1,16 @@
+{
+    "name": "LST Java 17 + Lein",
+    "build": {
+        "dockerfile": "Dockerfile"
+    },
+    "forwardPorts": [3000],
+    "customizations": {
+        "vscode": {
+            "extensions": [
+                "betterthantomorrow.calva",
+                "vscjava.vscode-java-pack"
+            ]
+        }
+    },
+    "postCreateCommand": "lein -v && java -version"
+}
