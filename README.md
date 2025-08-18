@@ -198,7 +198,7 @@ scripts/make-demo-gif.sh 3   # default 3 fps; increase for faster playback
 Tip: Try 4–5 fps for medium speed, 8–10 fps for fast.
 
 Notes:
-- The script and workflow curate a subset of `screenshot-*.png` files in a clear narrative order.
+- The script and workflow curate a subset of `images/screenshot-*.png` files in a clear narrative order.
 - If you add or rename screenshots, regenerate the GIF to update the walkthrough.
 - For a smaller file, lower the output width or FPS in the script/workflow.
 
