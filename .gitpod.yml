@@ -14,19 +14,20 @@ tasks:
       lein clean && lein deps && lein install
     command: |
       echo "Java in Setup task:" && java -version && which java
-      if [ ! -d gpapp ]; then
-        lein new lst gpapp
+      if [ ! -d myapp ]; then
+        # Generate a default Leiningen app project
+        lein new app myapp
       fi
-      cd gpapp
-      echo "Run 'lein with-profile dev run' to start the server, then open the Port 3000 preview."
-      echo "Note: After this template is published to Clojars, you can also run 'lein new org.clojars.hector/lst <name>' anywhere."
+      cd myapp
+      echo "Run 'lein run' to start the app."
+      echo "This workspace now uses a default Leiningen app (not the lst template)."
   - name: Run dev server
     command: |
-      echo "Java in Dev Server task:" && java -version && which java
-      # Wait for the project to be created by the setup task
-      until [ -f gpapp/project.clj ]; do
+  echo "Java in Dev Server task:" && java -version && which java
+  # Wait for the project to be created by the setup task
+  until [ -f myapp/project.clj ]; do
         echo "Waiting for gpapp to be ready..."
         sleep 2
       done
-      cd gpapp
-      lein with-profile dev run
+  cd myapp
+  lein run
