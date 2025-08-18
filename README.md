@@ -144,23 +144,23 @@ Below are example screenshots of LST-generated interfaces. These images demonstr
 
 | Screenshot | Description |
 |------------|-------------|
-| ![Screenshot 1](./screenshot-1.png) | Public Page |
-| ![Screenshot 2](./screenshot-2.png) | Login Form |
-| ![Screenshot 3](./screenshot-3.png) | Login Form |
-| ![Screenshot 4](./screenshot-4.png) | Change Password Form |
-| ![Screenshot 5](./screenshot-5.png) | Private Page |
-| ![Screenshot 6](./screenshot-6.png) | Contactos Dashboard |
-| ![Screenshot 7](./screenshot-7.png) | Reports Menu |
-| ![Screenshot 8](./screenshot-8.png) | Users Report |
-| ![Screenshot 9](./screenshot-9.png) | Administration Menu |
-| ![Screenshot 10](./screenshot-10.png) | Contactos Grid |
-| ![Screenshot 11](./screenshot-11.png) | Administration Menu |
-| ![Screenshot 12](./screenshot-12.png) | Siblings Subgrid |
-| ![Screenshot 13](./screenshot-13.png) | Subgrid Edit Record |
-| ![Screenshot 14](./screenshot-14.png) | Subgrid New Record |
-| ![Screenshot 15](./screenshot-15.png) | Grid Edit with thumbnail |
-| ![Screenshot 16](./screenshot-16.png) | Grid Edit with image |
-| ![Screenshot 17](./screenshot-17.png) | Grid showing thumbnails |
+| ![Screenshot 1](./images/screenshot-1.png) | Public Page |
+| ![Screenshot 2](./images/screenshot-2.png) | Login Form |
+| ![Screenshot 3](./images/screenshot-3.png) | Login Form |
+| ![Screenshot 4](./images/screenshot-4.png) | Change Password Form |
+| ![Screenshot 5](./images/screenshot-5.png) | Private Page |
+| ![Screenshot 6](./images/screenshot-6.png) | Contactos Dashboard |
+| ![Screenshot 7](./images/screenshot-7.png) | Reports Menu |
+| ![Screenshot 8](./images/screenshot-8.png) | Users Report |
+| ![Screenshot 9](./images/screenshot-9.png) | Administration Menu |
+| ![Screenshot 10](./images/screenshot-10.png) | Contactos Grid |
+| ![Screenshot 11](./images/screenshot-11.png) | Administration Menu |
+| ![Screenshot 12](./images/screenshot-12.png) | Siblings Subgrid |
+| ![Screenshot 13](./images/screenshot-13.png) | Subgrid Edit Record |
+| ![Screenshot 14](./images/screenshot-14.png) | Subgrid New Record |
+| ![Screenshot 15](./images/screenshot-15.png) | Grid Edit with thumbnail |
+| ![Screenshot 16](./images/screenshot-16.png) | Grid Edit with image |
+| ![Screenshot 17](./images/screenshot-17.png) | Grid showing thumbnails |
 
 *All screenshots are from a default LST application using Bootstrap 5 styling. You can fully customize the appearance and layout to match your branding.*
 
@@ -408,16 +408,16 @@ Below are thumbnails of the bundled themes available in this template:
 
 | Theme | Preview |
 |-------|---------|
-| Default (Bootstrap) | ![default](./default.png) |
-| Cerulean | ![cerulean](./cerulean.png) |
-| Cyborg | ![cyborg](./cyborg.png) |
-| Flatly | ![flatly](./flatly.png) |
-| Lux | ![lux](./lux.png) |
-| Minty | ![minty](./minty.png) |
-| Sandstone | ![sandstone](./sandstone.png) |
-| Slate | ![slate](./slate.png) |
-| Superhero | ![superhero](./superhero.png) |
-| Yeti | ![yeti](./yeti.png) |
+| Default (Bootstrap) | ![default](./images/default.png) |
+| Cerulean | ![cerulean](./images/cerulean.png) |
+| Cyborg | ![cyborg](./images/cyborg.png) |
+| Flatly | ![flatly](./images/flatly.png) |
+| Lux | ![lux](./images/lux.png) |
+| Minty | ![minty](./images/minty.png) |
+| Sandstone | ![sandstone](./images/sandstone.png) |
+| Slate | ![slate](./images/slate.png) |
+| Superhero | ![superhero](./images/superhero.png) |
+| Yeti | ![yeti](./images/yeti.png) |
 
 Notes:
 - If you don’t set `:theme`, the app falls back to `default`.
@@ -577,7 +577,7 @@ lein subgrid order_items orders order_id "Product:product_name" "Qty:quantity"
 
 #### Example Subgrid UI
 
-![Subgrid Example](./subgrid-example.png)
+![Subgrid Example](./images/subgrid-example.png)
 *Example: A subgrid showing sibling items within an contactos.*
 
 ---

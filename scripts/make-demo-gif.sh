@@ -15,15 +15,15 @@ mkdir -p docs
 
 # Curate a nice tour order; include only files that exist.
 frames=(
-  screenshot-2.png
-  screenshot-5.png
-  screenshot-6.png
-  screenshot-8.png
-  screenshot-10.png
-  screenshot-12.png
-  screenshot-15.png
-  screenshot-16.png
-  screenshot-17.png
+  images/screenshot-2.png
+  images/screenshot-5.png
+  images/screenshot-6.png
+  images/screenshot-8.png
+  images/screenshot-10.png
+  images/screenshot-12.png
+  images/screenshot-15.png
+  images/screenshot-16.png
+  images/screenshot-17.png
 )
 
 use_frames=()

@@ -11,7 +11,7 @@ on:
     branches:
       - main
     paths:
-      - 'screenshot-*.png'
+      - 'images/screenshot-*.png'
 
 permissions:
   contents: write
@@ -33,8 +33,8 @@ jobs:
         run: |
           mkdir -p docs
           # If you want a curated order, list them explicitly; otherwise glob all
-          if ls screenshot-*.png >/dev/null 2>&1; then
-            ls -1 screenshot-*.png > frames.txt
+          if ls images/screenshot-*.png >/dev/null 2>&1; then
+            ls -1 images/screenshot-*.png > frames.txt
           else
             echo "skip=true" >> "$GITHUB_OUTPUT"
             exit 0
