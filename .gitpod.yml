@@ -13,7 +13,6 @@ tasks:
       lein -v
       lein clean && lein deps && lein install
     command: |
-      echo "Java in Setup task:" && java -version && which java
       if [ ! -d myapp ]; then
         # Generate a default Leiningen app project
         lein new app myapp
@@ -23,11 +22,10 @@ tasks:
       echo "This workspace now uses a default Leiningen app (not the lst template)."
   - name: Run dev server
     command: |
-  echo "Java in Dev Server task:" && java -version && which java
-  # Wait for the project to be created by the setup task
-  until [ -f myapp/project.clj ]; do
-        echo "Waiting for gpapp to be ready..."
+      # Wait for the project to be created by the setup task
+      until [ -f myapp/project.clj ]; do
+        echo "Waiting for myapp to be ready..."
         sleep 2
       done
-  cd myapp
-  lein run
+      cd myapp
+      lein run
