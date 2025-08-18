@@ -27,7 +27,7 @@ for f in "${frames[@]}"; do
 done
 
 if [[ ${#use_frames[@]} -eq 0 ]]; then
-  echo "No screenshots found (screenshot-*.png)." >&2
+  echo "No screenshots found (images/screenshot-*.png)." >&2
   exit 0
 fi
 
