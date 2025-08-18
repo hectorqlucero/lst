@@ -14,12 +14,12 @@ tasks:
       lein clean && lein deps && lein install
     command: |
       if [ ! -d myapp ]; then
-        # Generate a default Leiningen app project
-        lein new app myapp
+        # Generate an LST web app from this template
+        lein new lst myapp
       fi
       cd myapp
-      echo "Run 'lein run' to start the app."
-      echo "This workspace now uses a default Leiningen app (not the lst template)."
+      echo "Run 'lein with-profile dev run' to start the LST app on port 3000."
+      echo "This workspace now uses the LST template."
       # Create a workspace file and open it to switch editor context to myapp
       cat > myapp.code-workspace <<'EOF'
       {
@@ -27,7 +27,7 @@ tasks:
         "settings": {}
       }
       EOF
-      gp open myapp.code-workspace || true
+  gp open myapp.code-workspace || true
   - name: Run dev server
     command: |
       # Wait for the project to be created by the setup task
@@ -36,4 +36,4 @@ tasks:
         sleep 2
       done
       cd myapp
-      lein run
+  lein with-profile dev run
