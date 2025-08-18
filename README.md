@@ -34,23 +34,10 @@
 ---
 
 <p align="center">
-  <a href="https://clojure.org/"><img alt="Clojure" src="https://img.shields.io/badge/Clojure-1.10+-blue.svg"></a>
-  <a href="https://openjdk.org/"><img alt="Java" src="https://img.shields.io/badge/Java-17+-orange.svg"></a>
-  <a href="https://leiningen.org/"><img alt="Leiningen" src="https://img.shields.io/badge/Leiningen-2.9.0+-green.svg"></a>
   <a href="./LICENSE"><img alt="License" src="https://img.shields.io/badge/License-MIT-black.svg"></a>
-  <a href="https://github.com/hectorqlucero/lst/releases"><img alt="Latest Release" src="https://img.shields.io/github/v/release/hectorqlucero/lst?display_name=tag&sort=semver"></a>
-  <a href="https://github.com/hectorqlucero/lst/releases"><img alt="Release date" src="https://img.shields.io/github/release-date/hectorqlucero/lst"></a>
   <a href="https://github.com/hectorqlucero/lst/actions/workflows/ci.yml"><img alt="CI" src="https://github.com/hectorqlucero/lst/actions/workflows/ci.yml/badge.svg?branch=main"></a>
   <a href="https://clojars.org/org.clojars.hector/lein-template.lst"><img alt="Clojars" src="https://img.shields.io/clojars/v/org.clojars.hector/lein-template.lst.svg"></a>
-  <a href="https://github.com/hectorqlucero/lst/stargazers"><img alt="GitHub stars" src="https://img.shields.io/github/stars/hectorqlucero/lst?style=social"></a>
-  <a href="https://github.com/hectorqlucero/lst/issues"><img alt="Open issues" src="https://img.shields.io/github/issues/hectorqlucero/lst"></a>
-  <a href="https://github.com/hectorqlucero/lst/pulls"><img alt="Open pull requests" src="https://img.shields.io/github/issues-pr/hectorqlucero/lst"></a>
-  <a href="https://github.com/hectorqlucero/lst/fork"><img alt="Forks" src="https://img.shields.io/github/forks/hectorqlucero/lst?style=social"></a>
-  <a href="https://github.com/hectorqlucero/lst/watchers"><img alt="Watchers" src="https://img.shields.io/github/watchers/hectorqlucero/lst?style=social"></a>
-  <a href="https://github.com/hectorqlucero/lst/commits"><img alt="Last commit" src="https://img.shields.io/github/last-commit/hectorqlucero/lst"></a>
-  <a href="https://github.com/hectorqlucero/lst/graphs/contributors"><img alt="Contributors" src="https://img.shields.io/github/contributors/hectorqlucero/lst"></a>
-  <a href="https://github.com/hectorqlucero/lst/issues"><img alt="PRs Welcome" src="https://img.shields.io/badge/PRs-welcome-brightgreen.svg"></a>
-  <a href="https://github.com/new?template_name=lst&template_owner=hectorqlucero"><img alt="Use this template" src="https://img.shields.io/badge/Use%20this%20template-Generate-blue?logo=github"></a>
+  <a href="https://github.com/hectorqlucero/lst/releases"><img alt="Latest Release" src="https://img.shields.io/github/v/release/hectorqlucero/lst?display_name=tag&sort=semver"></a>
 </p>
 
 <p align="center">
@@ -103,20 +90,6 @@ Prefer local? See Quick Start below.
 
 ---
 
-## 📦 Install from Clojars
-
-Once published, you can generate a new app directly from the registry:
-
-```bash
-lein new org.clojars.hector/lst myapp
-```
-
-For local development of this template (contributing here), use the steps in Quick Start to `lein install` and then run `lein new lst myapp`.
-
----
-
-
-
 ## 🎯 Overview
 
 LST is a professional Leiningen template for building full‑stack, database‑backed Clojure web applications in minutes—not weeks. It generates complete CRUD grids, dashboards, and reports with a clean MVC structure, Bootstrap 5 themes, DataTables, built‑in auth, and multi‑database support.
@@ -168,39 +141,12 @@ Below are example screenshots of LST-generated interfaces. These images demonstr
 
 ## 🎬 Demo
 
-Below is an auto-generated GIF that gives a quick tour of the login, dashboard, grids, subgrids, and image fields.
-
 <p align="center">
   <img src="./docs/demo.gif" alt="LST demo walkthrough" width="100%" />
   <br/>
-  <sub>If the GIF is missing, run the workflow below or the local script to create it.</sub>
-  <br/>
-  <sub>Tip: Click the image to view it full size.</sub>
+  <sub>See docs/DEMO.md to rebuild this GIF locally from screenshots.</sub>
   <br/>
 </p>
-
-### Generate or update the demo GIF
-
-Two ways to build `docs/demo.gif` from the repository screenshots:
-
-1) GitHub Actions (recommended)
-  - Go to Actions → "Create demo GIF" → Run workflow.
-  - Optionally set fps (default 3).
-  - The job commits `docs/demo.gif` back to `main`.
-
-2) Locally with ImageMagick
-  - Ensure ImageMagick is installed (the `convert` tool).
-  - Run the helper script:
-
-```bash
-scripts/make-demo-gif.sh 3   # default 3 fps; increase for faster playback
-```
-Tip: Try 4–5 fps for medium speed, 8–10 fps for fast.
-
-Notes:
-- The script and workflow curate a subset of `images/screenshot-*.png` files in a clear narrative order.
-- If you add or rename screenshots, regenerate the GIF to update the walkthrough.
-- For a smaller file, lower the output width or FPS in the script/workflow.
 
 ---
 
@@ -259,33 +205,22 @@ See all releases and notes: https://github.com/hectorqlucero/lst/releases
 
 ### Installation
 
-```bash
-# 1. Clone and install the template
-git clone <your-repo-url>
-cd lst
-lein clean && lein deps && lein install
-```
+Create a new app directly from Clojars (no clone needed):
 
 ```bash
-# 2. Create your new application
-# Option A: using the locally installed template (after step 1)
-lein new lst myapp
-
-# Option B: directly from Clojars (no local install needed)
 lein new org.clojars.hector/lst myapp
-
 cd myapp
 ```
 
 ### First Run
 
 ```bash
-# 3. Configure database (see Configuration section)
-# 4. Run migrations and seed data
+# 1) Configure database (see Configuration section)
+# 2) Run migrations and seed data (optional for sample data)
 lein migrate
 lein database
 
-# 5. Start the development server
+# 3) Start the development server
 lein with-profile dev run
 ```
 
@@ -1109,11 +1044,17 @@ lein subgrid <child> <parent> <fk> :rights [A]         # Admin only
 
 ## 🤝 Contributing
 
-1. Fork the repository  
-2. Create a feature branch  
-3. Make your changes  
-4. Add tests  
-5. Submit a pull request
+Developing the template locally?
+
+```bash
+git clone <your-fork-or-this-repo>
+cd lst
+lein clean && lein deps && lein install
+lein new lst myapp
+cd myapp && lein test
+```
+
+Then open a PR with your changes.
 
 ---
 
