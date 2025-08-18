@@ -7,12 +7,27 @@ ports:
 tasks:
   - name: Setup Lein and build template
     init: |
+      # Ensure Java 17 is available and selected
+      sudo apt-get update -y
+      sudo apt-get install -y openjdk-17-jdk
+      # Set Java 17 as default
+      if [ -x /usr/bin/update-alternatives ] && [ -d /usr/lib/jvm/java-17-openjdk-amd64 ]; then
+        sudo update-alternatives --set java /usr/lib/jvm/java-17-openjdk-amd64/bin/java || true
+        sudo update-alternatives --set javac /usr/lib/jvm/java-17-openjdk-amd64/bin/javac || true
+        export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+        export PATH=$JAVA_HOME/bin:$PATH
+      fi
       curl -fsSL https://raw.githubusercontent.com/technomancy/leiningen/stable/bin/lein -o /workspace/lein
       chmod +x /workspace/lein
       sudo mv /workspace/lein /usr/local/bin/lein
       lein -v
       lein clean && lein deps && lein install
     command: |
+      # Re-export JAVA_HOME for the interactive shell
+      if [ -d /usr/lib/jvm/java-17-openjdk-amd64 ]; then
+        export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+        export PATH=$JAVA_HOME/bin:$PATH
+      fi
       if [ ! -d gpapp ]; then
         lein new lst gpapp
       fi
@@ -21,6 +36,10 @@ tasks:
       echo "Note: After this template is published to Clojars, you can also run 'lein new org.clojars.hector/lst <name>' anywhere."
   - name: Run dev server
     command: |
+      if [ -d /usr/lib/jvm/java-17-openjdk-amd64 ]; then
+        export JAVA_HOME=/usr/lib/jvm/java-17-openjdk-amd64
+        export PATH=$JAVA_HOME/bin:$PATH
+      fi
       # Wait for the project to be created by the setup task
       until [ -f gpapp/project.clj ]; do
         echo "Waiting for gpapp to be ready..."
