@@ -20,14 +20,6 @@ tasks:
       cd myapp
       echo "Run 'lein with-profile dev run' to start the LST app on port 3000."
       echo "This workspace now uses the LST template."
-      # Create a workspace file and open it to switch editor context to myapp
-      cat > myapp.code-workspace <<'EOF'
-      {
-        "folders": [ { "path": "." } ],
-        "settings": {}
-      }
-      EOF
-  gp open myapp.code-workspace || true
   - name: Run dev server
     command: |
       # Wait for the project to be created by the setup task
@@ -36,4 +28,4 @@ tasks:
         sleep 2
       done
       cd myapp
-  lein with-profile dev run
+      lein with-profile dev run
