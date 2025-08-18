@@ -20,8 +20,14 @@ tasks:
       cd myapp
       echo "Run 'lein run' to start the app."
       echo "This workspace now uses a default Leiningen app (not the lst template)."
-        # Open the generated project in the editor as the workspace root
-        code -r myapp || gp open myapp || true
+      # Create a workspace file and open it to switch editor context to myapp
+      cat > myapp.code-workspace <<'EOF'
+      {
+        "folders": [ { "path": "." } ],
+        "settings": {}
+      }
+      EOF
+      gp open myapp.code-workspace || true
   - name: Run dev server
     command: |
       # Wait for the project to be created by the setup task
