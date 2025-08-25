@@ -386,6 +386,12 @@
       (clojure.string/replace #"_" " ")
       (clojure.string/capitalize)))
 
+;; --- FILE TOUCH UTILITY ---
+(defn touch-file [path]
+  (let [f (io/file path)]
+    (when (.exists f)
+      (.setLastModified f (System/currentTimeMillis)))))
+
 ;; --- FILE GENERATION ---
 
 ;; Normalize rights tokens from CLI (e.g., :rights [U A S] or :rights ["U" "A" "S"]) to
@@ -637,13 +643,15 @@
       (let [fields (for [field (map name (get-table-columns table :conn conn))]
                      [(auto-label field) field])]
         (when set-default? (update-config-default! conn))
-        (generate-files table (rest fields) conn rights))
+        (generate-files table (rest fields) conn rights)
+        (touch-file "src/{{name}}/core.clj"))
       :else
       (let [fields (map #(let [[label field] (str/split % #":")]
                            [label field])
                         field-pairs)]
         (when set-default? (update-config-default! conn))
-        (generate-files table fields conn rights)))))
+        (generate-files table fields conn rights)
+        (touch-file "src/{{name}}/core.clj")))))
 
 
 ;; Accept :rights [..] as last argument

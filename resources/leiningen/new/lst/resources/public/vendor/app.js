@@ -1,3 +1,4 @@
+
 $(document).ready(function () {
   // Theme handling: apply saved theme or config-provided default
   (function initTheme() {
@@ -5,16 +6,18 @@ $(document).ready(function () {
       var saved = localStorage.getItem('theme');
       var body = document.body;
       var classes = Array.from(body.classList);
+      var configTheme = null;
       var current = classes.find(function (c) { return c.indexOf('theme-') === 0; });
-      var fallback = current || 'theme-default';
-      var desired = saved ? ('theme-' + saved) : fallback;
-
+      if (current) {
+        configTheme = current.replace('theme-', '');
+      }
+      var themeName = saved || configTheme || 'sketchy';
+      // Remove all theme-* classes and set the correct one
       classes.filter(function (c) { return c.indexOf('theme-') === 0; })
         .forEach(function (c) { body.classList.remove(c); });
-      body.classList.add(desired);
+      body.classList.add('theme-' + themeName);
 
       // Update dropdown label and active item
-      var themeName = (saved || (fallback.replace('theme-', '')) || 'default');
       var labelSpan = document.getElementById('currentThemeLabel');
       if (labelSpan) {
         labelSpan.textContent = titleCase(themeName);
@@ -38,6 +41,42 @@ $(document).ready(function () {
         if (c.indexOf('theme-') === 0) body.classList.remove(c);
       });
       body.classList.add('theme-' + theme);
+
+      // Update Bootswatch theme CSS <link>, create if missing
+      var themeMap = {
+        default: '/vendor/bootstrap.min.css',
+        cerulean: '/vendor/bootswatch-cerulean.min.css',
+        cosmo: '/vendor/bootswatch-cosmo.min.css',
+        cyborg: '/vendor/bootswatch-cyborg.min.css',
+        darkly: '/vendor/bootswatch-darkly.min.css',
+        journal: '/vendor/bootswatch-journal.min.css',
+        litera: '/vendor/bootswatch-litera.min.css',
+        lumen: '/vendor/bootswatch-lumen.min.css',
+        lux: '/vendor/bootswatch-lux.min.css',
+        materia: '/vendor/bootswatch-materia.min.css',
+        minty: '/vendor/bootswatch-minty.min.css',
+        morph: '/vendor/bootswatch-morph.min.css',
+        pulse: '/vendor/bootswatch-pulse.min.css',
+        quartz: '/vendor/bootswatch-quartz.min.css',
+        sandstone: '/vendor/bootswatch-sandstone.min.css',
+        simplex: '/vendor/bootswatch-simplex.min.css',
+        sketchy: '/vendor/bootswatch-sketchy.min.css',
+        slate: '/vendor/bootswatch-slate.min.css',
+        solar: '/vendor/bootswatch-solar.min.css',
+        spacelab: '/vendor/bootswatch-spacelab.min.css',
+        united: '/vendor/bootswatch-united.min.css',
+        vapor: '/vendor/bootswatch-vapor.min.css',
+        zephyr: '/vendor/bootswatch-zephyr.min.css'
+      };
+      var href = themeMap[theme] || themeMap['default'];
+      var link = document.getElementById('bootswatch-theme');
+      if (!link) {
+        link = document.createElement('link');
+        link.rel = 'stylesheet';
+        link.id = 'bootswatch-theme';
+        document.head.insertBefore(link, document.head.firstChild);
+      }
+      link.setAttribute('href', href);
 
       // Update label and active UI state
       var labelSpan = document.getElementById('currentThemeLabel');
@@ -71,13 +110,36 @@ $(document).ready(function () {
     try {
       var link = document.getElementById('dt-theme-css');
       if (!link) return;
-      // Mapping for available DataTables themed CSS
+      // Mapping for available DataTables themed CSS (add all Bootswatch themes)
       var map = {
         flatly: '/vendor/datatables-flatly.min.css',
+        superhero: '/vendor/datatables-superhero.min.css',
         yeti: '/vendor/datatables-yeti.min.css',
-        superhero: '/vendor/datatables-superhero.min.css'
+        cerulean: '/vendor/datatables-cerulean.min.css',
+        cosmo: '/vendor/datatables-cosmo.min.css',
+        cyborg: '/vendor/datatables-cyborg.min.css',
+        darkly: '/vendor/datatables-darkly.min.css',
+        journal: '/vendor/datatables-journal.min.css',
+        litera: '/vendor/datatables-litera.min.css',
+        lumen: '/vendor/datatables-lumen.min.css',
+        lux: '/vendor/datatables-lux.min.css',
+        materia: '/vendor/datatables-materia.min.css',
+        minty: '/vendor/datatables-minty.min.css',
+        morph: '/vendor/datatables-morph.min.css',
+        pulse: '/vendor/datatables-pulse.min.css',
+        quartz: '/vendor/datatables-quartz.min.css',
+        sandstone: '/vendor/datatables-sandstone.min.css',
+        simplex: '/vendor/datatables-simplex.min.css',
+        sketchy: '/vendor/datatables-sketchy.min.css',
+        slate: '/vendor/datatables-slate.min.css',
+        solar: '/vendor/datatables-solar.min.css',
+        spacelab: '/vendor/datatables-spacelab.min.css',
+        united: '/vendor/datatables-united.min.css',
+        vapor: '/vendor/datatables-vapor.min.css',
+        zephyr: '/vendor/datatables-zephyr.min.css',
+        default: '/vendor/dataTables.bootstrap5.min.css'
       };
-      var href = map[theme] || '/vendor/dataTables.bootstrap5.min.css';
+      var href = map[theme] || map['default'];
       if (link.getAttribute('href') !== href) link.setAttribute('href', href);
     } catch (_) { /* ignore */ }
   }

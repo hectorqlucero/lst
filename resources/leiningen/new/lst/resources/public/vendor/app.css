@@ -54,32 +54,6 @@ body {
   max-width: 100% !important;
 }
 
-.col-sm-12 {
-  max-width: 100% !important;
-}
-
-/* Table: responsive, no fixed widths, truncate long content */
-.dataTable {
-  width: 100% !important;
-  table-layout: auto !important;
-}
-
-.dataTable th,
-.dataTable td {
-  min-width: 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  padding-left: 8px !important;
-  padding-right: 8px !important;
-}
-
-/* Remove horizontal padding from DataTables' grid columns (except main container) */
-.dataTables_wrapper .col-sm-12 {
-  padding-left: 1rem !important;
-  padding-right: 1rem !important;
-}
-
 /* Card/table container: keep padding for visual comfort and prevent clipping */
 .p-3.bg-white.rounded-bottom {
   padding-left: 1rem !important;
@@ -107,4 +81,44 @@ body>div[style*="max-width:900px"] {
   padding-right: 2rem;
   /* space for dropdown arrow */
   background-position: right 0.5rem center;
+}
+
+/* Strong scrollable dropdown for theme selector, works even if Bootswatch theme overrides */
+.theme-selector-dropdown .dropdown-menu {
+  max-height: 300px !important;
+  overflow-y: auto !important;
+  position: absolute !important;
+  z-index: 1050 !important;
+  width: max-content;
+  min-width: 200px;
+  right: 0;
+  left: auto;
+  -webkit-overflow-scrolling: touch !important;
+  pointer-events: auto !important;
+}
+
+.theme-selector-dropdown .dropdown-menu:hover,
+.theme-selector-dropdown .dropdown-menu:active {
+  overscroll-behavior: none !important;
+  touch-action: pan-y !important;
+}
+
+/* All navbar dropdown menus scroll if they overflow */
+.navbar .dropdown-menu {
+  max-height: 300px !important;
+  overflow-y: auto !important;
+  -webkit-overflow-scrolling: touch !important;
+  position: absolute !important;
+  z-index: 1050 !important;
+  width: max-content;
+  min-width: 200px;
+  right: 0;
+  left: auto;
+  pointer-events: auto !important;
+}
+
+.navbar .dropdown-menu:hover,
+.navbar .dropdown-menu:active {
+  overscroll-behavior: none !important;
+  touch-action: pan-y !important;
 }

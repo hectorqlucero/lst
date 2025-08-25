@@ -1,0 +1,7 @@
+/* Custom DataTables layout fix for Bootswatch themes */
+.dataTables_wrapper .dataTables_length,
+.dataTables_wrapper .dataTables_filter {
+    display: inline-block;
+    vertical-align: middle;
+    margin-right: 1em;
+}

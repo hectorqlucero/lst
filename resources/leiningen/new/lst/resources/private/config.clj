@@ -46,7 +46,7 @@
  :max-upload-mb 5                            ;; Optional: max image upload size in MB
  :allowed-image-exts ["jpg" "jpeg" "png" "gif" "bmp" "webp"] ;; Optional: allowed image extensions
  ;; --- Theme selection ---
- :theme "cerulean" ;; Options: "default" (Bootstrap), "cerulean", "slate", "minty", "lux", "cyborg", "sandstone", "superhero", "flatly", "yeti"
+ :theme "sketchy" ;; Options: "default" (Bootstrap), "cerulean", "slate", "minty", "lux", "cyborg", "sandstone", "superhero", "flatly", "yeti"
  ;; Optional email config
  :email-host   "smtp.example.com"
  :email-user   "user@example.com"

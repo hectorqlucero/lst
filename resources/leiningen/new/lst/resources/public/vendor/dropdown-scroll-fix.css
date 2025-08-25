@@ -1,0 +1,5 @@
+/* Custom fix for dropdown menu scrolling when overflowing container */
+.dropdown-menu {
+    max-height: 60vh;
+    overflow-y: auto;
+}
