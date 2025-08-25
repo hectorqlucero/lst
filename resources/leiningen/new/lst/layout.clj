@@ -245,53 +245,53 @@
 
 ;; Add theme class to <body> using (:theme config)
 (defn application [request title ok js & content]
-  (html5 {:ng-app (:site-name config) :lang "en"}
-         [:head
-          ;; Hide body until theme CSS is loaded
-          [:style "body{visibility:hidden}"]
-          ;; Minimal inline style to neutralize blue flash until theme loads
-          [:style ".navbar, .nav-link, .dropdown-menu, .btn-primary {background-color:#f8f9fa!important;color:#212529!important;border-color:#dee2e6!important;}"]
-          ;; Loader script: inject correct Bootswatch theme CSS before other CSS, show body only after loaded
-          [:script {:type "text/javascript"}
-           (str "(function(){"
-                "var theme=localStorage.getItem('theme');"
-                "if(!theme){theme='" (or (:theme config) "default") "';localStorage.setItem('theme',theme);}"
-                "var themeMap={default:'/vendor/bootstrap.min.css',flatly:'/vendor/bootswatch-flatly.min.css',superhero:'/vendor/bootswatch-superhero.min.css',yeti:'/vendor/bootswatch-yeti.min.css',cerulean:'/vendor/bootswatch-cerulean.min.css',cosmo:'/vendor/bootswatch-cosmo.min.css',cyborg:'/vendor/bootswatch-cyborg.min.css',darkly:'/vendor/bootswatch-darkly.min.css',journal:'/vendor/bootswatch-journal.min.css',litera:'/vendor/bootswatch-litera.min.css',lumen:'/vendor/bootswatch-lumen.min.css',lux:'/vendor/bootswatch-lux.min.css',materia:'/vendor/bootswatch-materia.min.css',minty:'/vendor/bootswatch-minty.min.css',morph:'/vendor/bootswatch-morph.min.css',pulse:'/vendor/bootswatch-pulse.min.css',quartz:'/vendor/bootswatch-quartz.min.css',sandstone:'/vendor/bootswatch-sandstone.min.css',simplex:'/vendor/bootswatch-simplex.min.css',sketchy:'/vendor/bootswatch-sketchy.min.css',slate:'/vendor/bootswatch-slate.min.css',solar:'/vendor/bootswatch-solar.min.css',spacelab:'/vendor/bootswatch-spacelab.min.css',united:'/vendor/bootswatch-united.min.css',vapor:'/vendor/bootswatch-vapor.min.css',zephyr:'/vendor/bootswatch-zephyr.min.css'};"
-                "var href=themeMap[theme]||themeMap['default'];"
-                "var link=document.getElementById('bootswatch-theme');"
-                "if(!link){link=document.createElement('link');link.rel='stylesheet';link.id='bootswatch-theme';document.head.insertBefore(link,document.head.firstChild);}"
-                "link.href=href;"
-                "link.onload=function(){document.body.style.visibility='visible';};"
-                "})();")]
-          [:title (or title (:site-name config))]
-          [:meta {:charset "UTF-8"}]
-          [:meta {:name "viewport" :content "width=device-width, initial-scale=1"}]
-          (app-css)
-          [:link {:rel "shortcut icon" :type "image/x-icon" :href "data:image/x-icon;,"}]]
-         [:body
-          [:div {:style "height: 70px;"}]
-          [:div.container-fluid.pt-3
-           {:style "min-height: 100vh;"}
-           (cond
-             (= ok -1) (menus-none)
-             (= ok 0) (menus-public)
-             (> ok 0) (menus-private request))
-           [:div.container-fluid.px-4
-            {:style "margin-top:32px; max-height:calc(100vh - 200px); overflow-y:auto; padding-bottom:80px;"}
-            (doall content)]]
-          [:div#exampleModal.modal.fade
-           {:tabindex "-1" :aria-labelledby "exampleModalLabel" :aria-hidden "true"}
-           [:div.modal-dialog
-            [:div.modal-content
-             [:div.modal-header.bg-primary.text-white
-              [:h5#exampleModalLabel.modal-title "Modal"]
-              [:button.btn-close {:type "button" :data-bs-dismiss "modal" :aria-label "Close"}]]
-             [:div.modal-body]]]]
-          (app-js)
-          js
-          [:footer.bg-light.text-center.fixed-bottom.py-2.shadow-sm
-           [:span "Copyright © "
-            (t/year (t/now)) " " (:company-name config) " - All Rights Reserved"]]]))
+  (html5
+   [:head
+    [:style ".preload { visibility: hidden; }"]
+    [:script
+     "document.addEventListener('DOMContentLoaded',function(){"
+     "var theme=localStorage.getItem('theme')||'sketchy';"
+     "document.body.className = 'preload theme-' + theme;"
+     "var themeMap={default:'/vendor/bootstrap.min.css',flatly:'/vendor/bootswatch-flatly.min.css',superhero:'/vendor/bootswatch-superhero.min.css',yeti:'/vendor/bootswatch-yeti.min.css',cerulean:'/vendor/bootswatch-cerulean.min.css',cosmo:'/vendor/bootswatch-cosmo.min.css',cyborg:'/vendor/bootswatch-cyborg.min.css',darkly:'/vendor/bootswatch-darkly.min.css',journal:'/vendor/bootswatch-journal.min.css',litera:'/vendor/bootswatch-litera.min.css',lumen:'/vendor/bootswatch-lumen.min.css',lux:'/vendor/bootswatch-lux.min.css',materia:'/vendor/bootswatch-materia.min.css',minty:'/vendor/bootswatch-minty.min.css',morph:'/vendor/bootswatch-morph.min.css',pulse:'/vendor/bootswatch-pulse.min.css',quartz:'/vendor/bootswatch-quartz.min.css',sandstone:'/vendor/bootswatch-sandstone.min.css',simplex:'/vendor/bootswatch-simplex.min.css',sketchy:'/vendor/bootswatch-sketchy.min.css',slate:'/vendor/bootswatch-slate.min.css',solar:'/vendor/bootswatch-solar.min.css',spacelab:'/vendor/bootswatch-spacelab.min.css',united:'/vendor/bootswatch-united.min.css',vapor:'/vendor/bootswatch-vapor.min.css',zephyr:'/vendor/bootswatch-zephyr.min.css'};"
+     "var href=themeMap[theme]||themeMap['default'];"
+     "var link=document.getElementById('bootswatch-theme');"
+     "if(!link){"
+     "  link=document.createElement('link');"
+     "  link.rel='stylesheet';"
+     "  link.id='bootswatch-theme';"
+     "  var firstStyle=document.querySelector('head link[rel=stylesheet], head style');"
+     "  if(firstStyle){document.head.insertBefore(link,firstStyle);}else{document.head.appendChild(link);}"
+     "}"
+     "link.href=href;"
+     "link.onload=function(){document.body.classList.remove('preload');};"
+     "});"]
+    ;; ...other head content...
+    (app-css)
+    [:title title]]
+   [:body.preload.theme-sketchy
+    [:div {:style "height: 70px;"}]
+    [:div.container-fluid.pt-3
+     {:style "min-height: 100vh;"}
+     (cond
+       (= ok -1) (menus-none)
+       (= ok 0) (menus-public)
+       (> ok 0) (menus-private request))
+     [:div.container-fluid.px-4
+      {:style "margin-top:32px; max-height:calc(100vh - 200px); overflow-y:auto; padding-bottom:80px;"}
+      (doall content)]]
+    [:div#exampleModal.modal.fade
+     {:tabindex "-1" :aria-labelledby "exampleModalLabel" :aria-hidden "true"}
+     [:div.modal-dialog
+      [:div.modal-content
+       [:div.modal-header.bg-primary.text-white
+        [:h5#exampleModalLabel.modal-title "Modal"]
+        [:button.btn-close {:type "button" :data-bs-dismiss "modal" :aria-label "Close"}]]
+       [:div.modal-body]]]]
+    (app-js)
+    js
+    [:footer.bg-light.text-center.fixed-bottom.py-2.shadow-sm
+     [:span "Copyright © "
+      (t/year (t/now)) " " (:company-name config) " - All Rights Reserved"]]]))
 
 (defn error-404
   ([msg] (error-404 msg nil))
