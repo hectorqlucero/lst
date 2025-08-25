@@ -151,6 +151,25 @@ Below are example screenshots of LST-generated interfaces. These images demonstr
 ---
 
 ## 🆕 What’s New
+### v0.1.6 — 2025-08-18
+
+- Fixed template packaging to ensure latest resources are included
+- Improved local install and deployment instructions
+
+### v0.1.9 — 2025-08-24
+
+- Fixed issues in generated `app.js` and `layout.clj` files
+- Improved template hygiene and deployment process
+
+### v0.1.8 — 2025-08-24
+
+- Removed sensitive config from published template
+- Bumped version to ensure clean release
+
+### v0.1.6 — 2025-08-18
+
+- Fixed template packaging to ensure latest resources are included
+- Improved local install and deployment instructions
 
 ### v0.1.5 — 2025-08-17
 
