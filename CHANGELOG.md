@@ -1,12 +1,14 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
+## [0.1.11] - 2025-08-26
+### Changed
+- Updated `builder.clj` touch utility to trigger wrap-reload after generating grids and related files, improving development workflow.
 
 ## [0.1.10] - 2025-08-25
 ### Fixed
 - Fixed error in `layout.clj`.
 ### Published
 - Published new version to Clojars as `org.clojars.hector/lein-template.lst` v0.1.10.
-## [Unreleased]
 ## [Unreleased]
 
 ## [0.1.6] - 2025-08-17

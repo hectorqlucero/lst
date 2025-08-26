@@ -390,7 +390,10 @@
 (defn touch-file [path]
   (let [f (io/file path)]
     (when (.exists f)
-      (.setLastModified f (System/currentTimeMillis)))))
+      (let [orig (slurp f)
+            marker (str "\n;; reload " (System/currentTimeMillis) "\n")]
+        (spit f (str orig marker))
+        (spit f orig)))))
 
 ;; --- FILE GENERATION ---
 
