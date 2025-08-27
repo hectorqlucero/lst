@@ -1,5 +1,9 @@
 # Change Log
 All notable changes to this project will be documented in this file. This change log follows the conventions of [keepachangelog.com](http://keepachangelog.com/).
+## [0.1.13] - 2025-08-26
+### Fixed
+- Fixed malformed template tag `{{name}` in `models-routes.clj` that was preventing project generation.
+
 ## [0.1.12] - 2025-08-26
 ### Changed
 - Added error checking to prevent overwriting existing grids, subgrids, dashboards, or reports during generation.

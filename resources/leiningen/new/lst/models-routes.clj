@@ -109,7 +109,7 @@
   (insert-lines-after-search "src/{{name}}/routes/proutes.clj"
                              [(build-grid-require table)]
                              "[compojure.core :refer [defroutes GET POST")
-  (insert-lines-after-search "src/{{name}/routes/proutes.clj"
+  (insert-lines-after-search "src/{{name}}/routes/proutes.clj"
                              [(build-subgrid-defroutes table parent-table)]
                              "(defroutes proutes"))
 
