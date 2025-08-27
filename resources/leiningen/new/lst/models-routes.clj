@@ -54,9 +54,13 @@
         insert-at (if found-index (inc found-index) (count lines))
         lines-before (take insert-at lines)
         lines-after (drop insert-at lines)
-        new-lines (concat lines-before lines-to-insert lines-after)
+        ;; Check if lines already exist to avoid duplicates
+        existing-lines-set (set lines)
+        new-lines-to-insert (filter #(not (contains? existing-lines-set %)) lines-to-insert)
+        new-lines (concat lines-before new-lines-to-insert lines-after)
         new-file-contents (str/join "\n" new-lines)]
-    (spit file-path new-file-contents)))
+    (when (seq new-lines-to-insert)
+      (spit file-path new-file-contents))))
 
 (defn process-grid
   "Actualiza proutes.clj"
@@ -105,7 +109,7 @@
   (insert-lines-after-search "src/{{name}}/routes/proutes.clj"
                              [(build-grid-require table)]
                              "[compojure.core :refer [defroutes GET POST")
-  (insert-lines-after-search "src/{{name}}/routes/proutes.clj"
+  (insert-lines-after-search "src/{{name}/routes/proutes.clj"
                              [(build-subgrid-defroutes table parent-table)]
                              "(defroutes proutes"))
 

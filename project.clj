@@ -1,4 +1,4 @@
-(defproject org.clojars.hector/lein-template.lst "0.1.11"
+(defproject org.clojars.hector/lein-template.lst "0.1.12"
   :description "LST Skeleton Web App"
   :url "http://github.com/hectorqlucero/lst"
   :license {:name "MIT License"

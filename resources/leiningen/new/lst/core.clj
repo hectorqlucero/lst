@@ -7,7 +7,7 @@
   - Routing setup (public + private routes)
   - App builder and -main launcher"
   (:require
-   [compojure.core :refer [defroutes routes]]
+   [compojure.core :refer [routes]]
    [compojure.route :as route]
    [{{name}}.models.crud :refer [config KEY]]
    [{{name}}.routes.proutes :refer [proutes]]
@@ -143,14 +143,17 @@
   (fn [routes]
     (route-fn routes)))
 
-;; Define the application routes
+;; Define the application routes dynamically
 ;; NOTE: Route order matters; more specific routes should come before generic ones.
-(defroutes app-routes
-  (route/resources "/")
-  (route/files (:path config) {:root (:uploads config)})
-  (wrap-routes open-routes)
-  (wrap-login (wrap-routes proutes))
-  (route/not-found "Not Found"))
+(def app-routes
+  "Dynamic route definition that re-evaluates routes on each access"
+  (fn []
+    (routes
+     (route/resources "/")
+     (route/files (:path config) {:root (:uploads config)})
+     (wrap-routes open-routes)
+     (wrap-login (wrap-routes proutes))
+     (route/not-found "Not Found"))))
 
 ;; Ensure the uploads directory (and parents) exist, based on config
 (defn ensure-upload-dirs! []
@@ -163,9 +166,10 @@
 
 ;; Application configuration
 ;; The order of middleware matters: defaults/multipart first, exception handling outermost.
-(def app
-  "Ring handler composed of routes + middleware (multipart, defaults with anti-forgery, sessions, exception handling)."
-  (-> (routes #'app-routes)
+(defn create-app
+  "Create a fresh Ring handler with current routes and middleware."
+  []
+  (-> (app-routes)
       (wrap-multipart-params)
       (wrap-defaults (-> site-defaults
                          (assoc-in [:security :anti-forgery] true)
@@ -173,6 +177,15 @@
                          (assoc-in [:session :cookie-attrs] {:max-age 28800})
                          (assoc-in [:session :cookie-name] "LS")))
       (wrap-exception-handling)))
+
+(def app
+  "Ring handler - re-evaluate create-app on each access to ensure routes are current"
+  (reify
+    clojure.lang.IDeref
+    (deref [_] (create-app))
+    clojure.lang.IFn
+    (invoke [_ request] ((create-app) request))
+    (applyTo [_ args] (apply (create-app) args))))
 
 ;; Main entry point
 (defn -main

@@ -228,7 +228,7 @@
   (:require
    [{{name}}.handlers.admin._subgrid-ns_.model :refer [get-_table_ get-_table_-id]]
    [{{name}}.handlers.admin._subgrid-ns_.view :refer [_table_-view build-_table_-form]]
-  [{{name}}.models.crud :refer [build-form-delete build-form-save crud-fix-id]]
+   [{{name}}.models.crud :refer [build-form-delete build-form-save crud-fix-id]]
    [{{name}}.models.util :refer [user-level]]
    [hiccup.core :refer [html]]))
 
@@ -515,6 +515,13 @@
     (spit (str base-path "view.clj") (render-template view-template m))
     (spit (str base-path "model.clj") (render-template model-template m))
     (routes/process-grid table)
+    ;; Load the newly generated namespaces to ensure wrap-reload recognizes them
+    (require (symbol (str "{{name}}.handlers.admin." table ".controller")))
+    (require (symbol (str "{{name}}.handlers.admin." table ".view")))
+    (require (symbol (str "{{name}}.handlers.admin." table ".model")))
+    ;; Ensure all file operations are complete by reading the files back
+    (doseq [file-type ["controller.clj" "view.clj" "model.clj"]]
+      (slurp (str base-path file-type)))
     (println (str "Code generated in: src/{{name}}/handlers/admin/" table))))
 
 
@@ -536,6 +543,13 @@
     (spit (str base-path "view.clj") (render-template view-dashboard-template m))
     (spit (str base-path "model.clj") (render-template model-dashboard-template m))
     (routes/process-dashboard table)
+    ;; Load the newly generated namespaces to ensure wrap-reload recognizes them
+    (require (symbol (str "{{name}}.handlers." table ".controller")))
+    (require (symbol (str "{{name}}.handlers." table ".view")))
+    (require (symbol (str "{{name}}.handlers." table ".model")))
+    ;; Ensure all file operations are complete by reading the files back
+    (doseq [file-type ["controller.clj" "view.clj" "model.clj"]]
+      (slurp (str base-path file-type)))
     (println (str "Dashboard code generated in: src/{{name}}/handlers/" table))))
 
 
@@ -553,6 +567,13 @@
     (spit (str base-path "view.clj") (render-template view-report-template m))
     (spit (str base-path "model.clj") (render-template model-report-template m))
     (routes/process-report table)
+    ;; Load the newly generated namespaces to ensure wrap-reload recognizes them
+    (require (symbol (str "{{name}}.handlers.reports." table ".controller")))
+    (require (symbol (str "{{name}}.handlers.reports." table ".view")))
+    (require (symbol (str "{{name}}.handlers.reports." table ".model")))
+    ;; Ensure all file operations are complete by reading the files back
+    (doseq [file-type ["controller.clj" "view.clj" "model.clj"]]
+      (slurp (str base-path file-type)))
     (println (str "Report code generated in: src/{{name}}/handlers/reports/" table))))
 
 
@@ -592,6 +613,13 @@
     (spit (str base-path "view.clj") (render-template view-subgrid-template m))
     (spit (str base-path "model.clj") (render-template model-subgrid-template m))
     (routes/process-subgrid subgrid-name parent-table)
+    ;; Load the newly generated namespaces to ensure wrap-reload recognizes them
+    (require (symbol (str "{{name}}.handlers.admin." subgrid-name ".controller")))
+    (require (symbol (str "{{name}}.handlers.admin." subgrid-name ".view")))
+    (require (symbol (str "{{name}}.handlers.admin." subgrid-name ".model")))
+    ;; Ensure all file operations are complete by reading the files back
+    (doseq [file-type ["controller.clj" "view.clj" "model.clj"]]
+      (slurp (str base-path file-type)))
     (println (str "Subgrid code generated in: src/{{name}}/handlers/admin/" subgrid-name "/"))))
 
 ;; --- USAGE ---
@@ -641,20 +669,44 @@
                                [rest-args nil])]
     (cond
       (nil? table) (usage)
+      ;; Check if grid already exists
+      (.exists (io/file (str "src/{{name}}/handlers/admin/" table)))
+      (println (str "Grid for '" table "' already exists. Skipping generation."))
       (empty? field-pairs)
       ;; If no fields given, auto-generate from DB
       (let [fields (for [field (map name (get-table-columns table :conn conn))]
                      [(auto-label field) field])]
         (when set-default? (update-config-default! conn))
         (generate-files table (rest fields) conn rights)
-        (touch-file "src/{{name}}/core.clj"))
+        ;; Ensure file operations are complete
+        (Thread/sleep 100)
+        ;; Reload the routes namespaces to pick up the new routes
+        (require '{{name}}.routes.proutes :reload)
+        (require '{{name}}.routes.routes :reload)
+        ;; Reload core to ensure the dynamic app picks up changes
+        (require '{{name}}.core :reload)
+        (println (str "Grid '" table "' generated successfully! The routes should be available immediately.")))
       :else
       (let [fields (map #(let [[label field] (str/split % #":")]
                            [label field])
                         field-pairs)]
         (when set-default? (update-config-default! conn))
         (generate-files table fields conn rights)
-        (touch-file "src/{{name}}/core.clj")))))
+        ;; Ensure file operations are complete
+        (Thread/sleep 200)
+        ;; Reload the routes namespaces to pick up the new routes
+        (require '{{name}}.routes.proutes :reload)
+        (require '{{name}}.routes.routes :reload)
+        ;; Reload core to re-evaluate the app with new routes
+        (require '{{name}}.core :reload)
+        ;; Force a more aggressive reload by touching and reloading again
+        (touch-file "src/{{name}}/core.clj")
+        (Thread/sleep 200)
+        (require '{{name}}.core :reload)
+        ;; Final reload to ensure everything is picked up
+        (Thread/sleep 100)
+        (require '{{name}}.core :reload)
+        (println (str "Grid '" table "' generated successfully! You may need to refresh your browser."))))))
 
 
 ;; Accept :rights [..] as last argument
@@ -671,18 +723,43 @@
                                [rest-args nil])]
     (cond
       (nil? table) (usage)
+      ;; Check if dashboard already exists
+      (.exists (io/file (str "src/{{name}}/handlers/" table)))
+      (println (str "Dashboard for '" table "' already exists. Skipping generation."))
       (empty? field-pairs)
       ;; If no fields given, auto-generate from DB
       (let [fields (for [field (map name (get-table-columns table :conn conn))]
                      [(auto-label field) field])]
         (when set-default? (update-config-default! conn))
-        (generate-dashboard-files table (rest fields) conn rights))
+        (generate-dashboard-files table (rest fields) conn rights)
+        ;; Ensure file operations are complete
+        (Thread/sleep 100)
+        ;; Reload the routes namespaces to pick up the new routes
+        (require '{{name}}.routes.proutes :reload)
+        (require '{{name}}.routes.routes :reload)
+        ;; Reload core to re-evaluate the app with new routes
+        (require '{{name}}.core :reload)
+        ;; Force a more aggressive reload by touching and reloading again
+        (touch-file "src/{{name}}/core.clj")
+        (Thread/sleep 100)
+        (require '{{name}}.core :reload))
       :else
       (let [fields (map #(let [[label field] (str/split % #":")]
                            [label field])
                         field-pairs)]
         (when set-default? (update-config-default! conn))
-        (generate-dashboard-files table fields conn rights)))))
+        (generate-dashboard-files table fields conn rights)
+        ;; Ensure file operations are complete
+        (Thread/sleep 100)
+        ;; Reload the routes namespaces to pick up the new routes
+        (require '{{name}}.routes.proutes :reload)
+        (require '{{name}}.routes.routes :reload)
+        ;; Reload core to re-evaluate the app with new routes
+        (require '{{name}}.core :reload)
+        ;; Force a more aggressive reload by touching and reloading again
+        (touch-file "src/{{name}}/core.clj")
+        (Thread/sleep 100)
+        (require '{{name}}.core :reload)))))
 
 
 ;; Accept :rights [..] as last argument
@@ -696,9 +773,22 @@
                  (normalize-rights (subvec rest-args (inc rights-idx))))]
     (if (nil? table)
       (usage)
-      (do
-        (when set-default? (update-config-default! conn))
-        (generate-report-files table conn rights)))))
+      (if (.exists (io/file (str "src/{{name}}/handlers/reports/" table)))
+        (println (str "Report for '" table "' already exists. Skipping generation."))
+        (do
+          (when set-default? (update-config-default! conn))
+          (generate-report-files table conn rights)
+          ;; Ensure file operations are complete
+          (Thread/sleep 100)
+          ;; Reload the routes namespaces to pick up the new routes
+          (require '{{name}}.routes.proutes :reload)
+          (require '{{name}}.routes.routes :reload)
+          ;; Reload core to re-evaluate the app with new routes
+          (require '{{name}}.core :reload)
+          ;; Force a more aggressive reload by touching and reloading again
+          (touch-file "src/{{name}}/core.clj")
+          (Thread/sleep 100)
+          (require '{{name}}.core :reload))))))
 
 
 
@@ -719,6 +809,9 @@
       (do
         (println "Usage: lein run -m builder subgrid <table> <parent-table> <parent-key> <Label1>:<field1> <Label2>:<field2> ...")
         (println "Example: lein run -m builder subgrid appointments patients patient_id \"Date:date\" Reason:reason"))
+      ;; Check if subgrid already exists
+      (.exists (io/file (str "src/{{name}}/handlers/admin/" table parent-table)))
+      (println (str "Subgrid for '" table "' (parent: '" parent-table "') already exists. Skipping generation."))
       (empty? field-pairs)
       ;; If no fields given, auto-generate from DB
       (let [all-fields (map name (get-table-columns table :conn conn))
@@ -726,14 +819,36 @@
             view-fields (map #(vector (auto-label %) %) filtered-fields)
             sql-fields filtered-fields]
         (when set-default? (update-config-default! conn))
-        (generate-subgrid-files table parent-table parent-key view-fields sql-fields conn rights))
+        (generate-subgrid-files table parent-table parent-key view-fields sql-fields conn rights)
+        ;; Ensure file operations are complete
+        (Thread/sleep 100)
+        ;; Reload the routes namespaces to pick up the new routes
+        (require '{{name}}.routes.proutes :reload)
+        (require '{{name}}.routes.routes :reload)
+        ;; Reload core to re-evaluate the app with new routes
+        (require '{{name}}.core :reload)
+        ;; Force a more aggressive reload by touching and reloading again
+        (touch-file "src/{{name}}/core.clj")
+        (Thread/sleep 100)
+        (require '{{name}}.core :reload))
       :else
       (let [view-fields (map #(let [[label field] (str/split % #":")]
                                 [label field])
                              field-pairs)
             sql-fields (map second view-fields)]
         (when set-default? (update-config-default! conn))
-        (generate-subgrid-files table parent-table parent-key view-fields sql-fields conn rights)))))
+        (generate-subgrid-files table parent-table parent-key view-fields sql-fields conn rights)
+        ;; Ensure file operations are complete
+        (Thread/sleep 100)
+        ;; Reload the routes namespaces to pick up the new routes
+        (require '{{name}}.routes.proutes :reload)
+        (require '{{name}}.routes.routes :reload)
+        ;; Reload core to re-evaluate the app with new routes
+        (require '{{name}}.core :reload)
+        ;; Force a more aggressive reload by touching and reloading again
+        (touch-file "src/{{name}}/core.clj")
+        (Thread/sleep 100)
+        (require '{{name}}.core :reload)))))
 
 ;; --- DOCS / QUICK REFERENCE -------------------------------------------------
 (comment
