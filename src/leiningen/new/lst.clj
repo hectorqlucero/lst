@@ -92,6 +92,7 @@
              ["src/{{sanitized}}/models/routes.clj" (render "models-routes.clj" data)]
              ["src/{{sanitized}}/models/email.clj" (render "email.clj" data)]
              ["src/{{sanitized}}/models/util.clj" (render "util.clj" data)]
+             ["src/{{sanitized}}/models/tabgrid.clj" (render "tabgrid.clj" data)]
 
              ;; Databases
              ["src/{{sanitized}}/models/db/sqlite.clj" (render "sqlite.clj" data)]
