@@ -6,7 +6,47 @@
    [cheshire.core :as json]
    [{{name}}.models.grid :refer [build-grid build-grid-with-custom-new]]
    [{{name}}.models.crud :refer [Query]]))
-
+;; Start help parent grid controller
+; [contactos.models.tabgrid :refer [build-tabs]]
+; (defn contactos
+;   [request]
+;   (let [title "Contactos"
+;         ok (get-session-id request)
+;         js nil
+;         params (:params request)
+;         contactos-id (or (:id params) nil)
+;         rows (if-not (nil? contactos-id)
+;                [(get-contactos-id contactos-id)]
+;                (get-contactos))
+;         parent-row (first rows)
+;         parent-id (:id parent-row)
+;         content (build-tabs "contactos" parent-row
+;                             {:labels ["Name" "Email" "Phone" "Image"]
+;                              :dbfields [:name :email :phone :image]
+;                              :args {:new true :edit true :delete true}
+;                              :href "/admin/contactos"
+;                              :fetch-fn get-contactos}
+;                             {:table "siblings"
+;                              :fk :contacto_id
+;                              :labels ["Name" "Age" "Image"]
+;                              :dbfields [:name :age :image]
+;                              :args {:new true :edit true :delete true}
+;                              :href "/admin/siblingscontactos"
+;                              :fetch-fn get-siblings
+;                              :fetch-args [parent-id]}
+;                             {:table "cars"
+;                              :fk :contacto_id
+;                              :labels ["Company" "Model" "Year" "Image"]
+;                              :dbfields [:company :model :year :image]
+;                              :args {:new true :edit true :delete true}
+;                              :href "/admin/carscontactos"
+;                              :fetch-fn get-cars
+;                              :fetch-args [parent-id]})
+;         user-r (user-level request)]
+;     (if (some #(= user-r %) allowed-rights)
+;       (application request title ok js content)
+;       (application request title ok nil (str "Not authorized to access this item! (level(s) " allowed-rights ")")))))
+;; End help parent grid controller
 (defn- safe-id [s]
   (-> (or s "")
       str/lower-case
@@ -52,8 +92,7 @@
 (defn- parent-table-modal
   [parent-table dbfields labels all-records]
   (let [table-id (str "select-" (safe-id parent-table) "-modal-table")
-        modal-id (str "select-" (safe-id parent-table) "-modal")
-        json-data (json/generate-string all-records)]
+        modal-id (str "select-" (safe-id parent-table) "-modal")]
     [:div
      [:button.btn.btn-outline-primary.mb-3 {:type "button" :data-bs-toggle "modal" :data-bs-target (str "#" modal-id)}
       "Select " (str/capitalize (name parent-table))]
@@ -72,6 +111,7 @@
           [:tbody]]]
         [:div.modal-footer
          [:button.btn.btn-secondary {:type "button" :data-bs-dismiss "modal"} "Close"]]]]]
+     ;; Only initialize DataTable when modal is shown
      [:script
       (str
        "document.addEventListener('shown.bs.modal', function(e){\n"
@@ -81,7 +121,7 @@
        "      tableEl.DataTable().clear().destroy();\n"
        "      tableEl.find('tbody').empty();\n"
        "    }\n"
-       "    var data = " json-data ";\n"
+       "    var data = " (json/generate-string all-records) ";\n"
        "    tableEl.DataTable({\n"
        "      data: data,\n"
        "      columns: [\n"
@@ -106,6 +146,7 @@
         args (or (:args spec) {:new true :edit true :delete true})
         rows (cond
                (:rows spec) (:rows spec)
+               (:fetch-fn spec) (apply (:fetch-fn spec) (or (:fetch-args spec) [parent-id]))
                (:rows-fn spec) ((:rows-fn spec) parent-id)
                :else (default-child-rows table fk parent-id))
         href (or (:href spec) (str "/admin/" table))
@@ -131,29 +172,12 @@
         nav-id (str base "-link")
         fields (fields-map dbfields labels)
         grid-fn (or (:grid-fn spec) build-grid)
-        rows (or (:rows spec) [parent-row])]
-    {:id base :title title :dbfields dbfields :labels labels :args args :href href :fields fields :grid-fn grid-fn :rows rows :pane-id pane-id :nav-id nav-id}))
-
-;; Start example usage - you need to modify your controller on the main grid only - You still have to generate the grid and subgrids, those are needed.  This is just a tabbed ui interface
-; (defn contactos
-;   [request]
-;   (let [title "Contactos"
-;         ok (get-session-id request)
-;         js nil
-;         params (:params request)
-;         contactos-id (or (:id params) nil)
-;         rows (if-not (nil? contactos-id)
-;                [(get-contactos-id contactos-id)]
-;                (get-contactos))
-;         content (build-tabs "contactos" (first rows)
-;                             {:labels ["Name" "Email" "Phone" "Imagen"] :dbfields [:name :email :phone :imagen] :args {:new true :edit true :delete true} :href "/admin/contactos"}
-;                             {:table "siblings" :fk :contacto_id :labels ["Name" "Age" "Imagen"] :dbfields [:name :age :imagen] :args {:new true :edit true :delete true} :href "/admin/siblingscontactos"}
-;                             {:table "cars" :fk :contacto_id :labels ["Company" "Model" "Year" "Imagen"] :dbfields [:company :model :year :imagen] :args {:new true :edit true :delete true} :href "/admin/carscontactos"})
-;         user-r (user-level request)]
-;     (if (some #(= user-r %) allowed-rights)
-;       (application request title ok js content)
-;       (application request title ok nil (str "Not authorized to access this item! (level(s) " allowed-rights ")")))))
-;; End example usage
+        rows (cond
+               (:rows spec) (:rows spec)
+               (:fetch-fn spec) ((:fetch-fn spec))
+               :else [parent-row])]
+    {:id base :title title :dbfields dbfields :labels labels :args args :href href :fields fields :grid-fn grid-fn :rows rows :pane-id pane-id :nav-id nav-id
+     :fetch-fn (:fetch-fn spec)}))
 
 (defn build-tabs
   "Build bootstrap tabs for a parent and its child grids, with Select modal for parent."
@@ -169,8 +193,10 @@
         parent-args (:args parent-conf)
         parent-dbfields (:dbfields parent-conf)
         parent-labels (:labels parent-conf)
-        ;; Fetch all parent records for modal selection
-        all-parent-records (Query [(str "select * from " (name parent-table))])
+        ;; Only fetch all parent records for modal when modal is shown
+        all-parent-records (if-let [fetch-fn (:fetch-fn parent-conf)]
+                             (fetch-fn)
+                             (Query [(str "select * from " (name parent-table))]))
         child-confs (map-indexed (fn [idx s] (normalize-child parent-table p-id idx s)) child-specs)
         parent-grid ((:grid-fn parent-conf) parent-title [parent-row] parent-table parent-fields parent-href parent-args)
         tabs (concat [{:tabname parent-title :id (:id parent-conf) :pane-id (:pane-id parent-conf) :nav-id (:nav-id parent-conf) :grid parent-grid}]
@@ -180,7 +206,7 @@
                           child-confs))]
     (list
      [:div
-      ;; Select modal button and modal for parent grid only, with all records as JSON
+      ;; Only render modal button and modal, modal DataTable is initialized only when shown
       (parent-table-modal parent-table parent-dbfields parent-labels all-parent-records)
       [:ul.nav.nav-tabs {:role "tablist"}
        (doall (map-indexed (fn [idx t]
