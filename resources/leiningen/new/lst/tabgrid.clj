@@ -193,12 +193,15 @@
         parent-args (:args parent-conf)
         parent-dbfields (:dbfields parent-conf)
         parent-labels (:labels parent-conf)
+        grid-row (if (> (count parent-row) 0)
+                   [parent-row]
+                   nil)
         ;; Only fetch all parent records for modal when modal is shown
         all-parent-records (if-let [fetch-fn (:fetch-fn parent-conf)]
                              (fetch-fn)
                              (Query [(str "select * from " (name parent-table))]))
         child-confs (map-indexed (fn [idx s] (normalize-child parent-table p-id idx s)) child-specs)
-        parent-grid ((:grid-fn parent-conf) parent-title [parent-row] parent-table parent-fields parent-href parent-args)
+        parent-grid ((:grid-fn parent-conf) parent-title grid-row parent-table parent-fields parent-href parent-args)
         tabs (concat [{:tabname parent-title :id (:id parent-conf) :pane-id (:pane-id parent-conf) :nav-id (:nav-id parent-conf) :grid parent-grid}]
                      (map (fn [c]
                             {:tabname (:title c) :id (:id c) :pane-id (:pane-id c) :nav-id (:nav-id c)
