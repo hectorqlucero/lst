@@ -1,57 +1,46 @@
 (ns {{name}}.models.tabgrid
-  "Tabbed interface helpers for parent/child grids.
-   Generic `build-tabs` accepts optional subgrid descriptors as varargs."
+  "Optional tabbed interface for grids with subgrids"
   (:require
    [clojure.string :as str]
    [cheshire.core :as json]
    [{{name}}.models.grid :refer [build-grid build-grid-with-custom-new]]
-   [{{name}}.models.crud :refer [Query]]))
-;; Start help parent grid controller
-; [contactos.models.tabgrid :refer [build-tabs]]
-; (defn contactos
-;   [request]
-;   (let [title "Contactos"
-;         ok (get-session-id request)
-;         js nil
-;         params (:params request)
-;         contactos-id (or (:id params) nil)
-;         rows (if-not (nil? contactos-id)
-;                [(get-contactos-id contactos-id)]
-;                (get-contactos))
-;         parent-row (first rows)
-;         parent-id (:id parent-row)
-;         content (build-tabs "contactos" parent-row
-;                             {:labels ["Name" "Email" "Phone" "Image"]
-;                              :dbfields [:name :email :phone :image]
-;                              :args {:new true :edit true :delete true}
-;                              :href "/admin/contactos"
-;                              :fetch-fn get-contactos}
-;                             {:table "siblings"
-;                              :fk :contacto_id
-;                              :labels ["Name" "Age" "Image"]
-;                              :dbfields [:name :age :image]
-;                              :args {:new true :edit true :delete true}
-;                              :href "/admin/siblingscontactos"
-;                              :fetch-fn get-siblings
-;                              :fetch-args [parent-id]}
-;                             {:table "cars"
-;                              :fk :contacto_id
-;                              :labels ["Company" "Model" "Year" "Image"]
-;                              :dbfields [:company :model :year :image]
-;                              :args {:new true :edit true :delete true}
-;                              :href "/admin/carscontactos"
-;                              :fetch-fn get-cars
-;                              :fetch-args [parent-id]})
-;         user-r (user-level request)]
-;     (if (some #(= user-r %) allowed-rights)
-;       (application request title ok js content)
-;       (application request title ok nil (str "Not authorized to access this item! (level(s) " allowed-rights ")")))))
-;; End help parent grid controller
+   [clojure.walk :as walk]))
+
+;; start needed require
+; [contactos.handlers.admin.siblingscontactos.model :require [get-siblings]]
+; [contactos.handlers.admin.carscontactos.model :require [get-cars]]
+; [contactos.models.tabgrid :require [tab-plugin]]
+;; end needed require
+
+;; start example setup
+;; content (tab-plugin request
+;;                     {:table "contactos"
+;;                      :labels ["Name" "Email" "Phone" "Image"]
+;;                      :dbfields [:name :email :phone :image]
+;;                      :href "/admin/contactos"
+;;                      :get-id-fn get-contactos-id
+;;                      :get-all-fn get-contactos}
+;;                     {:table "siblings"
+;;                      :fkey :contacto_id
+;;                      :labels ["Name" "Age" "Image"]
+;;                      :dbfields [:name :age :image]
+;;                      :href "/admin/siblingscontactos"
+;;                      :fetch-fn get-siblings
+;;                      :fetch-args [:parent-id]}
+;;                     {:table "cars"
+;;                      :fkey :contacto_id
+;;                      :labels ["Company" "Model" "Year" "Image"]
+;;                      :dbfields [:compay :model :year :image]
+;;                      :href "/admin/carscontactos"
+;;                      :fetch-fn get-cars
+;;                      :fetch-args [:parent-id]})]))
+;; End example setup
+
 (defn- safe-id [s]
   (-> (or s "")
       str/lower-case
       (str/replace #"[^a-z0-9]+" "-")
-      (str/replace #"-+" "-")
+      (str/replace #"(-)+" "-")
       (str/replace #"(^-|-$)" "")))
 
 (defn- parent-id [row]
@@ -89,8 +78,7 @@
           (when active? {:class "show active"}))
    content])
 
-(defn- parent-table-modal
-  [parent-table dbfields labels all-records]
+(defn- parent-table-modal [parent-table dbfields labels all-records]
   (let [table-id (str "select-" (safe-id parent-table) "-modal-table")
         modal-id (str "select-" (safe-id parent-table) "-modal")]
     [:div
@@ -111,7 +99,6 @@
           [:tbody]]]
         [:div.modal-footer
          [:button.btn.btn-secondary {:type "button" :data-bs-dismiss "modal"} "Close"]]]]]
-     ;; Only initialize DataTable when modal is shown
      [:script
       (str
        "document.addEventListener('shown.bs.modal', function(e){\n"
@@ -132,37 +119,44 @@
        "  }\n"
        "});")]]))
 
-(defn- default-child-rows [table fk p-id]
-  (if p-id
-    (Query [(str "select * from " table " where " (name fk) " = ?") p-id])
-    []))
-
 (defn- normalize-child [parent-table parent-id idx spec]
-  (let [table (or (:table spec) (some-> (:id spec) name) (throw (ex-info "child spec missing :table" {:spec spec})))
-        title (or (:title spec) (str/capitalize table))
-        fk (or (:fk spec) (keyword (str parent-table "_id")))
+  (when-not (map? spec)
+    (throw (ex-info "Child tab spec must be a map with at least :table and :fkey/:fk" {:spec spec})))
+  (let [table (or (:table spec) (throw (ex-info "child spec missing :table" {:spec spec})))
+        title (or (:title spec) (str/capitalize (name table)))
+        fk (cond
+             (contains? spec :fkey) (:fkey spec)
+             (contains? spec :fk) (:fk spec)
+             :else (throw (ex-info "Child tab missing required :fkey or :fk param" {:spec spec :table table :parent-table parent-table})))
         dbfields (or (:dbfields spec) [])
         labels (or (:labels spec) (mapv name dbfields))
         args (or (:args spec) {:new true :edit true :delete true})
-        rows (cond
-               (:rows spec) (:rows spec)
-               (:fetch-fn spec) (apply (:fetch-fn spec) (or (:fetch-args spec) [parent-id]))
-               (:rows-fn spec) ((:rows-fn spec) parent-id)
-               :else (default-child-rows table fk parent-id))
         href (or (:href spec) (str "/admin/" table))
         new-href (or (:new-url spec) (when parent-id (str href "/add-form/" parent-id)))
         base (str (safe-id parent-table) "-" (safe-id (str parent-id)) "-" (safe-id title) "-" idx)
         pane-id (str base "-pane")
         nav-id (str base "-link")
         fields (fields-map dbfields labels)
-        grid-fn (or (:grid-fn spec) build-grid-with-custom-new)]
-    {:id base
-     :table table :title title :dbfields dbfields :labels labels :args args :rows rows
-     :href href :new-href new-href :pane-id pane-id :nav-id nav-id :fields fields :grid-fn grid-fn :lazy? (boolean (:lazy spec))}))
+        grid-fn (or (:grid-fn spec) build-grid-with-custom-new)
+        parent-id-kw (or (:parent-id-kw spec) :parent-id)
+        parent-id-val parent-id
+        fetch-args (or (:fetch-args spec) [parent-id-val])
+        rows (cond
+               (:rows spec) (:rows spec)
+               (:fetch-fn spec) (apply (:fetch-fn spec) fetch-args)
+               (:rows-fn spec) ((:rows-fn spec) parent-id-val)
+               :else nil)]
+    (merge
+     {:id base
+      :table table :title title :dbfields dbfields :labels labels :args args :rows rows
+      :href href :new-href new-href :pane-id pane-id :nav-id nav-id :fields fields :grid-fn grid-fn :lazy? (boolean (:lazy spec))
+      :fk fk
+      :parent-id parent-id-val}
+     (dissoc spec :rows :fetch-fn :fetch-args :rows-fn :table :fk :fkey :href :new-url :dbfields :labels :args :grid-fn :lazy :title :parent-id-kw))))
 
 (defn- normalize-parent [parent-table parent-row spec]
   (let [p-id (parent-id parent-row)
-        title (or (:title spec) (str/capitalize parent-table))
+        title (or (:title spec) (str/capitalize (name parent-table)))
         dbfields (or (:dbfields spec) [:name :email :phone :imagen])
         labels (or (:labels spec) ["Name" "Email" "Phone" "Imagen"])
         args (or (:args spec) {:new true :edit true :delete true})
@@ -177,16 +171,12 @@
                (:fetch-fn spec) ((:fetch-fn spec))
                :else [parent-row])]
     {:id base :title title :dbfields dbfields :labels labels :args args :href href :fields fields :grid-fn grid-fn :rows rows :pane-id pane-id :nav-id nav-id
-     :fetch-fn (:fetch-fn spec)}))
+     :fetch-fn (:fetch-fn spec)
+     :get-all-fn (:get-all-fn spec)}))
 
-(defn build-tabs
-  "Build bootstrap tabs for a parent and its child grids, with Select modal for parent."
-  [parent-table parent-row & subgrids]
+(defn build-tabs [parent-table parent-row parent-spec child-specs]
   (let [p-id (parent-id parent-row)
-        [parent-override child-specs] (if (and (seq subgrids) (not (:table (first subgrids))))
-                                        [(first subgrids) (rest subgrids)]
-                                        [nil subgrids])
-        parent-conf (normalize-parent parent-table parent-row (or parent-override {}))
+        parent-conf (normalize-parent parent-table parent-row parent-spec)
         parent-title (:title parent-conf)
         parent-fields (:fields parent-conf)
         parent-href (:href parent-conf)
@@ -196,10 +186,7 @@
         grid-row (if (> (count parent-row) 0)
                    [parent-row]
                    nil)
-        ;; Only fetch all parent records for modal when modal is shown
-        all-parent-records (if-let [fetch-fn (:fetch-fn parent-conf)]
-                             (fetch-fn)
-                             (Query [(str "select * from " (name parent-table))]))
+        all-parent-records (if (fn? (:get-all-fn parent-conf)) (apply (:get-all-fn parent-conf) []) nil)
         child-confs (map-indexed (fn [idx s] (normalize-child parent-table p-id idx s)) child-specs)
         parent-grid ((:grid-fn parent-conf) parent-title grid-row parent-table parent-fields parent-href parent-args)
         tabs (concat [{:tabname parent-title :id (:id parent-conf) :pane-id (:pane-id parent-conf) :nav-id (:nav-id parent-conf) :grid parent-grid}]
@@ -209,7 +196,6 @@
                           child-confs))]
     (list
      [:div
-      ;; Only render modal button and modal, modal DataTable is initialized only when shown
       (parent-table-modal parent-table parent-dbfields parent-labels all-parent-records)
       [:ul.nav.nav-tabs {:role "tablist"}
        (doall (map-indexed (fn [idx t]
@@ -221,3 +207,28 @@
                            tabs))]]
      [:script
       "document.addEventListener('DOMContentLoaded', function(){var id=localStorage.getItem('active-tab'); if(id){var sel='.nav-tabs .nav-link[href=\\\"#'+id+'\\\"]'; var el=document.querySelector(sel); if(el){try{bootstrap.Tab.getOrCreateInstance(el).show();}catch(e){el.click();}}}});"])))
+
+(defmacro tab-plugin
+  [request parent-spec & child-specs]
+  (let [params-sym (gensym "params")
+        id-sym (gensym "id")
+        rows-sym (gensym "rows")
+        parent-row-sym (gensym "parent_row")
+        parent-id-sym (gensym "parent_id")
+        ;; Deeply walk all child specs and replace every occurrence of symbol 'parent-id and keyword :parent-id
+        deep-replace (fn [form]
+                       (walk/prewalk
+                        #(cond
+                           (= % 'parent-id) parent-id-sym
+                           (= % :parent-id) parent-id-sym
+                           :else %)
+                        form))
+        child-specs-vec (mapv deep-replace child-specs)]
+    `(let [~params-sym (:params ~request)
+           ~id-sym (or (:id ~params-sym) nil)
+           ~rows-sym (if-not (nil? ~id-sym)
+                       [(apply (:get-id-fn ~parent-spec) [~id-sym])]
+                       (apply (:get-all-fn ~parent-spec) []))
+           ~parent-row-sym (first ~rows-sym)
+           ~parent-id-sym (:id ~parent-row-sym)]
+       (build-tabs ~(get parent-spec :table) ~parent-row-sym ~parent-spec ~child-specs-vec))))
